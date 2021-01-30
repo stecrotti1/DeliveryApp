@@ -10,7 +10,7 @@ class Keys {
         // preferences
         const val userInfo: String = "userInfo"
         const val userType: String = "userType"
-        const val isRemembered: String = "isRemembered"
+        const val isLogged: String = "isLogged"
         const val isRegistered: String = "isRegistered"
         const val managerID: String = "managerID"
         const val clientLocation: String = "clientLocation"

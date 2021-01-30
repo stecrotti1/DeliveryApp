@@ -2,15 +2,15 @@ package com.android.deliveryapp
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
+import com.android.deliveryapp.util.Keys.Companion.isLogged
 import com.android.deliveryapp.util.Keys.Companion.isRegistered
-import com.android.deliveryapp.util.Keys.Companion.isRemembered
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 
@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
             if (sharedPreferences.getBoolean(isRegistered, false)) {
-                if (sharedPreferences.getBoolean(isRemembered, false)) {
+                if (sharedPreferences.getBoolean(isLogged, false)) {
                     when (sharedPreferences.getString(userType, null)) {
                         CLIENT -> TODO("startActivity(Intent(this@MainActivity, ClientHomeActivity::class.java))")
                         RIDER -> TODO("startActivity(Intent(this@MainActivity, RiderHomeActivity::class.java))")
@@ -39,8 +39,10 @@ class MainActivity : AppCompatActivity() {
                     TODO("startActivity(Intent(this@MainActivity, LoginActivity::class.java))")
                 }
             } else {
-                startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
+                startActivity(Intent(this@MainActivity, SignUpActivity::class.java))
             }
+            finish()
         }, 1500) // wait 1.5 seconds, then show the activity
+
     }
 }

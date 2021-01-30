@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DeliveryApp">
-        <activity android:name=".SelectUserTypeActivity"></activity>
+        <activity android:name=".SignUpActivity"
+            android:screenOrientation="sensor"/>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
