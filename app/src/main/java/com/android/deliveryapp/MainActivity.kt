@@ -1,11 +1,46 @@
 package com.android.deliveryapp
 
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import com.android.deliveryapp.util.Keys.Companion.CLIENT
+import com.android.deliveryapp.util.Keys.Companion.MANAGER
+import com.android.deliveryapp.util.Keys.Companion.RIDER
+import com.android.deliveryapp.util.Keys.Companion.isRegistered
+import com.android.deliveryapp.util.Keys.Companion.isRemembered
+import com.android.deliveryapp.util.Keys.Companion.userInfo
+import com.android.deliveryapp.util.Keys.Companion.userType
 
+/**
+ * Splash screen activity
+ */
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        supportActionBar?.hide() // hide action bar
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+
+            if (sharedPreferences.getBoolean(isRegistered, false)) {
+                if (sharedPreferences.getBoolean(isRemembered, false)) {
+                    when (sharedPreferences.getString(userType, null)) {
+                        CLIENT -> TODO("startActivity(Intent(this@MainActivity, ClientHomeActivity::class.java))")
+                        RIDER -> TODO("startActivity(Intent(this@MainActivity, RiderHomeActivity::class.java))")
+                        MANAGER -> TODO("startActivity(Intent(this@MainActivity, ManagerHomeActivity::class.java))")
+                        else -> TODO("startActivity(Intent(this@MainActivity, SelectionActivity::class.java))")
+                    }
+                } else {
+                    TODO("startActivity(Intent(this@MainActivity, LoginActivity::class.java))")
+                }
+            } else {
+                startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
+            }
+        }, 1500) // wait 1.5 seconds, then show the activity
     }
 }

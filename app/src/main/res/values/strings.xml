@@ -1,3 +1,61 @@
 <resources>
     <string name="app_name">DeliveryApp</string>
+
+    <!-- LOGIN ACTIVITY -->
+
+    <string name="submit_button">submit</string>
+
+    <string name="sign_up"><u>Sign Up</u></string>
+
+    <string name="login">Login</string>
+
+    <string name="remember_me">Remember me</string>
+
+    <!-- SELECT USER TYPE ACTIVITY -->
+
+    <string name="sign_up_label">Sign Up</string>
+
+    <string name="selection_label">Are you a…</string>
+
+    <string name="manager">Manager</string>
+    <string name="rider">Rider</string>
+    <string name="client">Client</string>
+
+    <string name="confirm_button">Confirm</string>
+
+    <!-- SIGN UP ACTIVITY -->
+    <string name="create_account">Create Account</string>
+
+    <string name="next_button">next</string>
+
+    <!-- PROFILE ACTIVITIES -->
+
+    <string name="profile_label">Your profile</string>
+
+    <string name="rider_status">Available</string>
+    <string name="save">Save</string>
+    <string name="homepage">Home page</string>
+
+    <!-- HOME ACTIVITY -->
+
+    <string name="welcome">Welcome</string>
+
+
+    <string name="shopping_cart">Shopping cart</string>
+    <string name="orders">Your orders</string>
+
+    <!-- hints -->
+    <string name="fname_hint">First Name</string>
+    <string name="lname_hint">Last Name</string>
+    <string name="location_hint">Address</string>
+    <string name="market_location_hint">Market Address</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="manager_verification_code_hint">Manager Verification Code</string>
+    <string name="rider_verification_code_hint">Manager Verification Code</string>
+
+    <!-- image description -->
+    <string name="delivery_image_desc">delivery icon</string>
+
 </resources>
