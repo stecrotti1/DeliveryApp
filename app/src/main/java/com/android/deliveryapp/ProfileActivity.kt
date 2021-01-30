@@ -1,15 +1,15 @@
 package com.android.deliveryapp
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityProfileBinding
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
+import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 import com.google.firebase.auth.FirebaseAuth
@@ -52,14 +52,17 @@ class ProfileActivity : AppCompatActivity() {
                 binding.location.hint = getString(R.string.market_location_hint)
             }
         }
-    }
-
-    // hide keyboard when user clicks outside EditText
-    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-        if (currentFocus != null) {
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        if (sharedPreferences.getBoolean(hasLocation, false)) { // if the user has already set the location
+            binding.saveProfile.visibility = View.INVISIBLE
+            binding.location.keyListener = null // not editable, but still visible
         }
-        return super.dispatchTouchEvent(event)
+        else {
+            // TODO: 30/01/2021 MAKE BUTTON FOR SETTING THE LOCATION 
+            binding.location.setOnClickListener {
+                startActivity(Intent(this@ProfileActivity, LocationActivity::class.java))
+            }
+        }
+        
+        
     }
 }

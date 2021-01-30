@@ -30,13 +30,18 @@
 
     <string name="next_button">next</string>
 
-    <!-- PROFILE ACTIVITIES -->
+    <!-- PROFILE ACTIVITY -->
 
     <string name="profile_label">Your profile</string>
 
     <string name="rider_status">Available</string>
     <string name="save">Save</string>
     <string name="homepage">Home page</string>
+    
+    <!-- LOCATION ACTIVITY -->
+    
+    <string name="client_position">You are here</string>
+    <string name="client_pos_snippet">Your last known location</string>
 
     <!-- HOME ACTIVITY -->
 
@@ -64,6 +69,7 @@
     <string name="invalid_password">Password should be at least 6 characters</string>
     <string name="password_not_match">Password does not match</string>
     <string name="sign_up_failure">Sign Up failed</string>
+    <string name="title_activity_location">Map</string>
 
 
 </resources>

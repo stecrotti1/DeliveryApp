@@ -12,6 +12,7 @@ class Keys {
         const val userType: String = "userType"
         const val isLogged: String = "isLogged"
         const val isRegistered: String = "isRegistered"
+        const val hasLocation: String = "hasLocation"
         const val managerID: String = "managerID"
         const val clientLocation: String = "clientLocation"
 
