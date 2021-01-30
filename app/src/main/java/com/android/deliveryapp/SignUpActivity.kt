@@ -1,6 +1,7 @@
 package com.android.deliveryapp
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -9,6 +10,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivitySignUpBinding
+import com.android.deliveryapp.util.Keys.Companion.isRegistered
+import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 
@@ -28,55 +31,66 @@ class SignUpActivity : AppCompatActivity() {
 
         binding.nextButton.setOnClickListener {
             signUpUser(binding.email, binding.password, binding.confirmPassword)
+
         }
     }
 
+    /**
+     * @param email given by the user
+     * @param password given by the user
+     * @param confirmPwd must be the same as password in order to confirm
+     */
     private fun signUpUser(
         email: TextInputEditText,
         password: TextInputEditText,
         confirmPwd: TextInputEditText
-    ) {
-        if (checkInput(binding.email)
-            && checkInput(binding.password)
-            && checkInput(binding.confirmPassword)) {
+    ){
 
-            if (!Patterns.EMAIL_ADDRESS.matcher(email.text.toString()).matches()) {
-                email.error = getString(R.string.invalid_email)
-                email.requestFocus()
-                return
-            }
-            if (password.text!!.length < 6) {
-                password.error = getString(R.string.invalid_password)
-                password.requestFocus()
-                return
-            }
-            if (password.text.toString() != confirmPwd.text.toString()) {
-                password.error = getString(R.string.password_not_match)
-                confirmPwd.error = getString(R.string.password_not_match)
-                password.requestFocus()
-                confirmPwd.requestFocus()
-                return
-            }
-
-            auth.createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
-                    .addOnCompleteListener(this) { task ->
-                        if (task.isSuccessful) {
-                            Log.d(TAG, "createUserWithEmail: SUCCESS")
-                        }
-                        else {
-                            Log.w(TAG, "createUserWithEmail: FAILURE", task.exception)
-                            Toast.makeText(baseContext, getString(R.string.sign_up_failure), Toast.LENGTH_SHORT).show()
-                        }
-                    }
+        if (email.text.isNullOrEmpty()) {
+            email.error = getString(R.string.empty_email)
+            email.requestFocus()
+            return
         }
-    }
+        if (password.text.isNullOrEmpty()) {
+            password.error = getString(R.string.empty_password)
+            password.requestFocus()
+            return
+        }
 
-    private fun checkInput(inputText: TextInputEditText): Boolean {
-        return if (inputText.text.isNullOrEmpty()) {
-            inputText.error = getString(R.string.empty)
-            inputText.requestFocus()
-            false
-        } else true
+        if (!Patterns.EMAIL_ADDRESS.matcher(email.text.toString()).matches()) {
+            email.error = getString(R.string.invalid_email)
+            email.requestFocus()
+            return
+        }
+        if (password.text!!.length < 6) {
+            password.error = getString(R.string.invalid_password)
+            password.requestFocus()
+            return
+        }
+        if (password.text.toString() != confirmPwd.text.toString()) {
+            confirmPwd.error = getString(R.string.password_not_match)
+            confirmPwd.requestFocus()
+            return
+        }
+
+        auth.createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "createUserWithEmail: SUCCESS")
+                    startActivity(Intent(this@SignUpActivity, ProfileActivity::class.java))
+
+                    val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+
+                    val editor = sharedPreferences.edit()
+                    editor.putBoolean(isRegistered, true) // user is not flagged as registered
+                    editor.apply()
+
+                } else {
+                    Log.w(TAG, "createUserWithEmail: FAILURE", task.exception)
+                    Toast.makeText(baseContext, getString(R.string.sign_up_failure), Toast.LENGTH_SHORT).show()
+                }
+            }
+        return
     }
 
     // hide keyboard when user clicks outside EditText

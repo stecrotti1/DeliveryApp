@@ -58,12 +58,12 @@
     <string name="rider_verification_code_hint">Manager Verification Code</string>
 
     <!-- errors -->
-    <string name="empty">Please fill</string>
+    <string name="empty_email">Please enter email</string>
+    <string name="empty_password">Please enter password</string>
     <string name="invalid_email">Please enter a valid email</string>
     <string name="invalid_password">Password should be at least 6 characters</string>
     <string name="password_not_match">Password does not match</string>
     <string name="sign_up_failure">Sign Up failed</string>
-
 
 
 </resources>

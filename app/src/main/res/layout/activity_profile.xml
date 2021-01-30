@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfileActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/profile"
+        android:layout_above="@id/profileLabel"
+        android:layout_margin="10dp"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/profileLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/profile_label"
+        android:textColor="@color/blue"
+        android:textStyle="bold"
+        android:textSize="40sp"
+        android:layout_above="@id/emailLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_margin="10dp"
+        android:layout_above="@id/locationLayout"
+        android:layout_centerHorizontal="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/email"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/email_hint"
+            android:inputType="textEmailAddress"
+            android:focusable="false"
+            android:imeOptions="actionDone" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- TODO: set location input mode/hints by gps -->
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/locationLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_margin="10dp"
+        android:layout_centerInParent="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/location"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPostalAddress"
+            android:imeOptions="actionDone" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <CheckBox
+        android:id="@+id/riderStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="@string/rider_status"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/locationLayout" />
+
+    <Button
+        android:id="@+id/saveProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/riderStatus" />
+
+</RelativeLayout>
