@@ -37,6 +37,8 @@
     <string name="rider_status">Available</string>
     <string name="save">Save</string>
     <string name="homepage">Home page</string>
+
+    <string name="is_location_correct">Is this your location? <u>Correct here</u></string>
     
     <!-- LOCATION ACTIVITY -->
     

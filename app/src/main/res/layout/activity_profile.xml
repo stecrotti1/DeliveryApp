@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProfileActivity">
 
     <ImageView
@@ -29,7 +30,7 @@
         android:id="@+id/emailLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
         android:layout_margin="10dp"
         android:layout_above="@id/locationLayout"
         android:layout_centerHorizontal="true">
@@ -44,23 +45,31 @@
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- TODO: set location input mode/hints by gps -->
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/locationLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
         android:layout_margin="10dp"
+        app:endIconMode="clear_text"
         android:layout_centerInParent="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/location"
             android:layout_width="230dp"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:inputType="textPostalAddress"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/isLocationCorrect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/is_location_correct"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/locationLayout" />
 
     <CheckBox
         android:id="@+id/riderStatus"
@@ -69,14 +78,6 @@
         android:checked="false"
         android:text="@string/rider_status"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/locationLayout" />
-
-    <Button
-        android:id="@+id/saveProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/save"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/riderStatus" />
+        android:layout_below="@id/isLocationCorrect" />
 
 </RelativeLayout>

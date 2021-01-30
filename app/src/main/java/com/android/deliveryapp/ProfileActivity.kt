@@ -9,15 +9,17 @@ import com.android.deliveryapp.databinding.ActivityProfileBinding
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
-import com.android.deliveryapp.util.Keys.Companion.hasLocation
+import com.android.deliveryapp.util.Keys.Companion.clientLocation
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.firebase.auth.FirebaseAuth
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var fusedLocation: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +42,7 @@ class ProfileActivity : AppCompatActivity() {
                 supportActionBar?.title = getString(R.string.client) // set "Client" in action bar
                 binding.riderStatus.visibility = View.INVISIBLE
                 binding.location.hint = getString(R.string.location_hint)
+                binding.location.setText(sharedPreferences.getString(clientLocation, null)?:"")
             }
             RIDER -> {
                 supportActionBar?.title = getString(R.string.rider) // set "Rider" in action bar
@@ -52,17 +55,9 @@ class ProfileActivity : AppCompatActivity() {
                 binding.location.hint = getString(R.string.market_location_hint)
             }
         }
-        if (sharedPreferences.getBoolean(hasLocation, false)) { // if the user has already set the location
-            binding.saveProfile.visibility = View.INVISIBLE
-            binding.location.keyListener = null // not editable, but still visible
+
+        binding.isLocationCorrect.setOnClickListener {
+            startActivity(Intent(this@ProfileActivity, LocationActivity::class.java))
         }
-        else {
-            // TODO: 30/01/2021 MAKE BUTTON FOR SETTING THE LOCATION 
-            binding.location.setOnClickListener {
-                startActivity(Intent(this@ProfileActivity, LocationActivity::class.java))
-            }
-        }
-        
-        
     }
 }

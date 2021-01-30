@@ -15,6 +15,7 @@ class Keys {
         const val hasLocation: String = "hasLocation"
         const val managerID: String = "managerID"
         const val clientLocation: String = "clientLocation"
+        const val marketLocation: String = "marketLocation"
 
         // firebasefirestore
         const val productList: String = "productList"
