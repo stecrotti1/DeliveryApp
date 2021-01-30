@@ -5,6 +5,16 @@
     android:layout_height="match_parent"
     tools:context=".SelectUserTypeActivity">
 
+    <ImageView
+        android:id="@+id/imageProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/profile"
+        android:layout_above="@id/loginTitle"
+        android:layout_margin="20dp"
+        android:layout_centerHorizontal="true"
+        tools:ignore="ContentDescription" />
+
     <TextView
         android:id="@+id/loginTitle"
         android:layout_width="wrap_content"
@@ -47,6 +57,15 @@
 
     </RadioGroup>
 
+    <TextView
+        android:id="@+id/hasAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/has_account"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/radioGroup"
+        android:clickable="true" />
+
     <Button
         android:id="@+id/confirmButton"
         android:layout_width="wrap_content"
@@ -54,6 +73,6 @@
         android:text="@string/confirm_button"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
-        android:layout_below="@id/radioGroup" />
+        android:layout_below="@id/hasAccount" />
 
 </RelativeLayout>

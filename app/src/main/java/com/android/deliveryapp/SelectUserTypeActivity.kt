@@ -1,8 +1,9 @@
 package com.android.deliveryapp
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivitySelectUserTypeBinding
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
@@ -35,8 +36,29 @@ class SelectUserTypeActivity : AppCompatActivity() {
             }
 
             editor.apply()
-            // frame?
-            TODO("startActivity(Intent(this@SelectionActivity, SignupActivity::class.java))")
+
+            startActivity(Intent(this@SelectUserTypeActivity, SignUpActivity::class.java))
         }
+
+        binding.hasAccount.setOnClickListener {
+            TODO("startActivity(Intent(this@SelectUserTypeActivity, LoginActivity::class.java))")
+            finish()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean("clientRadioButton", binding.client.isChecked)
+        outState.putBoolean("riderRadioButton", binding.rider.isChecked)
+        outState.putBoolean("managerRadioButton", binding.manager.isChecked)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.client.isChecked = savedInstanceState.getBoolean("clientRadioButton")
+        binding.rider.isChecked = savedInstanceState.getBoolean("riderRadioButton")
+        binding.manager.isChecked = savedInstanceState.getBoolean("managerRadioButton")
     }
 }

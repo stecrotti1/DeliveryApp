@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
                     TODO("startActivity(Intent(this@MainActivity, LoginActivity::class.java))")
                 }
             } else {
-                startActivity(Intent(this@MainActivity, SignUpActivity::class.java))
+                startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
             }
             finish()
         }, 1500) // wait 1.5 seconds, then show the activity

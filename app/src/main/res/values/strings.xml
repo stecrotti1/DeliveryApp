@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">DeliveryApp</string>
+    <string name="app_name" translatable="false">DeliveryApp</string>
 
     <!-- LOGIN ACTIVITY -->
 
     <string name="submit_button">submit</string>
 
-    <string name="sign_up"><u>Sign Up</u></string>
+    <string name="sign_up">Don\'t have an account? <u>Sign Up</u></string>
 
     <string name="login">Login</string>
 
@@ -18,8 +18,10 @@
     <string name="selection_label">Are you a…</string>
 
     <string name="manager">Manager</string>
-    <string name="rider">Rider</string>
+    <string name="rider" translatable="false">Rider</string>
     <string name="client">Client</string>
+
+    <string name="has_account">Already have an account? <u>Log in</u></string>
 
     <string name="confirm_button">Confirm</string>
 
@@ -55,7 +57,12 @@
     <string name="manager_verification_code_hint">Manager Verification Code</string>
     <string name="rider_verification_code_hint">Manager Verification Code</string>
 
-    <!-- image description -->
-    <string name="delivery_image_desc">delivery icon</string>
+    <!-- errors -->
+    <string name="empty">Please fill</string>
+    <string name="invalid_email">Please enter a valid email</string>
+    <string name="invalid_password">Password should be at least 6 characters</string>
+    <string name="password_not_match">Password does not match</string>
+
+
 
 </resources>
