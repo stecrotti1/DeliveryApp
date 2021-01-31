@@ -35,12 +35,12 @@
     <string name="profile_label">Your profile</string>
 
     <string name="rider_status">Available</string>
-    <string name="homepage">Home page</string>
+    <string name="homepage">Homepage</string>
 
     <string name="is_location_correct"><u>Set your location here</u></string>
-    
+
     <!-- LOCATION ACTIVITY -->
-    
+
     <string name="client_position">You are here</string>
     <string name="client_pos_snippet">Your last known location</string>
 
@@ -50,9 +50,6 @@
     <string name="save_location">Save</string>
     <string name="location_save_success">Location saved successfully</string>
 
-    <string name="search_button">Search</string>
-
-    <!-- menu -->
     <string name="search">Search your location</string>
 
     <!-- HOME ACTIVITY -->
@@ -82,6 +79,7 @@
     <string name="invalid_password">Password should be at least 6 characters</string>
     <string name="password_not_match">Password does not match</string>
     <string name="sign_up_failure">Sign Up failed</string>
+    <string name="login_failure">Authentication failed</string>
     <string name="title_activity_location">Map</string>
 
 

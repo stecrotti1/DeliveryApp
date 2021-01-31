@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/searchLocation"
-        android:title="@string/search"/>
+        android:id="@+id/homePage"
+        android:title="@string/homepage"  />
 
 </menu>

@@ -3,8 +3,7 @@ package com.android.deliveryapp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityProfileBinding
@@ -42,7 +41,7 @@ class ProfileActivity : AppCompatActivity() {
                 supportActionBar?.title = getString(R.string.client) // set "Client" in action bar
                 binding.riderStatus.visibility = View.INVISIBLE
                 binding.location.hint = getString(R.string.location_hint)
-                binding.location.setText(intent.getStringExtra(clientLocation)?:"")
+                binding.location.setText(sharedPreferences.getString(clientLocation, null))
             }
             RIDER -> {
                 supportActionBar?.title = getString(R.string.rider) // set "Rider" in action bar
@@ -58,6 +57,21 @@ class ProfileActivity : AppCompatActivity() {
 
         binding.isLocationCorrect.setOnClickListener {
             startActivity(Intent(this@ProfileActivity, LocationActivity::class.java))
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.profile_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.homePage  -> {
+                TODO()
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

@@ -3,7 +3,6 @@
     package="com.android.deliveryapp"
     android:versionCode="1"
     android:versionName="0.0.1">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -19,7 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DeliveryApp">
-
+        <activity android:name=".LoginActivity"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -34,7 +33,8 @@
 
         <activity
             android:name=".LocationActivity"
-            android:label="@string/title_activity_location" />
+            android:label="@string/title_activity_location"
+            android:screenOrientation="sensor" />
         <activity
             android:name=".ProfileActivity"
             android:screenOrientation="sensor"
@@ -45,7 +45,7 @@
         <activity
             android:name=".SignUpActivity"
             android:screenOrientation="sensor"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">

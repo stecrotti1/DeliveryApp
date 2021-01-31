@@ -3,32 +3,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".SignUpActivity">
+    tools:context=".LoginActivity">
 
-    <TextView
-        android:id="@+id/createAccountLabel"
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/create_account"
+        android:src="@drawable/delivery"
+        android:layout_margin="20dp"
+        android:layout_above="@id/deliveryAppLabel"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/deliveryAppLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/blue"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="@color/blue"
+        android:layout_above="@id/loginEmailLayout"
         android:layout_centerHorizontal="true"
-        android:layout_above="@id/emailLayout" />
-
+        android:layout_margin="10dp" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/emailLayout"
+        android:id="@+id/loginEmailLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_margin="10dp"
-        android:layout_above="@id/passwordLayout"
+        android:layout_above="@id/loginPasswordLayout"
         android:layout_centerHorizontal="true">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/email"
+            android:id="@+id/loginEmail"
             android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:hint="@string/email_hint"
@@ -37,16 +44,15 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/passwordLayout"
+        android:id="@+id/loginPasswordLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_margin="10dp"
-        app:endIconMode="password_toggle"
         android:layout_centerInParent="true">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/password"
+            android:id="@+id/loginPassword"
             android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:hint="@string/password_hint"
@@ -54,32 +60,31 @@
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/confirmPasswordLayout"
+    <CheckBox
+        android:id="@+id/rememberUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_margin="10dp"
-        android:layout_below="@id/passwordLayout"
-        app:endIconMode="password_toggle"
-        android:layout_centerHorizontal="true">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/confirmPassword"
-            android:layout_width="230dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/confirm_password_hint"
-            android:inputType="textPassword"
-            android:imeOptions="actionDone" />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:text="@string/remember_me"
+        android:layout_below="@id/loginPasswordLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp" />
 
     <Button
-        android:id="@+id/nextButton"
+        android:id="@+id/submitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/next_button"
-        android:layout_below="@id/confirmPasswordLayout"
+        android:text="@string/submit_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp" />
+        android:layout_below="@id/rememberUser"
+        android:layout_margin="10dp" />
+
+    <TextView
+        android:id="@+id/signUpLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up"
+        android:textSize="12sp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/submitButton" />
 
 </RelativeLayout>

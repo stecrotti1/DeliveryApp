@@ -45,7 +45,6 @@ class SignUpActivity : AppCompatActivity() {
         password: TextInputEditText,
         confirmPwd: TextInputEditText
     ){
-
         if (email.text.isNullOrEmpty()) {
             email.error = getString(R.string.empty_email)
             email.requestFocus()
@@ -84,6 +83,7 @@ class SignUpActivity : AppCompatActivity() {
                     val editor = sharedPreferences.edit()
                     editor.putBoolean(isRegistered, true) // user is not flagged as registered
                     editor.apply()
+                    finish()
 
                 } else {
                     Log.w(TAG, "createUserWithEmail: FAILURE", task.exception)
