@@ -18,7 +18,10 @@ class Keys {
         const val marketLocation: String = "marketLocation"
 
         // firebasefirestore
-        const val productList: String = "productList"
+        const val marketPosFirebase: String = "MarketPos"
+        const val Lat: String = "Lat"
+        const val Lng: String = "Lng"
+        const val productListFirebase: String = "productList"
         const val image: String = "image"
         const val name: String = "name"
         const val price: String = "price"

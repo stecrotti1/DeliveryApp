@@ -3,7 +3,9 @@ package com.android.deliveryapp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityProfileBinding
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
@@ -12,14 +14,12 @@ import com.android.deliveryapp.util.Keys.Companion.RIDER
 import com.android.deliveryapp.util.Keys.Companion.clientLocation
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.firebase.auth.FirebaseAuth
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var fusedLocation: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +42,7 @@ class ProfileActivity : AppCompatActivity() {
                 supportActionBar?.title = getString(R.string.client) // set "Client" in action bar
                 binding.riderStatus.visibility = View.INVISIBLE
                 binding.location.hint = getString(R.string.location_hint)
-                binding.location.setText(sharedPreferences.getString(clientLocation, null)?:"")
+                binding.location.setText(intent.getStringExtra(clientLocation)?:"")
             }
             RIDER -> {
                 supportActionBar?.title = getString(R.string.rider) // set "Rider" in action bar
@@ -59,5 +59,14 @@ class ProfileActivity : AppCompatActivity() {
         binding.isLocationCorrect.setOnClickListener {
             startActivity(Intent(this@ProfileActivity, LocationActivity::class.java))
         }
+    }
+
+    // hide keyboard when user clicks outside EditText
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(event)
     }
 }
