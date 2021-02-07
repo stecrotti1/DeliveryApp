@@ -18,8 +18,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DeliveryApp">
-        <activity android:name=".profile.RiderProfileActivity"></activity>
-        <activity android:name=".profile.ManagerProfileActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -55,8 +53,11 @@
             android:screenOrientation="sensor" />
         <activity
             android:name=".profile.ClientProfileActivity"
-            android:screenOrientation="sensor"
-            android:windowSoftInputMode="adjustResize" />
+            android:screenOrientation="sensor" />
+        <activity android:name=".profile.RiderProfileActivity"
+            android:screenOrientation="sensor" />
+        <activity android:name=".profile.ManagerProfileActivity"
+            android:screenOrientation="sensor" />
         <activity
             android:name=".SelectUserTypeActivity"
             android:screenOrientation="sensor" />

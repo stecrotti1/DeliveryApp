@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/managerProfile"
-        android:title="@string/profile_label"  />
+        android:id="@+id/riderProfile"
+        android:title="@string/profile_label" />
 
 </menu>
