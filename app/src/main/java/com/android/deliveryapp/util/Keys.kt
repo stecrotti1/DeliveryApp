@@ -17,7 +17,7 @@ class Keys {
         // firebasefirestore
         const val users: String = "users"
 
-        const val clientLocation: String = "location"
+        const val clientAddress: String = "address"
 
         const val marketPosFirestore: String = "marketPos"
         const val marketDocument: String = "MARKET"

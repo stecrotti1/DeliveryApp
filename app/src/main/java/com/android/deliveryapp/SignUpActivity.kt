@@ -86,7 +86,7 @@ class SignUpActivity : AppCompatActivity() {
                     editor.putBoolean(isRegistered, true) // user is not flagged as registered
                     editor.apply()
 
-                    startActivity(Intent(this@SignUpActivity, ProfileActivity::class.java))
+                    startActivity(Intent(this@SignUpActivity, ClientProfileActivity::class.java))
                     finish()
 
                 } else {

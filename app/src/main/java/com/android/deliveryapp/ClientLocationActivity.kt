@@ -18,7 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.android.deliveryapp.databinding.ActivityClientLocationBinding
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
-import com.android.deliveryapp.util.Keys.Companion.clientLocation
+import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.fieldPosition
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
@@ -106,17 +106,17 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val editor = sharedPreferences.edit()
 
         // get market position
-        var marketPos = LatLng(0.0, 0.0)
+        var marketPos = GeoPoint(0.0, 0.0)
 
         database.collection(marketPosFirestore)
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
-                        marketPos = document.get(fieldPosition) as LatLng
+                        marketPos = document.getGeoPoint(fieldPosition)!!
                     }
 
                     mMap.addMarker(MarkerOptions() // put a marker
-                            .position(marketPos)
+                            .position(LatLng(marketPos.latitude, marketPos.longitude))
                             .title(getString(R.string.market_position))
                             .snippet(getString(R.string.market_snippet))
                     )
@@ -201,7 +201,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (auth.currentUser != null) {
                     val entry = hashMapOf<String, Any?>(
                             userType to CLIENT,
-                            clientLocation to clientGeoPoint
+                            clientAddress to clientGeoPoint
                     )
                     // adds a document with user email
                     database.collection(users).document(auth.currentUser!!.email!!)
@@ -209,10 +209,11 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                             .addOnSuccessListener { documentRef ->
                                 Log.d(FIREBASEFIRESTORE,
                                         "DocumentSnapshot added with id $documentRef")
-                                editor.putBoolean(hasLocation, true)
+
+                                editor.putBoolean(hasLocation, true) // set preference
                                 editor.apply()
 
-                                startActivity(Intent(this@ClientLocationActivity, ProfileActivity::class.java))
+                                startActivity(Intent(this@ClientLocationActivity, ClientProfileActivity::class.java))
                                 finish()
                             }
                             .addOnFailureListener { e ->

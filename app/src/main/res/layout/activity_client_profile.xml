@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ProfileActivity">
+    tools:context=".ClientProfileActivity">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -58,6 +58,7 @@
             android:id="@+id/location"
             android:layout_width="230dp"
             android:layout_height="wrap_content"
+            android:hint="@string/location_hint"
             android:inputType="textPostalAddress"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -70,14 +71,6 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/locationLayout" />
 
-    <CheckBox
-        android:id="@+id/riderStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="false"
-        android:text="@string/rider_status"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/setLocationBtn" />
 
     <!-- save profile button? -->
 
