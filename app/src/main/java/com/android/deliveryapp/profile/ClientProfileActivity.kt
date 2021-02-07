@@ -101,7 +101,7 @@ class ClientProfileActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.homePage -> {
                 // FIXME: 07/02/2021
-                if (sharedPreferences.getBoolean(hasLocation, false)) {
+                if (!sharedPreferences.getBoolean(hasLocation, false)) {
                     binding.location.error = getString(R.string.empty_location)
                     binding.location.requestFocus()
                 } else {

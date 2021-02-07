@@ -21,7 +21,19 @@
         android:layout_margin="90dp"
         android:hint="@string/search_location_hint"
         android:inputType="textPostalAddress"
-        android:imeOptions="actionSearch" />
+        android:imeOptions="actionDone"
+        tools:ignore="Autofill" />
+
+    <Button
+        android:id="@+id/searchLocationBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/search_location"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="100dp"
+        android:layout_marginBottom="20dp" />
 
     <Button
         android:id="@+id/saveLocationBtn"
@@ -30,6 +42,9 @@
         android:text="@string/save_location"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"/>
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="20dp"
+        tools:ignore="RelativeOverlap" />
 
 </RelativeLayout>

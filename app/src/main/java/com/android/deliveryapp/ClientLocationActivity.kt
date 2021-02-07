@@ -10,7 +10,6 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -127,39 +126,34 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
         // if user press actionSearch on keyboard (imeOptions)
-        binding.searchLocation.setOnEditorActionListener { _, id, _ ->
-            if (id == EditorInfo.IME_ACTION_SEARCH) {
-                try {
-                    geocoder = Geocoder(this).getFromLocationName(
+        binding.searchLocationBtn.setOnClickListener {
+            try {
+                geocoder = Geocoder(this).getFromLocationName(
                         binding.searchLocation.text.toString(),
                         1
-                    )
-                } catch (e: IOException) {
-                    Log.w(TAG, e.message.toString())
-                }
+                )
+            } catch (e: IOException) {
+                Log.w(TAG, e.message.toString())
+            }
 
-                if (geocoder != null) {
+            if (geocoder != null) {
 
-                    searchPosition = LatLng(geocoder!![0].latitude, geocoder!![0].longitude)
+                searchPosition = LatLng(geocoder!![0].latitude, geocoder!![0].longitude)
 
-                    mMap.addMarker(
+                mMap.addMarker(
                         MarkerOptions()
-                            .position(searchPosition)
-                    )
+                                .position(searchPosition)
+                )
 
-                    // animate on the new searched position
-                    mMap.animateCamera(
+                // animate on the new searched position
+                mMap.animateCamera(
                         CameraUpdateFactory.newLatLngZoom(
-                            LatLng(
-                                geocoder!![0].latitude,
-                                geocoder!![0].longitude
-                            ), 12.0F
+                                LatLng(
+                                        geocoder!![0].latitude,
+                                        geocoder!![0].longitude
+                                ), 12.0F
                         )
-                    )
-                }
-                true
-            } else {
-                false
+                )
             }
         }
 
@@ -184,46 +178,48 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // if user wants to save location
         binding.saveLocationBtn.setOnClickListener {
-            val clientGeoPoint: GeoPoint = if (binding.searchLocation.text.isNullOrEmpty()) { // if live location is correct
-                GeoPoint(clientPosition.latitude, clientPosition.longitude)
-            } else { // if user has searched for a location
-                GeoPoint(searchPosition.latitude, searchPosition.longitude)
-            }
-            // TODO: 07/02/2021 if client is > 10 km from market, cannot save 
-            try {
-                geocoder = Geocoder(this).getFromLocation(clientPosition.latitude,
-                        clientPosition.longitude, 1)
-            } catch (e: IOException) {
-                Log.w(TAG, e.message.toString())
-            }
-
-            if (geocoder != null) {
-
-                val user = auth.currentUser
-
-                if (user != null) {
-                    val entry = hashMapOf<String, Any?>(
-                            userType to CLIENT,
-                            clientAddress to clientGeoPoint
-                    )
-                    // adds a document with user email
-                    database.collection(users).document(user.email!!)
-                            .set(entry)
-                            .addOnSuccessListener { documentRef ->
-                                Log.d(FIREBASEFIRESTORE,
-                                        "DocumentSnapshot added with id $documentRef")
-
-                                editor.putBoolean(hasLocation, true) // set preference
-                                editor.apply()
-
-                                startActivity(Intent(this@ClientLocationActivity, ClientProfileActivity::class.java))
-                                finish()
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w(FIREBASEFIRESTORE, "Error adding document", e)
-                            }
+            Thread {
+                val clientGeoPoint: GeoPoint = if (binding.searchLocation.text.isNullOrEmpty()) { // if live location is correct
+                    GeoPoint(clientPosition.latitude, clientPosition.longitude)
+                } else { // if user has searched for a location
+                    GeoPoint(searchPosition.latitude, searchPosition.longitude)
                 }
-            }
+                // TODO: 07/02/2021 if client is > 10 km from market, cannot save
+                try {
+                    geocoder = Geocoder(this).getFromLocation(clientPosition.latitude,
+                            clientPosition.longitude, 1)
+                } catch (e: IOException) {
+                    Log.w(TAG, e.message.toString())
+                }
+
+                if (geocoder != null) {
+
+                    val user = auth.currentUser
+
+                    if (user != null) {
+                        val entry = hashMapOf<String, Any?>(
+                                userType to CLIENT,
+                                clientAddress to clientGeoPoint
+                        )
+                        // adds a document with user email
+                        database.collection(users).document(user.email!!)
+                                .set(entry)
+                                .addOnSuccessListener { documentRef ->
+                                    Log.d(FIREBASEFIRESTORE,
+                                            "DocumentSnapshot added with id $documentRef")
+
+                                    editor.putBoolean(hasLocation, true) // set preference
+                                    editor.apply()
+
+                                    startActivity(Intent(this@ClientLocationActivity, ClientProfileActivity::class.java))
+                                    finish()
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w(FIREBASEFIRESTORE, "Error adding document", e)
+                                }
+                    }
+                }
+            }.start()
         }
     }
 
