@@ -6,8 +6,6 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
-import android.view.MotionEvent
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityLoginBinding
@@ -42,6 +40,10 @@ class LoginActivity : AppCompatActivity() {
 
         binding.submitButton.setOnClickListener {
             loginUser(binding.loginEmail, binding.loginPassword)
+        }
+
+        binding.signUpLabel.setOnClickListener {
+            startActivity(Intent(this@LoginActivity, SelectUserTypeActivity::class.java))
         }
     }
 
@@ -85,14 +87,5 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-    }
-
-    // hide keyboard when user clicks outside EditText
-    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-        if (currentFocus != null) {
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-        }
-        return super.dispatchTouchEvent(event)
     }
 }

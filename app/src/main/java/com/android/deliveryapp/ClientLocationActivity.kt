@@ -199,13 +199,15 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
             if (geocoder != null) {
 
-                if (auth.currentUser != null) {
+                val user = auth.currentUser
+
+                if (user != null) {
                     val entry = hashMapOf<String, Any?>(
                             userType to CLIENT,
                             clientAddress to clientGeoPoint
                     )
                     // adds a document with user email
-                    database.collection(users).document(auth.currentUser!!.email!!)
+                    database.collection(users).document(user.email!!)
                             .set(entry)
                             .addOnSuccessListener { documentRef ->
                                 Log.d(FIREBASEFIRESTORE,

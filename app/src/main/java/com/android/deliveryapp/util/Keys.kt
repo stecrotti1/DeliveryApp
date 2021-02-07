@@ -3,7 +3,7 @@ package com.android.deliveryapp.util
 class Keys {
     companion object {
         // user types
-        const val CLIENT: String = "USER"
+        const val CLIENT: String = "CLIENT"
         const val RIDER: String = "RIDER"
         const val MANAGER: String = "MANAGER"
 

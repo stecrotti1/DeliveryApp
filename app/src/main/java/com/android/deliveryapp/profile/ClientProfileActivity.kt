@@ -9,6 +9,7 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.ClientLocationActivity
 import com.android.deliveryapp.R
@@ -50,8 +51,6 @@ class ClientProfileActivity : AppCompatActivity() {
         }
 
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
-
-        binding.location.keyListener = null // not editable by user, but still visible
 
         // if user has already set the location
         if (sharedPreferences.getBoolean(hasLocation, false) && user != null) {
@@ -101,11 +100,11 @@ class ClientProfileActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.homePage -> {
-                if (binding.location.text.isNullOrEmpty() || sharedPreferences.getBoolean(hasLocation, true)) {
+                // FIXME: 07/02/2021
+                if (sharedPreferences.getBoolean(hasLocation, false)) {
                     binding.location.error = getString(R.string.empty_location)
                     binding.location.requestFocus()
-                }
-                else {
+                } else {
                     startActivity(Intent(this@ClientProfileActivity, ClientHomeActivity::class.java))
                     finish()
                 }
@@ -113,5 +112,14 @@ class ClientProfileActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    // hide keyboard when user clicks outside EditText
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(event)
     }
 }
