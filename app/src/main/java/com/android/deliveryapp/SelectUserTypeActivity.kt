@@ -38,6 +38,7 @@ class SelectUserTypeActivity : AppCompatActivity() {
             editor.apply()
 
             startActivity(Intent(this@SelectUserTypeActivity, SignUpActivity::class.java))
+            finish()
         }
 
         binding.hasAccount.setOnClickListener {

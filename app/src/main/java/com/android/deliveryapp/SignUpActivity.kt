@@ -11,8 +11,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivitySignUpBinding
 import com.android.deliveryapp.profile.ClientProfileActivity
+import com.android.deliveryapp.profile.ManagerProfileActivity
+import com.android.deliveryapp.profile.RiderProfileActivity
+import com.android.deliveryapp.util.Keys.Companion.CLIENT
+import com.android.deliveryapp.util.Keys.Companion.MANAGER
+import com.android.deliveryapp.util.Keys.Companion.RIDER
 import com.android.deliveryapp.util.Keys.Companion.isRegistered
 import com.android.deliveryapp.util.Keys.Companion.userInfo
+import com.android.deliveryapp.util.Keys.Companion.userType
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -35,7 +41,6 @@ class SignUpActivity : AppCompatActivity() {
 
         binding.nextButton.setOnClickListener {
             signUpUser(binding.email, binding.password, binding.confirmPassword)
-
         }
     }
 
@@ -87,7 +92,11 @@ class SignUpActivity : AppCompatActivity() {
                     editor.putBoolean(isRegistered, true) // user is not flagged as registered
                     editor.apply()
 
-                    startActivity(Intent(this@SignUpActivity, ClientProfileActivity::class.java))
+                    when (sharedPreferences.getString(userType, null)) {
+                        CLIENT -> startActivity(Intent(this@SignUpActivity, ClientProfileActivity::class.java))
+                        RIDER -> startActivity(Intent(this@SignUpActivity, RiderProfileActivity::class.java))
+                        MANAGER -> startActivity(Intent(this@SignUpActivity, ManagerProfileActivity::class.java))
+                    }
                     finish()
 
                 } else {
