@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivitySignUpBinding
+import com.android.deliveryapp.profile.ClientProfileActivity
 import com.android.deliveryapp.util.Keys.Companion.isRegistered
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.google.android.material.textfield.TextInputEditText

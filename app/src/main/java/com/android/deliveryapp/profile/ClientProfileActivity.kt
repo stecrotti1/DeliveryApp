@@ -1,4 +1,4 @@
-package com.android.deliveryapp
+package com.android.deliveryapp.profile
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,8 +9,9 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.ClientLocationActivity
+import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientProfileBinding
 import com.android.deliveryapp.home.ClientHomeActivity
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
@@ -24,7 +25,7 @@ import java.io.IOException
 class ClientProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityClientProfileBinding
-    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var database: FirebaseFirestore
 
@@ -34,14 +35,14 @@ class ClientProfileActivity : AppCompatActivity() {
         binding = ActivityClientProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        firebaseAuth = FirebaseAuth.getInstance()
+        auth = FirebaseAuth.getInstance()
         database = FirebaseFirestore.getInstance()
 
         supportActionBar?.title = getString(R.string.client)
 
         var geocoder: List<Address>? = null
 
-        val user = firebaseAuth.currentUser
+        val user = auth.currentUser
 
         if (user != null) {
             binding.email.setText(user.email) // show email at the user
@@ -99,7 +100,7 @@ class ClientProfileActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.homePage  -> {
+            R.id.homePage -> {
                 if (binding.location.text.isNullOrEmpty() || sharedPreferences.getBoolean(hasLocation, true)) {
                     binding.location.error = getString(R.string.empty_location)
                     binding.location.requestFocus()
@@ -112,14 +113,5 @@ class ClientProfileActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    // hide keyboard when user clicks outside EditText
-    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-        if (currentFocus != null) {
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-        }
-        return super.dispatchTouchEvent(event)
     }
 }
