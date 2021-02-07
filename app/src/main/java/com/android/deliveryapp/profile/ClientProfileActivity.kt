@@ -100,7 +100,6 @@ class ClientProfileActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.homePage -> {
-                // FIXME: 07/02/2021
                 if (!sharedPreferences.getBoolean(hasLocation, false)) {
                     binding.location.error = getString(R.string.empty_location)
                     binding.location.requestFocus()
