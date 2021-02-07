@@ -14,11 +14,13 @@ import com.android.deliveryapp.util.Keys.Companion.isRegistered
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class SignUpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignUpBinding
     private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseFirestore
 
     private val TAG = "EmailPassword"
 
@@ -28,6 +30,7 @@ class SignUpActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
+        database = FirebaseFirestore.getInstance() // saves user data in cloud
 
         binding.nextButton.setOnClickListener {
             signUpUser(binding.email, binding.password, binding.confirmPassword)
@@ -76,13 +79,14 @@ class SignUpActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "createUserWithEmail: SUCCESS")
-                    startActivity(Intent(this@SignUpActivity, ProfileActivity::class.java))
 
                     val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
                     val editor = sharedPreferences.edit()
                     editor.putBoolean(isRegistered, true) // user is not flagged as registered
                     editor.apply()
+
+                    startActivity(Intent(this@SignUpActivity, ProfileActivity::class.java))
                     finish()
 
                 } else {

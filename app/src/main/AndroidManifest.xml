@@ -18,7 +18,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DeliveryApp">
-        <activity android:name=".LoginActivity"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -30,9 +29,24 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
+        <activity android:name=".home.ManagerHomeActivity"
+            android:label="@string/home"
+            android:screenOrientation="sensor" />
         <activity
-            android:name=".LocationActivity"
+            android:name=".home.RiderHomeActivity"
+            android:label="@string/home"
+            android:screenOrientation="sensor" />
+        <activity
+            android:name=".home.ClientHomeActivity"
+            android:label="@string/home"
+            android:screenOrientation="sensor" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/login"
+            android:screenOrientation="sensor"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ClientLocationActivity"
             android:label="@string/title_activity_location"
             android:screenOrientation="sensor" />
         <activity

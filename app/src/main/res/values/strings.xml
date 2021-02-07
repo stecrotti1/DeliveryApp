@@ -37,7 +37,7 @@
     <string name="rider_status">Available</string>
     <string name="homepage">Homepage</string>
 
-    <string name="is_location_correct"><u>Set your location here</u></string>
+    <string name="is_location_correct">Set your location here</string>
 
     <!-- LOCATION ACTIVITY -->
 
@@ -48,13 +48,13 @@
     <string name="market_snippet">Market is here</string>
 
     <string name="save_location">Save</string>
-    <string name="location_save_success">Location saved successfully</string>
 
     <string name="search">Search your location</string>
 
     <!-- HOME ACTIVITY -->
 
     <string name="welcome">Welcome</string>
+    <string name="home">HomePage</string>
 
 
     <string name="shopping_cart">Shopping cart</string>
@@ -81,6 +81,15 @@
     <string name="sign_up_failure">Sign Up failed</string>
     <string name="login_failure">Authentication failed</string>
     <string name="title_activity_location">Map</string>
+    <string name="title_activity_login2">LoginActivity2</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="empty_location">Please enter an address</string>
+    <string name="save_location_failed">Could not save your location</string>
 
 
 </resources>

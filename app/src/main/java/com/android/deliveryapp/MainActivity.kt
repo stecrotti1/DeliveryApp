@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.home.ClientHomeActivity
+import com.android.deliveryapp.home.ManagerHomeActivity
+import com.android.deliveryapp.home.RiderHomeActivity
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
@@ -30,13 +33,13 @@ class MainActivity : AppCompatActivity() {
             if (sharedPreferences.getBoolean(isRegistered, false)) {
                 if (sharedPreferences.getBoolean(isLogged, false)) {
                     when (sharedPreferences.getString(userType, null)) {
-                        CLIENT -> TODO("startActivity(Intent(this@MainActivity, ClientHomeActivity::class.java))")
-                        RIDER -> TODO("startActivity(Intent(this@MainActivity, RiderHomeActivity::class.java))")
-                        MANAGER -> TODO("startActivity(Intent(this@MainActivity, ManagerHomeActivity::class.java))")
-                        else -> TODO("startActivity(Intent(this@MainActivity, SelectionActivity::class.java))")
+                        CLIENT -> startActivity(Intent(this@MainActivity, ClientHomeActivity::class.java))
+                        RIDER -> startActivity(Intent(this@MainActivity, RiderHomeActivity::class.java))
+                        MANAGER -> startActivity(Intent(this@MainActivity, ManagerHomeActivity::class.java))
+                        else -> startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
                     }
                 } else {
-                    TODO("startActivity(Intent(this@MainActivity, LoginActivity::class.java))")
+                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
                 }
             } else {
                 startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))

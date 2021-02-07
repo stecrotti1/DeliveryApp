@@ -1,0 +1,257 @@
+package com.android.deliveryapp
+
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.android.deliveryapp.databinding.ActivityClientLocationBinding
+import com.android.deliveryapp.util.Keys.Companion.CLIENT
+import com.android.deliveryapp.util.Keys.Companion.clientLocation
+import com.android.deliveryapp.util.Keys.Companion.fieldPosition
+import com.android.deliveryapp.util.Keys.Companion.hasLocation
+import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
+import com.android.deliveryapp.util.Keys.Companion.userInfo
+import com.android.deliveryapp.util.Keys.Companion.userType
+import com.android.deliveryapp.util.Keys.Companion.users
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
+import java.io.IOException
+
+/**
+ * Client set his home location
+ */
+class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private lateinit var mMap: GoogleMap
+    private lateinit var binding: ActivityClientLocationBinding
+    private lateinit var database: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
+
+    private val LOCATION_REQUEST_CODE = 101
+    private val TAG = "GoogleMaps"
+    private val FIREBASEFIRESTORE = "FIREBASEFIRESTORE"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityClientLocationBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseFirestore.getInstance()
+
+        var geocoder: List<Address>? = null
+        var clientPosition = LatLng(0.0, 0.0)
+        var searchPosition = LatLng(0.0, 0.0)
+
+        val permission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+            mMap.isMyLocationEnabled = true
+        } else {
+            requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION_REQUEST_CODE)
+        }
+
+        /***** MAP SETTINGS *****/
+
+        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+
+        val mapSettings = mMap.uiSettings
+        mapSettings?.isZoomControlsEnabled = false
+        mapSettings?.isZoomGesturesEnabled = true
+        mapSettings?.isScrollGesturesEnabled = true
+        mapSettings?.isTiltGesturesEnabled = true
+        mapSettings?.isRotateGesturesEnabled = true
+
+        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        // get market position
+        var marketPos = LatLng(0.0, 0.0)
+
+        database.collection(marketPosFirestore)
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        marketPos = document.get(fieldPosition) as LatLng
+                    }
+
+                    mMap.addMarker(MarkerOptions() // put a marker
+                            .position(marketPos)
+                            .title(getString(R.string.market_position))
+                            .snippet(getString(R.string.market_snippet))
+                    )
+                }
+                .addOnFailureListener { exception ->
+                    Log.w("Firestore", "Error getting documents", exception)
+                }
+
+        // if user press actionSearch on keyboard (imeOptions)
+        binding.searchLocation.setOnEditorActionListener { _, id, _ ->
+            if (id == EditorInfo.IME_ACTION_SEARCH) {
+                try {
+                    geocoder = Geocoder(this).getFromLocationName(
+                        binding.searchLocation.text.toString(),
+                        1
+                    )
+                } catch (e: IOException) {
+                    Log.w(TAG, e.message.toString())
+                }
+
+                if (geocoder != null) {
+
+                    searchPosition = LatLng(geocoder!![0].latitude, geocoder!![0].longitude)
+
+                    mMap.addMarker(
+                        MarkerOptions()
+                            .position(searchPosition)
+                    )
+
+                    // animate on the new searched position
+                    mMap.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            LatLng(
+                                geocoder!![0].latitude,
+                                geocoder!![0].longitude
+                            ), 12.0F
+                        )
+                    )
+                }
+                true
+            } else {
+                false
+            }
+        }
+
+        val locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        locationProviderClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        clientPosition = LatLng(location.latitude, location.longitude)
+
+                        mMap.addMarker(
+                                MarkerOptions()
+                                        .position(clientPosition)
+                                        .title(getString(R.string.client_position))
+                                        .snippet(getString(R.string.client_pos_snippet))
+                        )
+
+                        // animate on current position
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
+                    }
+                }
+
+        // if user wants to save location
+        binding.saveLocationBtn.setOnClickListener {
+            val clientGeoPoint: GeoPoint = if (binding.searchLocation.text.isNullOrEmpty()) { // if live location is correct
+                GeoPoint(clientPosition.latitude, clientPosition.longitude)
+            } else { // if user has searched for a location
+                GeoPoint(searchPosition.latitude, searchPosition.longitude)
+            }
+            // TODO: 07/02/2021 if client is > 10 km from market, cannot save 
+            try {
+                geocoder = Geocoder(this).getFromLocation(clientPosition.latitude,
+                        clientPosition.longitude, 1)
+            } catch (e: IOException) {
+                Log.w(TAG, e.message.toString())
+            }
+
+            if (geocoder != null) {
+
+                if (auth.currentUser != null) {
+                    val entry = hashMapOf<String, Any?>(
+                            userType to CLIENT,
+                            clientLocation to clientGeoPoint
+                    )
+                    // adds a document with user email
+                    database.collection(users).document(auth.currentUser!!.email!!)
+                            .set(entry)
+                            .addOnSuccessListener { documentRef ->
+                                Log.d(FIREBASEFIRESTORE,
+                                        "DocumentSnapshot added with id $documentRef")
+                                editor.putBoolean(hasLocation, true)
+                                editor.apply()
+
+                                startActivity(Intent(this@ClientLocationActivity, ProfileActivity::class.java))
+                                finish()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w(FIREBASEFIRESTORE, "Error adding document", e)
+                            }
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            LOCATION_REQUEST_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Unable to show location - permission required",
+                        Toast.LENGTH_LONG).show()
+                } else {
+                    val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+                    mapFragment.getMapAsync(this)
+                }
+            }
+        }
+    }
+
+    /**
+     * Request current location permission
+     */
+    private fun requestPermission(permissionType: String, requestCode: Int) {
+        ActivityCompat.requestPermissions(this, arrayOf(permissionType), requestCode)
+    }
+
+    // hide keyboard when user clicks outside EditText
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(event)
+    }
+}

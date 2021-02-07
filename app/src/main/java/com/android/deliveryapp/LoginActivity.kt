@@ -1,6 +1,7 @@
 package com.android.deliveryapp
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityLoginBinding
+import com.android.deliveryapp.home.ClientHomeActivity
+import com.android.deliveryapp.home.ManagerHomeActivity
+import com.android.deliveryapp.home.RiderHomeActivity
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
@@ -37,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
         binding.submitButton.setOnClickListener {
-
+            loginUser(binding.loginEmail, binding.loginPassword)
         }
     }
 
@@ -59,11 +63,9 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        if (binding.rememberUser.isChecked) {
-            val editor = sharedPreferences.edit()
-            editor.putBoolean(isLogged, true)
-            editor.apply()
-        }
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(isLogged, binding.rememberUser.isChecked) // set preference
+        editor.apply()
 
         auth.signInWithEmailAndPassword(binding.loginEmail.text.toString(),
                 binding.loginPassword.text.toString()).addOnCompleteListener(this) { task ->
@@ -71,10 +73,11 @@ class LoginActivity : AppCompatActivity() {
                 Log.d(TAG, "signInWithEmail:success")
 
                 when (sharedPreferences.getString(userType, null)) {
-                    CLIENT -> TODO("startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))")
-                    RIDER -> TODO("startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))")
-                    MANAGER -> TODO("startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))")
+                    CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))
+                    RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
+                    MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
                 }
+                finish()
             }
             else {
                 Log.w(TAG, "signInWithEmail:failure", task.exception)
