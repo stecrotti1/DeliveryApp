@@ -52,12 +52,13 @@
 
     <string name="search">Search your location</string>
 
-    <!-- HOME ACTIVITY -->
+    <!-- CLIENT HOME ACTIVITY -->
 
     <string name="welcome">Welcome</string>
     <string name="home">HomePage</string>
+    <string name="products">Products</string>
 
-
+    <!-- menu -->
     <string name="shopping_cart">Shopping cart</string>
     <string name="orders">Your orders</string>
 

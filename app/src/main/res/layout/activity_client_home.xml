@@ -6,9 +6,35 @@
     tools:context=".home.ClientHomeActivity">
 
     <TextView
+        android:id="@+id/welcomeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Client Home"
-        android:layout_centerInParent="true"/>
+        android:text="@string/welcome"
+        android:textColor="@color/blue"
+        android:textStyle="bold"
+        android:textSize="40sp"
+        android:layout_marginStart="20dp"
+        android:layout_alignParentStart="true"/>
+
+    <TextView
+        android:id="@+id/productLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/products"
+        android:textColor="@color/blue"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/welcomeLabel"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp" />
+
+    <ListView
+        android:id="@+id/productListView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/productLabel"
+        android:layout_margin="20dp"
+        android:scrollbarSize="@dimen/cardview_default_radius"/>
 
 </RelativeLayout>
