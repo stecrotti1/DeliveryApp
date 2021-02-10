@@ -7,12 +7,14 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
+import com.android.deliveryapp.util.ProductItem
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ClientHomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityClientHomeBinding
     private lateinit var database: FirebaseFirestore
+    private lateinit var productList: Array<ProductItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +22,8 @@ class ClientHomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         database = FirebaseFirestore.getInstance()
+
+        // TODO: 10/02/2021 get collection 
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
