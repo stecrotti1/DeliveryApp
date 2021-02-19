@@ -1,5 +1,6 @@
 package com.android.deliveryapp.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -7,14 +8,18 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
+import com.android.deliveryapp.profile.ClientProfileActivity
 import com.android.deliveryapp.util.ProductItem
+import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class ClientHomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityClientHomeBinding
     private lateinit var database: FirebaseFirestore
     private lateinit var productList: Array<ProductItem>
+    private lateinit var storageReference: FirebaseStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +28,12 @@ class ClientHomeActivity : AppCompatActivity() {
 
         database = FirebaseFirestore.getInstance()
 
-        // TODO: 10/02/2021 get collection 
+        val storage = storageReference.reference
+
+        Glide.with(this)
+                .load(storage)
+                .into(findViewById(R.id.productImage))
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -35,7 +45,7 @@ class ClientHomeActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.clientProfile -> {
-                // TODO: 07/02/2021 return to client profile
+                startActivity(Intent(this@ClientHomeActivity, ClientProfileActivity::class.java))
                 true
             }
             R.id.orders -> {

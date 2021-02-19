@@ -42,10 +42,13 @@ import java.io.IOException
  */
 class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    // TODO: 19/02/2021 delete previosuly created markers
+
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityClientLocationBinding
     private lateinit var database: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+
 
     private val LOCATION_REQUEST_CODE = 101
     private val TAG = "GoogleMaps"
@@ -55,6 +58,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityClientLocationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -91,7 +95,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION_REQUEST_CODE)
         }
 
-        /***** MAP SETTINGS *****/
+        /******************************** MAP SETTINGS ****************************************/
 
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
 
@@ -101,6 +105,8 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         mapSettings?.isScrollGesturesEnabled = true
         mapSettings?.isTiltGesturesEnabled = true
         mapSettings?.isRotateGesturesEnabled = true
+
+        /***************************************************************************************/
 
         val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -125,7 +131,32 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     Log.w("Firestore", "Error getting documents", exception)
                 }
 
-        // if user press actionSearch on keyboard (imeOptions)
+        /******************************** CLIENT LOCATION *****************************************/
+
+        val locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        locationProviderClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    clientPosition = LatLng(location.latitude, location.longitude)
+
+                    mMap.addMarker(
+                        MarkerOptions()
+                            .position(clientPosition)
+                            .title(getString(R.string.client_position))
+                            .snippet(getString(R.string.client_pos_snippet))
+                    )
+
+                    // animate on current position
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
+                }
+            }
+
+        /*****************************************************************************************/
+
+        /******************** USER SEARCH ********************************/
+
+        // if user press search button
         binding.searchLocationBtn.setOnClickListener {
             try {
                 geocoder = Geocoder(this).getFromLocationName(
@@ -157,28 +188,13 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        val locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        /*****************************************************************************************/
 
-        locationProviderClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    if (location != null) {
-                        clientPosition = LatLng(location.latitude, location.longitude)
-
-                        mMap.addMarker(
-                                MarkerOptions()
-                                        .position(clientPosition)
-                                        .title(getString(R.string.client_position))
-                                        .snippet(getString(R.string.client_pos_snippet))
-                        )
-
-                        // animate on current position
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
-                    }
-                }
+        /************************************** CLIENT SAVE LOCATION ******************************/
 
         // if user wants to save location
         binding.saveLocationBtn.setOnClickListener {
-            Thread {
+            //Thread {
                 val clientGeoPoint: GeoPoint = if (binding.searchLocation.text.isNullOrEmpty()) { // if live location is correct
                     GeoPoint(clientPosition.latitude, clientPosition.longitude)
                 } else { // if user has searched for a location
@@ -219,7 +235,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                                 }
                     }
                 }
-            }.start()
+            //}.start()
         }
     }
 
