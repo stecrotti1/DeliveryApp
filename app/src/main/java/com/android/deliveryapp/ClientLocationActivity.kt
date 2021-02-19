@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -25,6 +26,8 @@ import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.Keys.Companion.users
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -48,6 +51,8 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityClientLocationBinding
     private lateinit var database: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private lateinit var locationProviderClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
 
 
     private val LOCATION_REQUEST_CODE = 101
@@ -83,6 +88,8 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         var geocoder: List<Address>? = null
         var clientPosition = LatLng(0.0, 0.0)
         var searchPosition = LatLng(0.0, 0.0)
+
+        var isLocationEnabled = false // if user has enabled location services
 
         val permission = ContextCompat.checkSelfPermission(
             this,
@@ -133,24 +140,29 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         /******************************** CLIENT LOCATION *****************************************/
 
-        val locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
-        locationProviderClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                if (location != null) {
-                    clientPosition = LatLng(location.latitude, location.longitude)
+        if (isLocationEnabled) {
+            val locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
-                    mMap.addMarker(
-                        MarkerOptions()
-                            .position(clientPosition)
-                            .title(getString(R.string.client_position))
-                            .snippet(getString(R.string.client_pos_snippet))
-                    )
+            locationProviderClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        clientPosition = LatLng(location.latitude, location.longitude)
 
-                    // animate on current position
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
+                        mMap.addMarker(
+                            MarkerOptions()
+                                .position(clientPosition)
+                                .title(getString(R.string.client_position))
+                                .snippet(getString(R.string.client_pos_snippet))
+                        )
+
+                        // animate on current position
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
+                    }
                 }
-            }
+        }
 
         /*****************************************************************************************/
 
