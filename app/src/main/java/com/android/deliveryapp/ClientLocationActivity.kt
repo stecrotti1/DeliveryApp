@@ -18,13 +18,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.android.deliveryapp.databinding.ActivityClientLocationBinding
 import com.android.deliveryapp.profile.ClientProfileActivity
-import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.fieldPosition
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
 import com.android.deliveryapp.util.Keys.Companion.userInfo
-import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.Keys.Companion.users
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -45,8 +43,6 @@ import java.io.IOException
  * Client set his home location
  */
 class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
-
-    // TODO: 19/02/2021 delete previosuly created markers
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityClientLocationBinding
@@ -154,12 +150,12 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (location != null) {
                         clientPosition = LatLng(location.latitude, location.longitude)
 
-                        markers.plus(mMap.addMarker( // add marker on map and to the markers array
+                        mMap.addMarker(
                             MarkerOptions()
                                 .position(clientPosition)
                                 .title(getString(R.string.client_position))
                                 .snippet(getString(R.string.client_pos_snippet))
-                        ))
+                        )
 
                         // animate on current position
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
@@ -192,7 +188,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 searchPosition = LatLng(geocoder!![0].latitude, geocoder!![0].longitude)
 
-                markers.plus(mMap.addMarker(
+                markers.plus(mMap.addMarker( // add marker on map and to the markers array
                         MarkerOptions()
                                 .position(searchPosition)
                 ))
@@ -234,8 +230,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     val user = auth.currentUser
 
                     if (user != null) {
-                        val entry = hashMapOf<String, Any?>(
-                                userType to CLIENT,
+                        val entry = hashMapOf(
                                 clientAddress to clientGeoPoint
                         )
                         // adds a document with user email

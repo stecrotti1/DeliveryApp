@@ -16,6 +16,12 @@ class Keys {
 
         // firebasefirestore
         const val users: String = "users"
+        const val manager: String = "manager"
+        const val riders: String = "riders"
+
+        const val managerID: String = "managerID"
+
+        const val riderStatus: String = "riderStatus"
 
         const val clientAddress: String = "address"
 

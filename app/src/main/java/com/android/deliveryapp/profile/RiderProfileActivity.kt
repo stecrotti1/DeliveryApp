@@ -2,19 +2,25 @@ package com.android.deliveryapp.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRiderProfileBinding
 import com.android.deliveryapp.home.RiderHomeActivity
+import com.android.deliveryapp.util.Keys.Companion.riderStatus
+import com.android.deliveryapp.util.Keys.Companion.riders
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RiderProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRiderProfileBinding
     private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +29,8 @@ class RiderProfileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        database = FirebaseFirestore.getInstance()
+
         supportActionBar?.title = getString(R.string.rider)
 
         val user = auth.currentUser
@@ -30,6 +38,22 @@ class RiderProfileActivity : AppCompatActivity() {
         if (user != null) {
             binding.email.setText(user.email) // show email at the user
             binding.email.keyListener = null // not editable by user, but still visible
+
+            binding.riderStatus.setOnCheckedChangeListener { _, isChecked ->
+                val entry = hashMapOf(riderStatus to isChecked)
+
+                database.collection(riders)
+                    .document(user.email!!)
+                    .set(entry)
+                    .addOnSuccessListener { documentRef ->
+                        Log.d("FIREBASEFIRESTORE", "DocumentSnapshot added with $documentRef")
+                        Toast.makeText(baseContext, getString(R.string.rider_status_save_success), Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASEFIRESTORE", "Error adding document", e)
+                        Toast.makeText(baseContext, getString(R.string.rider_status_save_failure), Toast.LENGTH_SHORT).show()
+                    }
+            }
         }
     }
 

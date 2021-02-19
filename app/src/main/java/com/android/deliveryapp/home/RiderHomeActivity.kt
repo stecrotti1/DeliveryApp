@@ -1,5 +1,6 @@
 package com.android.deliveryapp.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -7,10 +8,11 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRiderHomeBinding
+import com.android.deliveryapp.profile.RiderProfileActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RiderHomeActivity : AppCompatActivity() {
-
+    // TODO: 19/02/2021 notifications 
     private lateinit var binding: ActivityRiderHomeBinding
     private lateinit var database: FirebaseFirestore
 
@@ -31,7 +33,11 @@ class RiderHomeActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.riderProfile -> {
-                // TODO: 07/02/2021 return to profile activity
+                startActivity(Intent(this@RiderHomeActivity, RiderProfileActivity::class.java))
+                true
+            }
+            R.id.riderDeliveries -> {
+                // TODO: 19/02/2021 history deliveries 
                 true
             }
             else -> super.onOptionsItemSelected(item)

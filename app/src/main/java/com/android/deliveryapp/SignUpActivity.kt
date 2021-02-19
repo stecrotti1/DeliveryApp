@@ -89,7 +89,7 @@ class SignUpActivity : AppCompatActivity() {
                     val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
                     val editor = sharedPreferences.edit()
-                    editor.putBoolean(isRegistered, true) // user is not flagged as registered
+                    editor.putBoolean(isRegistered, true) // user flagged as registered
                     editor.apply()
 
                     when (sharedPreferences.getString(userType, null)) {

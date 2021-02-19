@@ -5,4 +5,8 @@
         android:id="@+id/riderProfile"
         android:title="@string/profile_label" />
 
+    <item
+        android:id="@+id/riderDeliveries"
+        android:title="@string/delivery_history_rider" />
+
 </menu>

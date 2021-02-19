@@ -9,24 +9,18 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
 import com.android.deliveryapp.profile.ClientProfileActivity
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 
 class ClientHomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityClientHomeBinding
-    private lateinit var database: FirebaseFirestore
-    private lateinit var storage: FirebaseStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityClientHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
 
-        database = FirebaseFirestore.getInstance()
-        storage = FirebaseStorage.getInstance()
-
-
+        // TODO: 19/02/2021 insert images from firebase
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

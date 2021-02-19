@@ -1,5 +1,6 @@
 package com.android.deliveryapp.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -7,12 +8,15 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
+import com.android.deliveryapp.profile.ManagerProfileActivity
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class ManagerHomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityManagerHomeBinding
     private lateinit var database: FirebaseFirestore
+    private lateinit var storage: FirebaseStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +24,15 @@ class ManagerHomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         database = FirebaseFirestore.getInstance()
+
+        storage = FirebaseStorage.getInstance()
+        
+        
+        
+        
+        binding.addProductButton.setOnClickListener {
+            // TODO: 19/02/2021 add product activity 
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -31,7 +44,7 @@ class ManagerHomeActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.managerProfile -> {
-                // TODO: 07/02/2021 return to profile activity
+                startActivity(Intent(this@ManagerHomeActivity, ManagerProfileActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
