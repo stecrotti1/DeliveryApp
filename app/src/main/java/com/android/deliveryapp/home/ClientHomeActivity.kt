@@ -18,8 +18,8 @@ class ClientHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityClientHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
 
+        // TODO: 19/02/2021 add product quantity 
         // TODO: 19/02/2021 insert images from firebase
     }
 

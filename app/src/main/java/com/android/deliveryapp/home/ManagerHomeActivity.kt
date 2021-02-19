@@ -47,6 +47,10 @@ class ManagerHomeActivity : AppCompatActivity() {
                 startActivity(Intent(this@ManagerHomeActivity, ManagerProfileActivity::class.java))
                 true
             }
+            R.id.ridersList -> {
+                // TODO: 19/02/2021 activity list riders
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

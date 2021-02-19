@@ -43,6 +43,10 @@
 
     <string name="delivery_history_rider">Deliveries history</string>
 
+    <!-- manager profile activity -->
+
+    <string name="riders_list">Riders list</string>
+
     <!-- LOCATION ACTIVITY -->
 
     <string name="client_position">You are here</string>
