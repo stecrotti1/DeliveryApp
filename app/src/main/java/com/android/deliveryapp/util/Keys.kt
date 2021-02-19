@@ -24,6 +24,7 @@ class Keys {
         const val fieldPosition: String = "position"
 
         const val productListFirebase: String = "productList"
+        const val productImages: String = "productImages"
 
         const val image: String = "image"
         const val name: String = "name"

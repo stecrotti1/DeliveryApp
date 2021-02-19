@@ -34,6 +34,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -88,6 +89,8 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         var geocoder: List<Address>? = null
         var clientPosition = LatLng(0.0, 0.0)
         var searchPosition = LatLng(0.0, 0.0)
+
+        var markers = emptyArray<Marker>()
 
         var isLocationEnabled = false // if user has enabled location services
 
@@ -151,12 +154,12 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (location != null) {
                         clientPosition = LatLng(location.latitude, location.longitude)
 
-                        mMap.addMarker(
+                        markers.plus(mMap.addMarker( // add marker on map and to the markers array
                             MarkerOptions()
                                 .position(clientPosition)
                                 .title(getString(R.string.client_position))
                                 .snippet(getString(R.string.client_pos_snippet))
-                        )
+                        ))
 
                         // animate on current position
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
@@ -170,6 +173,12 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // if user press search button
         binding.searchLocationBtn.setOnClickListener {
+            // clear all markers if user wants to correct/search location
+            for (marker in markers) {
+                marker.remove()
+            }
+            markers = emptyArray()
+
             try {
                 geocoder = Geocoder(this).getFromLocationName(
                         binding.searchLocation.text.toString(),
@@ -183,10 +192,10 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 searchPosition = LatLng(geocoder!![0].latitude, geocoder!![0].longitude)
 
-                mMap.addMarker(
+                markers.plus(mMap.addMarker(
                         MarkerOptions()
                                 .position(searchPosition)
-                )
+                ))
 
                 // animate on the new searched position
                 mMap.animateCamera(

@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
 import com.android.deliveryapp.profile.ClientProfileActivity
+import com.android.deliveryapp.util.Keys.Companion.productImages
 import com.android.deliveryapp.util.ProductItem
-import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
@@ -27,13 +27,11 @@ class ClientHomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         database = FirebaseFirestore.getInstance()
+        storageReference = FirebaseStorage.getInstance()
 
         val storage = storageReference.reference
 
-        Glide.with(this)
-                .load(storage)
-                .into(findViewById(R.id.productImage))
-
+        val productImagesList = storage.root.child(productImages).listAll()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -49,11 +47,11 @@ class ClientHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.orders -> {
-                // TODO: 07/02/2021 start activity orders
+                // TODO: 07/02/2021 start activity orders or fragment??
                 true
             }
             R.id.shoppingCart -> {
-                // TODO: 07/02/2021 start activity shopping cart
+                // TODO: 07/02/2021 start activity shopping cart or fragment??
                 true
             }
             else -> super.onOptionsItemSelected(item)

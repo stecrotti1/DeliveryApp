@@ -100,13 +100,8 @@ class ClientProfileActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.homePage -> {
-                if (!sharedPreferences.getBoolean(hasLocation, false)) {
-                    binding.location.error = getString(R.string.empty_location)
-                    binding.location.requestFocus()
-                } else {
-                    startActivity(Intent(this@ClientProfileActivity, ClientHomeActivity::class.java))
-                    finish()
-                }
+                startActivity(Intent(this@ClientProfileActivity, ClientHomeActivity::class.java))
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)
