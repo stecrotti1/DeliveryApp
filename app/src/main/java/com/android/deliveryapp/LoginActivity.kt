@@ -53,6 +53,7 @@ class LoginActivity : AppCompatActivity() {
 
         binding.submitButton.setOnClickListener {
             loginUser(binding.loginEmail, binding.loginPassword)
+            finish()
         }
 
         binding.signUpLabel.setOnClickListener {
@@ -103,7 +104,6 @@ class LoginActivity : AppCompatActivity() {
                                 RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
                                 MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
                             }
-                            finish()
                         }
                     }
                 }

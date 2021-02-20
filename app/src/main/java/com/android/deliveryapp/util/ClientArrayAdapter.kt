@@ -10,7 +10,7 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.R
 
-class CustomArrayAdapter(
+class ClientArrayAdapter(
     private val activity: Activity,
     layout: Int,
     private val array: Array<ProductItem>
@@ -26,7 +26,7 @@ class CustomArrayAdapter(
         val view: View?
 
         if (convertView == null) {
-            view = activity.layoutInflater.inflate(R.layout.list_element, null)
+            view = activity.layoutInflater.inflate(R.layout.list_element, parent)
 
             val viewHolder = ViewHolder()
             viewHolder.image = view.findViewById(R.id.productImage)

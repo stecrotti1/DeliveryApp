@@ -12,7 +12,7 @@ import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
 import com.android.deliveryapp.profile.ClientProfileActivity
-import com.android.deliveryapp.util.CustomArrayAdapter
+import com.android.deliveryapp.util.ClientArrayAdapter
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.ProductItem
 import com.google.firebase.auth.FirebaseAuth
@@ -42,17 +42,17 @@ class ClientHomeActivity : AppCompatActivity() {
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 productList = processItems(snapshot) // create the product list
-
-                binding.productListView.adapter = CustomArrayAdapter(
-                    this@ClientHomeActivity, R.layout.list_element, productList
+                // TODO: 20/02/2021 remove products with quantity 0
+                binding.productListView.adapter = ClientArrayAdapter(
+                        this@ClientHomeActivity, R.layout.list_element, productList
                 )
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(
-                    baseContext,
-                    getString(R.string.image_loading_error),
-                    Toast.LENGTH_LONG
+                        baseContext,
+                        getString(R.string.image_loading_error),
+                        Toast.LENGTH_LONG
                 ).show()
                 Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
             }
@@ -67,7 +67,7 @@ class ClientHomeActivity : AppCompatActivity() {
         var imageUrl = ""
         var title = ""
         var price = ""
-        val qty = ""
+        var qty = ""
 
         val array = emptyArray<ProductItem>()
 
@@ -77,7 +77,7 @@ class ClientHomeActivity : AppCompatActivity() {
                     "image" -> imageUrl = item.value as String
                     "title" -> title = item.value as String
                     "price" -> price = item.value as String
-                    // quantity isn't needed by the user so it remains always ""
+                    "quantity" -> qty = item.value as String
                 }
             }
             array.plus(ProductItem(imageUrl, title, price, qty))
