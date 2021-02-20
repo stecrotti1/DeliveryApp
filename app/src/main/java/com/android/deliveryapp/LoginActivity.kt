@@ -76,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val editor = sharedPreferences.edit()
 
-                if (binding.rememberUser.isChecked) { // set preferences
+                if (binding.rememberUser.isChecked) { // if user wants to be remembered next time
                     editor.putBoolean(isLogged, true) // user must be logged instantly next time
                     editor.putString(username, binding.loginEmail.text.toString()) // save email
                     editor.putString(pwd, binding.loginPassword.text.toString()) // save password
