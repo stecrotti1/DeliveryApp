@@ -26,9 +26,9 @@ class ManagerHomeActivity : AppCompatActivity() {
         database = FirebaseFirestore.getInstance()
 
         storage = FirebaseStorage.getInstance()
-        
-        
-        
+
+
+        // TODO: 19/02/2021 add product quantity
         
         binding.addProductButton.setOnClickListener {
             // TODO: 19/02/2021 add product activity 

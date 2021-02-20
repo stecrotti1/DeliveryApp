@@ -14,7 +14,10 @@ import com.android.deliveryapp.home.RiderHomeActivity
 import com.android.deliveryapp.util.Keys.Companion.riderStatus
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class RiderProfileActivity : AppCompatActivity() {
 
@@ -40,21 +43,30 @@ class RiderProfileActivity : AppCompatActivity() {
             binding.email.keyListener = null // not editable by user, but still visible
 
             binding.riderStatus.setOnCheckedChangeListener { _, isChecked ->
-                val entry = hashMapOf(riderStatus to isChecked)
-
-                database.collection(riders)
-                    .document(user.email!!)
-                    .set(entry)
-                    .addOnSuccessListener { documentRef ->
-                        Log.d("FIREBASEFIRESTORE", "DocumentSnapshot added with $documentRef")
-                        Toast.makeText(baseContext, getString(R.string.rider_status_save_success), Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASEFIRESTORE", "Error adding document", e)
-                        Toast.makeText(baseContext, getString(R.string.rider_status_save_failure), Toast.LENGTH_SHORT).show()
-                    }
+                GlobalScope.launch { // coroutine
+                    uploadToCloud(database, user, isChecked)
+                }
             }
         }
+    }
+
+    /**
+     * Upload data to cloud
+     */
+    private fun uploadToCloud(database: FirebaseFirestore, user: FirebaseUser, isChecked: Boolean) {
+        val entry = hashMapOf(riderStatus to isChecked)
+
+        database.collection(riders)
+            .document(user.email!!)
+            .set(entry)
+            .addOnSuccessListener { documentRef ->
+                Log.d("FIREBASEFIRESTORE", "DocumentSnapshot added with $documentRef")
+                Toast.makeText(baseContext, getString(R.string.rider_status_save_success), Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASEFIRESTORE", "Error adding document", e)
+                Toast.makeText(baseContext, getString(R.string.rider_status_save_failure), Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

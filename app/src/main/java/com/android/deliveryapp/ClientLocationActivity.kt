@@ -37,6 +37,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 /**
@@ -234,8 +236,8 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             } catch (e: IOException) {
                 Log.w(TAG, e.message.toString())
             }
-
-            if (geocoder != null) {
+            GlobalScope.launch {
+                if (geocoder != null) {
                 val user = auth.currentUser
 
                 if (user != null) {
@@ -259,6 +261,8 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                         .addOnFailureListener { e ->
                             Log.w(FIREBASEFIRESTORE, "Error adding document", e)
                         }
+                }
+
                 }
             }
         }

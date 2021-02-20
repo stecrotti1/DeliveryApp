@@ -18,8 +18,10 @@ import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
 import com.android.deliveryapp.util.Keys.Companion.isLogged
+import com.android.deliveryapp.util.Keys.Companion.pwd
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
+import com.android.deliveryapp.util.Keys.Companion.username
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 
@@ -67,14 +69,22 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        val editor = sharedPreferences.edit()
-        editor.putBoolean(isLogged, binding.rememberUser.isChecked) // set preference
-        editor.apply()
+
 
         auth.signInWithEmailAndPassword(binding.loginEmail.text.toString(),
                 binding.loginPassword.text.toString()).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
-                Log.d(TAG, "signInWithEmail:success")
+                val editor = sharedPreferences.edit()
+
+                if (binding.rememberUser.isChecked) { // set preferences
+                    editor.putBoolean(isLogged, true) // user must be logged instantly next time
+                    editor.putString(username, binding.loginEmail.text.toString()) // save email
+                    editor.putString(pwd, binding.loginPassword.text.toString()) // save password
+                } else {
+                    editor.putBoolean(isLogged, false)
+                }
+
+                editor.apply()
 
                 when (sharedPreferences.getString(userType, null)) {
                     CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))

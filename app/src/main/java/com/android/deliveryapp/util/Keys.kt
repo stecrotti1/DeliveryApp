@@ -11,10 +11,16 @@ class Keys {
         const val userInfo: String = "userInfo"
         const val userType: String = "userType"
         const val isLogged: String = "isLogged"
+
+        // if is logged
+        var username: String = ""
+        var pwd: String = ""
+
+
         const val isRegistered: String = "isRegistered"
         const val hasLocation: String = "hasLocation"
 
-        // firebasefirestore
+        // firebase
         const val users: String = "users"
         const val manager: String = "manager"
         const val riders: String = "riders"

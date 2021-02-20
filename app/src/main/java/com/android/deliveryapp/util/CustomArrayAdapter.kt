@@ -1,0 +1,54 @@
+package com.android.deliveryapp.util
+
+import android.app.Activity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.TextView
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.android.deliveryapp.R
+
+class CustomArrayAdapter(
+    private val activity: Activity,
+    layout: Int,
+    private val array: Array<ProductItem>
+)
+    : ArrayAdapter<ProductItem>(activity, layout, array) {
+
+        internal class ViewHolder {
+            var image: ImageView? = null
+            var title: TextView? = null
+            var price: TextView? = null
+        }
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val view: View?
+
+        if (convertView == null) {
+            val inflater = activity.layoutInflater
+            view = inflater.inflate(R.layout.list_element, parent)
+
+            val viewHolder = ViewHolder()
+            viewHolder.image = view.findViewById(R.id.productImage)
+            viewHolder.title = view?.findViewById(R.id.productName)
+            viewHolder.price = view?.findViewById(R.id.productPrice)
+            view.tag = viewHolder
+        } else {
+            view = convertView
+        }
+
+        val holder = view?.tag as ViewHolder
+        holder.image?.load(array[position].imgUrl) { // load the image from the given url
+            crossfade(true)
+            error(R.mipmap.ic_launcher_round)
+            transformations(CircleCropTransformation())
+        }
+        holder.image?.id = position
+        holder.title?.text = array[position].title
+        holder.price?.text = array[position].price
+
+        return view
+    }
+}

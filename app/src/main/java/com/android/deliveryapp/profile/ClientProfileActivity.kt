@@ -56,7 +56,7 @@ class ClientProfileActivity : AppCompatActivity() {
         if (sharedPreferences.getBoolean(hasLocation, false) && user != null) {
             binding.setLocationBtn.visibility = View.INVISIBLE
 
-            database.collection(users)
+            database.collection(users) // fetch user address from cloud
                     .get()
                     .addOnSuccessListener { result ->
                         for (document in result) {
