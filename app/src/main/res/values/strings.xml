@@ -58,6 +58,8 @@
     <string name="save_location">Save</string>
     <string name="search_location">Search</string>
 
+    <string name="location_error">Unable to retrieve your current location</string>
+
     <string name="search">Search your location</string>
 
     <!-- CLIENT HOME ACTIVITY -->
@@ -65,6 +67,8 @@
     <string name="welcome">Welcome</string>
     <string name="home">HomePage</string>
     <string name="products">Products</string>
+
+    <string name="image_loading_error">Failed to retrieve products</string>
 
     <!-- RIDER PROFILE ACTIVITY -->
     <string name="rider_status_save_success">Availability submitted with success</string>
