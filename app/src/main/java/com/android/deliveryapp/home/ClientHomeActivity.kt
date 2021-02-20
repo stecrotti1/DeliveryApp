@@ -24,7 +24,6 @@ import com.google.firebase.database.ValueEventListener
 class ClientHomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityClientHomeBinding
-    //private lateinit var storage: StorageReference // where the images are stored
     private lateinit var database: FirebaseDatabase // product names and prices
     private lateinit var auth: FirebaseAuth
 
@@ -33,8 +32,7 @@ class ClientHomeActivity : AppCompatActivity() {
         binding = ActivityClientHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // FIXME: 20/02/2021 database images won't show 
-        //storage = FirebaseStorage.getInstance().reference
+        // FIXME: 20/02/2021 database images won't show
         database = FirebaseDatabase.getInstance()
 
         val databaseRef = database.getReference(productListFirebase)
@@ -45,13 +43,9 @@ class ClientHomeActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 productList = processItems(snapshot) // create the product list
 
-                val adapter = CustomArrayAdapter(
-                    this@ClientHomeActivity,
-                    R.layout.list_element,
-                    productList
+                binding.productListView.adapter = CustomArrayAdapter(
+                    this@ClientHomeActivity, R.layout.list_element, productList
                 )
-
-                binding.productListView.adapter = adapter
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -63,24 +57,6 @@ class ClientHomeActivity : AppCompatActivity() {
                 Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
             }
         })
-
-        /*
-        storage.child("productImages/").listAll()
-                .addOnSuccessListener { list ->
-                    for (image in list.items) {
-                        image.downloadUrl.addOnSuccessListener { url ->
-                        }
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(
-                            baseContext,
-                            getString(R.string.image_loading_error),
-                            Toast.LENGTH_LONG
-                    ).show()
-                    Log.w("FIREBASE_STORAGE", "Failed to retrieve items", e)
-                }
-         */
     }
 
     /**
