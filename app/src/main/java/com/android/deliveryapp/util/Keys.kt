@@ -13,8 +13,8 @@ class Keys {
         const val isLogged: String = "isLogged"
 
         // if is logged
-        var username: String = ""
-        var pwd: String = ""
+        const val username: String = "username"
+        const val pwd: String = "password"
 
 
         const val isRegistered: String = "isRegistered"

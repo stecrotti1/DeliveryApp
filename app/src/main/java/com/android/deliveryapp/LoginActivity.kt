@@ -69,8 +69,6 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-
-
         auth.signInWithEmailAndPassword(binding.loginEmail.text.toString(),
                 binding.loginPassword.text.toString()).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
@@ -83,7 +81,6 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     editor.putBoolean(isLogged, false)
                 }
-
                 editor.apply()
 
                 when (sharedPreferences.getString(userType, null)) {
