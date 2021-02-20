@@ -19,11 +19,11 @@ import androidx.core.content.ContextCompat
 import com.android.deliveryapp.databinding.ActivityClientLocationBinding
 import com.android.deliveryapp.profile.ClientProfileActivity
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
+import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.fieldPosition
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
 import com.android.deliveryapp.util.Keys.Companion.userInfo
-import com.android.deliveryapp.util.Keys.Companion.users
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
@@ -246,7 +246,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     )
 
                     // adds a document with user email
-                    database.collection(users).document(user.email!!)
+                    database.collection(clients).document(user.email!!)
                         .set(entry)
                         .addOnSuccessListener { documentRef ->
                             Log.d(FIREBASEFIRESTORE,

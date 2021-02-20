@@ -21,7 +21,7 @@ class Keys {
         const val hasLocation: String = "hasLocation"
 
         // firebase
-        const val users: String = "users"
+        const val clients: String = "clients"
         const val manager: String = "manager"
         const val riders: String = "riders"
 

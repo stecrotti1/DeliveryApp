@@ -5,4 +5,8 @@
         android:id="@+id/homePage"
         android:title="@string/homepage"  />
 
+    <item
+        android:id="@+id/logout"
+        android:title="@string/logout" />
+
 </menu>

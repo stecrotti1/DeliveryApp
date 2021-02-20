@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
-            if (sharedPreferences.getBoolean(isRegistered, false)) {
-                if (sharedPreferences.getBoolean(isLogged, false)) {
+            if (sharedPreferences.getBoolean(isRegistered, true)) {
+                if (sharedPreferences.getBoolean(isLogged, true)) {
                     val email = sharedPreferences.getString(username, null)
                     val password = sharedPreferences.getString(pwd, null)
 
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
             }
-            finish()
+            finishAfterTransition()
         }, 1500) // wait 1.5 seconds, then show the activity
 
     }

@@ -37,35 +37,29 @@ class ClientHomeActivity : AppCompatActivity() {
         val databaseRef = database.getReference(productListFirebase)
 
         var productList: Array<ProductItem>
-        Thread {
-            databaseRef.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    productList = processItems(snapshot) // create the product list
 
-                    val adapter = CustomArrayAdapter(
-                        this@ClientHomeActivity,
-                        R.layout.list_element,
-                        productList
-                    )
+        databaseRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                productList = processItems(snapshot) // create the product list
 
-                    binding.productListView.adapter = adapter
+                val adapter = CustomArrayAdapter(
+                    this@ClientHomeActivity,
+                    R.layout.list_element,
+                    productList
+                )
 
-                    runOnUiThread {
-                        adapter.notifyDataSetChanged()
-                    }
-                }
+                binding.productListView.adapter = adapter
+            }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(
-                        baseContext,
-                        getString(R.string.image_loading_error),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
-                }
-            })
-        }.start()
-
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.image_loading_error),
+                    Toast.LENGTH_LONG
+                ).show()
+                Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
+            }
+        })
 
         /*
         storage.child("productImages/").listAll()

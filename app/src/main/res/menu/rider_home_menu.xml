@@ -9,4 +9,8 @@
         android:id="@+id/riderDeliveries"
         android:title="@string/delivery_history_rider" />
 
+    <item
+        android:id="@+id/logout"
+        android:title="@string/logout" />
+
 </menu>

@@ -10,15 +10,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.ClientLocationActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientProfileBinding
 import com.android.deliveryapp.home.ClientHomeActivity
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
-import com.android.deliveryapp.util.Keys.Companion.hasLocation
+import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.userInfo
-import com.android.deliveryapp.util.Keys.Companion.users
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.IOException
@@ -53,10 +53,10 @@ class ClientProfileActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
         // if user has already set the location
-        if (sharedPreferences.getBoolean(hasLocation, false) && user != null) {
+        if (user != null) {
             binding.setLocationBtn.visibility = View.INVISIBLE
 
-            database.collection(users) // fetch user address from cloud
+            database.collection(clients) // fetch user address from cloud
                     .get()
                     .addOnSuccessListener { result ->
                         for (document in result) {
@@ -82,6 +82,9 @@ class ClientProfileActivity : AppCompatActivity() {
                             }
                         }
                     }
+                .addOnFailureListener {
+                    Toast.makeText(baseContext, getString(R.string.generic_error), Toast.LENGTH_LONG).show()
+                }
         } else {
             binding.setLocationBtn.visibility = View.VISIBLE
         }
