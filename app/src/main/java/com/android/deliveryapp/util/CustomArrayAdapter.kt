@@ -6,8 +6,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import coil.ImageLoader
-import coil.request.ImageRequest
+import coil.load
 import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.R
 
@@ -40,23 +39,13 @@ class CustomArrayAdapter(
             view = convertView
         }
 
-        val imageLoader = ImageLoader.Builder(context)
-            .availableMemoryPercentage(0.25)
-            .crossfade(true)
-            .build()
-
         val holder = view?.tag as ViewHolder
-
-        val request = ImageRequest.Builder(context)
-            .data(array[position].imgUrl) // load the image with the given url
-            .crossfade(true)
-            .target(holder.image!!)
-            .transformations(CircleCropTransformation())
-            .build()
-
-        imageLoader.enqueue(request)
-
-        holder.image?.id = position
+        holder.image?.load(array[position].imgUrl) {
+            transformations(CircleCropTransformation())
+            getItemId(position)
+            crossfade(true)
+            build()
+        }
         holder.title?.text = array[position].title
         holder.price?.text = array[position].price
 
