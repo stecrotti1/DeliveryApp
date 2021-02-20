@@ -32,20 +32,20 @@ class ClientHomeActivity : AppCompatActivity() {
         binding = ActivityClientHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // FIXME: 20/02/2021 database images won't show
+        // FIXME: 20/02/2021 ListView is blank
         database = FirebaseDatabase.getInstance()
 
         val databaseRef = database.getReference(productListFirebase)
         val auth = FirebaseAuth.getInstance()
-        var productList: Array<ProductItem>
 
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                productList = processItems(snapshot) // create the product list
-                // TODO: 20/02/2021 remove products with quantity 0
-                binding.productListView.adapter = ClientArrayAdapter(
-                        this@ClientHomeActivity, R.layout.list_element, productList
-                )
+                val productList = processItems(snapshot) // create the product list
+
+
+
+                val adapter = ClientArrayAdapter(this@ClientHomeActivity, R.layout.list_element, productList)
+                binding.productListView.adapter = adapter
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -59,6 +59,7 @@ class ClientHomeActivity : AppCompatActivity() {
         })
     }
 
+
     /**
      * @param snapshot the firebase realtime database snapshot
      * @return an array containing data related to the market products
@@ -69,19 +70,25 @@ class ClientHomeActivity : AppCompatActivity() {
         var price = ""
         var qty = ""
 
-        val array = emptyArray<ProductItem>()
+        var array = emptyArray<ProductItem>()
 
         for (child in snapshot.children) {
             for (item in child.children) {
                 when (item.key) {
-                    "image" -> imageUrl = item.value as String
-                    "title" -> title = item.value as String
-                    "price" -> price = item.value as String
-                    "quantity" -> qty = item.value as String
+                    "image" -> imageUrl = item.value.toString()
+                    "title" -> title = item.value.toString()
+                    "price" -> price = item.value.toString()
+                    "quantity" -> qty = item.value.toString()
                 }
             }
-            array.plus(ProductItem(imageUrl, title, price, qty))
+            if (qty != "0") {
+                array = array.plus(ProductItem(imageUrl, title, price, qty))
+            }
         }
+         if (array.isEmpty()) {
+             Toast.makeText(baseContext, "EMPTY", Toast.LENGTH_SHORT).show()
+         }
+
         return array
     }
 

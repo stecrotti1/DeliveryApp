@@ -150,7 +150,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
                 }
-                editor.commit()
+                editor.commit() // force instant commit
             }
             .addOnFailureListener { e ->
                 Log.w(TAG, "signInWithEmail:failure", e)

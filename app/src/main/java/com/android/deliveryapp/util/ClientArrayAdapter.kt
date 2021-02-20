@@ -26,7 +26,7 @@ class ClientArrayAdapter(
         val view: View?
 
         if (convertView == null) {
-            view = activity.layoutInflater.inflate(R.layout.list_element, parent)
+            view = activity.layoutInflater.inflate(R.layout.list_element, null)
 
             val viewHolder = ViewHolder()
             viewHolder.image = view.findViewById(R.id.productImage)
@@ -50,4 +50,5 @@ class ClientArrayAdapter(
 
         return view
     }
+
 }
