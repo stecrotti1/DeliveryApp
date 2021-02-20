@@ -88,7 +88,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         var markers = emptyArray<Marker>()
 
-        var isLocationEnabled = false // if user has enabled location services
+        var isLocationEnabled = false
 
         val permission = ContextCompat.checkSelfPermission(
             this,
@@ -142,7 +142,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
-        if (isLocationEnabled) {
+        if (isLocationEnabled) { // if user has enabled location services
             val locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
             locationProviderClient.lastLocation
@@ -161,6 +161,20 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
                     }
                 }
+        }
+
+        mMap.setOnMyLocationButtonClickListener { // when user click on location button on map
+            if (isLocationEnabled) { // if user has location services enabled
+                mMap.addMarker(
+                        MarkerOptions()
+                                .position(clientPosition)
+                                .title(getString(R.string.client_position))
+                                .snippet(getString(R.string.client_pos_snippet))
+                )
+                true
+            }
+            else
+                false
         }
 
         /*****************************************************************************************/
