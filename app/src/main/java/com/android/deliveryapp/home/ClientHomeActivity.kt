@@ -2,24 +2,21 @@ package com.android.deliveryapp.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
 import com.android.deliveryapp.profile.ClientProfileActivity
-import com.android.deliveryapp.util.CustomArrayAdapter
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.ProductItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 
 class ClientHomeActivity : AppCompatActivity() {
 
@@ -41,6 +38,13 @@ class ClientHomeActivity : AppCompatActivity() {
         val auth = FirebaseAuth.getInstance()
         var productList: Array<ProductItem>
 
+        binding.imageViewTest.load("https://firebasestorage.googleapis.com/v0/b/deliveryapp-7c8fe.appspot.com/o/productImages%2Fpizza.jpg?alt=media&token=3c8e7307-f877-4806-a228-265c2db755f4") {
+            transformations(CircleCropTransformation())
+            crossfade(true)
+            build()
+        }
+
+        /*
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 productList = processItems(snapshot) // create the product list
@@ -80,6 +84,8 @@ class ClientHomeActivity : AppCompatActivity() {
                     ).show()
                     Log.w("FIREBASE_STORAGE", "Failed to retrieve items", e)
                 }
+         */
+
          */
     }
 
