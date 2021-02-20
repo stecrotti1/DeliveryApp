@@ -8,12 +8,14 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
 import com.android.deliveryapp.profile.ClientProfileActivity
 import com.android.deliveryapp.util.CustomArrayAdapter
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.ProductItem
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -24,6 +26,7 @@ class ClientHomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityClientHomeBinding
     //private lateinit var storage: StorageReference // where the images are stored
     private lateinit var database: FirebaseDatabase // product names and prices
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +38,7 @@ class ClientHomeActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
 
         val databaseRef = database.getReference(productListFirebase)
-
+        val auth = FirebaseAuth.getInstance()
         var productList: Array<ProductItem>
 
         databaseRef.addValueEventListener(object : ValueEventListener {
@@ -113,20 +116,27 @@ class ClientHomeActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+        auth = FirebaseAuth.getInstance()
+        when (item.itemId) {
             R.id.clientProfile -> {
                 startActivity(Intent(this@ClientHomeActivity, ClientProfileActivity::class.java))
-                true
+
             }
             R.id.orders -> {
                 // TODO: 07/02/2021 start activity orders or fragment??
-                true
+
             }
             R.id.shoppingCart -> {
                 // TODO: 07/02/2021 start activity shopping cart or fragment??
-                true
+
             }
-            else -> super.onOptionsItemSelected(item)
+            R.id.logout -> {
+                auth.signOut()
+                startActivity(Intent(this@ClientHomeActivity, LoginActivity::class.java))
+                finish()
+            }
+
         }
+        return super.onOptionsItemSelected(item)
     }
 }

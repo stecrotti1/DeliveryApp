@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
             }
-            finishAfterTransition()
+            finish()
         }, 1500) // wait 1.5 seconds, then show the activity
 
     }

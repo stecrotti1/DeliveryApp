@@ -103,7 +103,7 @@ class LoginActivity : AppCompatActivity() {
                                 RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
                                 MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
                             }
-                            finishAfterTransition()
+                            finish()
                         }
                     }
                 }

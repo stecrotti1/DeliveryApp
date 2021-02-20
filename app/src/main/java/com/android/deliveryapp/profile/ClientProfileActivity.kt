@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.ClientLocationActivity
+import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientProfileBinding
 import com.android.deliveryapp.home.ClientHomeActivity
@@ -101,14 +102,19 @@ class ClientProfileActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+        auth = FirebaseAuth.getInstance()
+        when (item.itemId) {
             R.id.homePage -> {
                 startActivity(Intent(this@ClientProfileActivity, ClientHomeActivity::class.java))
                 finish()
-                true
             }
-            else -> super.onOptionsItemSelected(item)
+            R.id.logout -> {
+                auth.signOut()
+                startActivity(Intent(this@ClientProfileActivity, LoginActivity::class.java))
+                finish()
+            }
         }
+        return super.onOptionsItemSelected(item)
     }
 
     // hide keyboard when user clicks outside EditText
