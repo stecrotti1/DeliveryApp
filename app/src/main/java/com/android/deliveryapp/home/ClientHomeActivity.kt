@@ -100,7 +100,6 @@ class ClientHomeActivity : AppCompatActivity() {
         productList = emptyArray()
     }
 
-
     /**
      * @param snapshot the firebase realtime database snapshot
      * @return an array containing data related to the market products
@@ -129,6 +128,8 @@ class ClientHomeActivity : AppCompatActivity() {
         }
         return array
     }
+
+    private fun addToShoppingCart() {}
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater

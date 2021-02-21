@@ -26,6 +26,7 @@ class ManagerHomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityManagerHomeBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var auth: FirebaseAuth
+    private lateinit var productList: Array<ProductItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +40,7 @@ class ManagerHomeActivity : AppCompatActivity() {
 
         databaseRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val productList = processItems(snapshot)
+                productList = processItems(snapshot)
 
                 binding.productListView.adapter = ManagerArrayAdapter(
                         this@ManagerHomeActivity, R.layout.list_element, productList
