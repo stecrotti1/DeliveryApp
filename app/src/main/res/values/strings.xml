@@ -68,6 +68,8 @@
     <string name="home">HomePage</string>
     <string name="products">Products</string>
 
+    <string name="add_cart_success">Product added to shopping cart successfully</string>
+
     <string name="image_loading_error">Failed to retrieve products</string>
 
     <!-- RIDER PROFILE ACTIVITY -->
@@ -97,6 +99,10 @@
     <string name="rider_verification_code_hint">Manager Verification Code</string>
     <string name="search_location_hint">Search for your location</string>
 
+    <string name="product_name_hint">Product name</string>
+    <string name="product_price_hint">Price</string>
+    <string name="product_qty_hint">Quantity</string>
+
     <!-- errors -->
     <string name="empty_email">Please enter email</string>
     <string name="empty_password">Please enter password</string>
@@ -115,6 +121,9 @@
     <string name="login_failed">"Login failed"</string>
     <string name="empty_location">Please enter an address</string>
     <string name="save_location_failed">Could not save your location</string>
-    <string name="generic_error">Error fetching user data</string>
+    <string name="error_user_data">Error fetching user data</string>
+
+    <string name="error_product_quantity">Max quantity reached</string>
+    <string name="error_shopping_cart">There was an error adding product to shopping cart</string>
 
 </resources>

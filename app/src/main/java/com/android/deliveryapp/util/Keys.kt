@@ -30,6 +30,7 @@ class Keys {
         const val riderStatus: String = "riderStatus"
 
         const val clientAddress: String = "address"
+        const val shoppingCart: String = "shoppingCart"
 
         const val marketPosFirestore: String = "marketPos"
         const val marketDocument: String = "MARKET"

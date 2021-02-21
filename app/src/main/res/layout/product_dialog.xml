@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
         android:id="@+id/productImageDialog"
@@ -23,13 +24,56 @@
         android:layout_centerHorizontal="true" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/plusButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/minus"
+        app:fabSize="mini"
+        android:layout_centerHorizontal="true"
+        android:layout_toStartOf="@id/productQtyCounterLayout"
+        android:layout_below="@id/productPriceDialog"
+        tools:ignore="ContentDescription" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/productQtyCounterLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_margin="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/productPriceDialog">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/productQtyCounter"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textStyle="bold"
+            android:focusable="false"
+            android:imeOptions="actionDone" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/minusButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/plus"
+        app:fabSize="mini"
+        android:layout_centerHorizontal="true"
+        android:layout_toEndOf="@id/productQtyCounterLayout"
+        android:layout_below="@id/productPriceDialog"
+        tools:ignore="ContentDescription" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addProductButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:src="@drawable/plus"
+        android:src="@drawable/shopping_cart"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/productPriceDialog"
+        android:layout_below="@id/plusButton"
         tools:ignore="ContentDescription" />
 
 </RelativeLayout>

@@ -24,8 +24,6 @@ import com.android.deliveryapp.util.Keys.Companion.fieldPosition
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
 import com.android.deliveryapp.util.Keys.Companion.userInfo
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -50,8 +48,6 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityClientLocationBinding
     private lateinit var database: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-    private lateinit var locationProviderClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
 
 
     private val LOCATION_REQUEST_CODE = 101
@@ -90,7 +86,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         var markers = emptyArray<Marker>()
 
-        var isLocationEnabled = false
+        val isLocationEnabled: Boolean
 
         val permission = ContextCompat.checkSelfPermission(
             this,
@@ -238,31 +234,35 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             GlobalScope.launch {
                 if (geocoder != null) {
-                val user = auth.currentUser
+                    val user = auth.currentUser
 
-                if (user != null) {
-                    val entry = hashMapOf(
-                        clientAddress to clientGeoPoint
-                    )
+                    if (user != null) {
+                        val entry = hashMapOf(
+                            clientAddress to clientGeoPoint
+                        )
 
-                    // adds a document with user email
-                    database.collection(clients).document(user.email!!)
-                        .set(entry)
-                        .addOnSuccessListener { documentRef ->
-                            Log.d(FIREBASEFIRESTORE,
-                                "DocumentSnapshot added with id $documentRef")
+                        // adds a document with user email
+                        database.collection(clients).document(user.email!!)
+                            .set(entry)
+                            .addOnSuccessListener { documentRef ->
+                                Log.d(FIREBASEFIRESTORE,
+                                    "DocumentSnapshot added with id $documentRef")
 
-                            editor.putBoolean(hasLocation, true) // set preference
-                            editor.apply()
+                                editor.putBoolean(hasLocation, true) // set preference
+                                editor.apply()
 
-                            startActivity(Intent(this@ClientLocationActivity, ClientProfileActivity::class.java))
-                            finish()
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w(FIREBASEFIRESTORE, "Error adding document", e)
-                        }
-                }
-
+                                startActivity(Intent(this@ClientLocationActivity, ClientProfileActivity::class.java))
+                                finish()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w(FIREBASEFIRESTORE, "Error adding document", e)
+                                Toast.makeText(
+                                    baseContext,
+                                    getString(R.string.save_location_failed),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                    }
                 }
             }
         }

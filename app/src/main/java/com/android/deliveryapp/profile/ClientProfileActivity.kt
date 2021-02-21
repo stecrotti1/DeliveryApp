@@ -84,7 +84,7 @@ class ClientProfileActivity : AppCompatActivity() {
                         }
                     }
                 .addOnFailureListener {
-                    Toast.makeText(baseContext, getString(R.string.generic_error), Toast.LENGTH_LONG).show()
+                    Toast.makeText(baseContext, getString(R.string.error_user_data), Toast.LENGTH_LONG).show()
                 }
         } else {
             binding.setLocationBtn.visibility = View.VISIBLE
