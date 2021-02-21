@@ -3,11 +3,17 @@ package com.android.deliveryapp.home
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
@@ -20,18 +26,20 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.util.*
 
 class ClientHomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityClientHomeBinding
     private lateinit var database: FirebaseDatabase // product names and prices
     private lateinit var auth: FirebaseAuth
+    private lateinit var productList: Array<ProductItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityClientHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
+
         database = FirebaseDatabase.getInstance()
 
         val databaseRef = database.getReference(productListFirebase)
@@ -39,7 +47,7 @@ class ClientHomeActivity : AppCompatActivity() {
 
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val productList = processItems(snapshot) // create the product list
+                productList = processItems(snapshot) // create the product list
 
                 binding.productListView.adapter = ClientArrayAdapter(
                         this@ClientHomeActivity, R.layout.list_element, productList
@@ -55,6 +63,41 @@ class ClientHomeActivity : AppCompatActivity() {
                 Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
             }
         })
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        binding.productListView.setOnItemClickListener { _, _, i, _ ->
+            val productTitle: String = productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
+
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.product_dialog, null)
+
+            val dialog: AlertDialog?
+
+            val dialogImage: ImageView? = dialogView.findViewById(R.id.productImageDialog)
+            dialogImage?.load(productList[i].imgUrl) {
+                transformations(CircleCropTransformation())
+                error(R.mipmap.ic_launcher_round)
+                crossfade(true)
+                build()
+            }
+
+            val dialogProductPrice: TextView? = dialogView.findViewById(R.id.productPriceDialog)
+            dialogProductPrice?.text = productList[i].price
+
+            val dialogBuilder = AlertDialog.Builder(this)
+                    .setView(dialogView)
+                    .setTitle(productTitle)
+
+            dialog = dialogBuilder.create()
+            dialog.show()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        productList = emptyArray()
     }
 
 

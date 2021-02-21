@@ -53,5 +53,4 @@ class ClientArrayAdapter(
 
         return view
     }
-
 }

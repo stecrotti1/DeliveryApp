@@ -113,6 +113,8 @@
     <string name="empty_location">Please enter an address</string>
     <string name="save_location_failed">Could not save your location</string>
     <string name="generic_error">Error fetching user data</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>
