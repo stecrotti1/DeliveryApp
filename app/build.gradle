@@ -12,8 +12,8 @@ android {
         applicationId "com.android.deliveryapp"
         minSdkVersion 28
         targetSdkVersion 30
-        versionCode 9
-        versionName "v0.0.9-a"
+        versionCode 10
+        versionName "v0.0.10-a"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
