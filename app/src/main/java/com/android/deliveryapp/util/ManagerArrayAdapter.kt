@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import coil.annotation.ExperimentalCoilApi
 import coil.load
 import coil.transform.CircleCropTransformation
+import coil.transition.CrossfadeTransition
 import com.android.deliveryapp.R
 
 /**
@@ -26,6 +28,7 @@ class ManagerArrayAdapter(
         var quantity: TextView? = null
     }
 
+    @ExperimentalCoilApi
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View?
 
@@ -46,7 +49,9 @@ class ManagerArrayAdapter(
         holder.image?.load(array[position].imgUrl) {
             transformations(CircleCropTransformation())
             getItem(position)
-            error(R.mipmap.ic_launcher_round)
+            placeholder(R.drawable.image)
+            error(R.drawable.error_image)
+            transition(CrossfadeTransition(100))
             build()
         }
         holder.title?.text = array[position].title

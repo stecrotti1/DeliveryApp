@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
-            if (sharedPreferences.getBoolean(isRegistered, true)) {
-                if (sharedPreferences.getBoolean(isLogged, true)) {
+            if (sharedPreferences.getBoolean(isRegistered, false)) {
+                if (sharedPreferences.getBoolean(isLogged, false)) {
                     val email = sharedPreferences.getString(username, null)
                     val password = sharedPreferences.getString(pwd, null)
 
