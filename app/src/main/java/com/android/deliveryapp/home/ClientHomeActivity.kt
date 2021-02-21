@@ -31,21 +31,19 @@ class ClientHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityClientHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // FIXME: 20/02/2021 ListView is blank
+        
         database = FirebaseDatabase.getInstance()
 
         val databaseRef = database.getReference(productListFirebase)
-        val auth = FirebaseAuth.getInstance()
+        auth = FirebaseAuth.getInstance()
 
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val productList = processItems(snapshot) // create the product list
 
-
-
-                val adapter = ClientArrayAdapter(this@ClientHomeActivity, R.layout.list_element, productList)
-                binding.productListView.adapter = adapter
+                binding.productListView.adapter = ClientArrayAdapter(
+                        this@ClientHomeActivity, R.layout.list_element, productList
+                )
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -63,6 +61,7 @@ class ClientHomeActivity : AppCompatActivity() {
     /**
      * @param snapshot the firebase realtime database snapshot
      * @return an array containing data related to the market products
+     * if an item has quantity 0 it will not be shown at the user (CLIENT)
      */
     private fun processItems(snapshot: DataSnapshot): Array<ProductItem> {
         var imageUrl = ""
@@ -81,14 +80,10 @@ class ClientHomeActivity : AppCompatActivity() {
                     "quantity" -> qty = item.value.toString()
                 }
             }
-            if (qty != "0") {
+            if (qty != "0") { // don't add items with qty 0
                 array = array.plus(ProductItem(imageUrl, title, price, qty))
             }
         }
-         if (array.isEmpty()) {
-             Toast.makeText(baseContext, "EMPTY", Toast.LENGTH_SHORT).show()
-         }
-
         return array
     }
 
@@ -100,26 +95,26 @@ class ClientHomeActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         auth = FirebaseAuth.getInstance()
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.clientProfile -> {
                 startActivity(Intent(this@ClientHomeActivity, ClientProfileActivity::class.java))
-
+                true
             }
             R.id.orders -> {
                 // TODO: 07/02/2021 start activity orders or fragment??
-
+                true
             }
             R.id.shoppingCart -> {
                 // TODO: 07/02/2021 start activity shopping cart or fragment??
-
+                true
             }
             R.id.logout -> {
                 auth.signOut()
                 startActivity(Intent(this@ClientHomeActivity, LoginActivity::class.java))
                 finish()
+                true
             }
-
+            else -> super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 }

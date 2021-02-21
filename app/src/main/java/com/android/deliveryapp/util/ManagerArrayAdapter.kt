@@ -11,19 +11,20 @@ import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.R
 
 /**
- * Array adapter used for ClientHomeActivity
+ * Array adapter used for ManagerHomeActivity
  */
-class ClientArrayAdapter(
-    private val activity: Activity,
-    layout: Int,
-    private val array: Array<ProductItem>
+class ManagerArrayAdapter(
+        private val activity: Activity,
+        layout: Int,
+        private val array: Array<ProductItem>
 ): ArrayAdapter<ProductItem>(activity, layout, array) {
 
-        internal class ViewHolder {
-            var image: ImageView? = null
-            var title: TextView? = null
-            var price: TextView? = null
-        }
+    internal class ViewHolder {
+        var image: ImageView? = null
+        var title: TextView? = null
+        var price: TextView? = null
+        var quantity: TextView? = null
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View?
@@ -35,6 +36,7 @@ class ClientArrayAdapter(
             viewHolder.image = view.findViewById(R.id.productImage)
             viewHolder.title = view.findViewById(R.id.productName)
             viewHolder.price = view.findViewById(R.id.productPrice)
+            viewHolder.quantity = view.findViewById(R.id.productQty)
             view.tag = viewHolder
         } else {
             view = convertView
@@ -43,15 +45,14 @@ class ClientArrayAdapter(
         val holder = view?.tag as ViewHolder
         holder.image?.load(array[position].imgUrl) {
             transformations(CircleCropTransformation())
-            getItemId(position)
+            getItem(position)
             error(R.mipmap.ic_launcher_round)
-            crossfade(true)
             build()
         }
         holder.title?.text = array[position].title
         holder.price?.text = array[position].price
+        holder.quantity?.text = array[position].quantity
 
         return view
     }
-
 }
