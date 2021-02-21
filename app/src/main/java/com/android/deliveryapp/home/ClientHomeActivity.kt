@@ -95,18 +95,15 @@ class ClientHomeActivity : AppCompatActivity() {
             val dialogProductPrice: TextView? = dialogView.findViewById(R.id.productPriceDialog)
             dialogProductPrice?.text = productList[i].price
 
-
             val productQty: TextInputEditText = dialogView.findViewById(R.id.productQtyCounter)
-            productQty.setText(productCount)
+            productQty.setText("$productCount")
             productQty.keyListener = null // not editable with keyboard but visible
 
             val removeQty: FloatingActionButton = dialogView.findViewById(R.id.minusButton)
 
             val addQty: FloatingActionButton = dialogView.findViewById(R.id.plusButton)
 
-            val addToCart: FloatingActionButton = dialogView.findViewById(R.id.shoppingCart)
-
-
+            val addToCart: FloatingActionButton = dialogView.findViewById(R.id.addProductButton)
 
             val dialogBuilder = AlertDialog.Builder(this)
                     .setView(dialogView)
@@ -120,7 +117,7 @@ class ClientHomeActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }
                 else {
-                    productQty.setText(productCount--)
+                    productQty.setText((productCount--).toString())
                 }
             }
 
@@ -130,7 +127,7 @@ class ClientHomeActivity : AppCompatActivity() {
                 productQty.error = getString(R.string.error_product_quantity)
                 }
                 else {
-                    productQty.setText(productCount++)
+                    productQty.setText((productCount++).toString())
                 }
             }
 
@@ -191,12 +188,15 @@ class ClientHomeActivity : AppCompatActivity() {
 
         if (user != null) {
             val entry = hashMapOf(
-                    "title" to title,
-                    "price" to price,
-                    "qty" to quantity
+                    shoppingCart to hashMapOf
+                    (
+                            "title" to title,
+                            "price" to price,
+                            "qty" to quantity
+                    )
             )
 
-            firestore.collection(clients).document("${user.email!!}/$shoppingCart")
+            firestore.collection(clients).document(user.email!!)
                     .set(entry)
                     .addOnSuccessListener { documentRef ->
                         Log.d("FIREBASEFIRESTORE", "Document added with id: $documentRef")

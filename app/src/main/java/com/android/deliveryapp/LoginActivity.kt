@@ -53,7 +53,6 @@ class LoginActivity : AppCompatActivity() {
 
         binding.submitButton.setOnClickListener {
             loginUser(binding.loginEmail, binding.loginPassword)
-            finish()
         }
 
         binding.signUpLabel.setOnClickListener {

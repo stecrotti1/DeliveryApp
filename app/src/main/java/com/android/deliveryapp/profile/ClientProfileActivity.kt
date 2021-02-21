@@ -19,6 +19,7 @@ import com.android.deliveryapp.databinding.ActivityClientProfileBinding
 import com.android.deliveryapp.home.ClientHomeActivity
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.clients
+import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -54,14 +55,14 @@ class ClientProfileActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
         // if user has already set the location
-        if (user != null) {
+        if (sharedPreferences.getBoolean(hasLocation, false)) {
             binding.setLocationBtn.visibility = View.INVISIBLE
 
             database.collection(clients) // fetch user address from cloud
                     .get()
                     .addOnSuccessListener { result ->
                         for (document in result) {
-                            if (document.id == user.email) {
+                            if (document.id == user?.email) {
                                 val clientGeoPoint = document.getGeoPoint(clientAddress)
 
                                 if (clientGeoPoint != null) {
