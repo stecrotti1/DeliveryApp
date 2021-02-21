@@ -19,6 +19,7 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.DeliveryApp">
+        <activity android:name=".RidersListActivity"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -55,9 +56,11 @@
         <activity
             android:name=".profile.ClientProfileActivity"
             android:screenOrientation="sensor" />
-        <activity android:name=".profile.RiderProfileActivity"
+        <activity
+            android:name=".profile.RiderProfileActivity"
             android:screenOrientation="sensor" />
-        <activity android:name=".profile.ManagerProfileActivity"
+        <activity
+            android:name=".profile.ManagerProfileActivity"
             android:screenOrientation="sensor" />
         <activity
             android:name=".SelectUserTypeActivity"
@@ -68,8 +71,8 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

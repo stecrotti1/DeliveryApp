@@ -79,6 +79,9 @@
     <string name="orders">Your orders</string>
     <string name="logout">Log out</string>
 
+    <!-- RIDERS LIST ACTIVITY -->
+    <string name="your_riders">Your riders</string>
+
     <!-- hints -->
     <string name="fname_hint">First Name</string>
     <string name="lname_hint">Last Name</string>
