@@ -1,6 +1,8 @@
 package com.android.deliveryapp.home
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -8,6 +10,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.AddProductActivity
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
@@ -27,6 +30,9 @@ class ManagerHomeActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private lateinit var auth: FirebaseAuth
     private lateinit var productList: Array<ProductItem>
+
+    private val PERMISSION_CODE = 1000
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +65,19 @@ class ManagerHomeActivity : AppCompatActivity() {
 
         binding.addProductButton.setOnClickListener {
             // TODO: 19/02/2021 add product activity
+            if (checkSelfPermission(Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_DENIED ||
+                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            == PackageManager.PERMISSION_DENIED) {
+                // permission not enabled
+                val permission = arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+                requestPermissions(permission, PERMISSION_CODE)
+            } else {
+                startActivity(Intent(this@ManagerHomeActivity, AddProductActivity::class.java))
+            }
         }
     }
 
@@ -83,6 +102,7 @@ class ManagerHomeActivity : AppCompatActivity() {
         }
         return array
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
