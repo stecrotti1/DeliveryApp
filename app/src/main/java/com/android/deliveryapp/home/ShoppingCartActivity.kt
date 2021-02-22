@@ -72,14 +72,14 @@ class ShoppingCartActivity : AppCompatActivity() {
                 if (quantity == 0) {
                     removeItem(products[i])
                 } else {
-                    products[i].quantity = (--quantity).toString()
+                    products[i].quantity = --quantity
                 }
                 // update the view
                 binding.shoppingListView.adapter = ShoppingCartArrayAdapter(
                         this, R.layout.list_element_shopping_cart, products
                 )
 
-                binding.totalPriceLabel.text = getTotalPrice()
+                binding.totalPriceLabel.text = "${getString(R.string.total_price)} ${getTotalPrice()}"
             }
         }
 
@@ -101,7 +101,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                 val dialog: AlertDialog?
 
                 val totalPrice: TextView = dialogView.findViewById(R.id.totalPriceDialog)
-                totalPrice.text = getTotalPrice()
+                totalPrice.text = "${getString(R.string.total_price)} ${getTotalPrice()}"
 
                 val payment: RadioGroup = dialogView.findViewById(R.id.paymentOptions)
 
@@ -152,7 +152,7 @@ class ShoppingCartActivity : AppCompatActivity() {
     private fun createOrder(reference: DatabaseReference, user: FirebaseUser, position: GeoPoint?, paymentType: PaymentType) {
         val today = LocalDate.now().format(formatter)
 
-        var productMap: Map<String, String> = emptyMap()
+        var productMap: Map<String, Any?> = emptyMap()
 
         for (item in products) {
             productMap = productMap.plus("title" to item.title)
@@ -188,11 +188,10 @@ class ShoppingCartActivity : AppCompatActivity() {
      */
     private fun getTotalPrice(): String {
         for (item in products) {
-            for (price in item.price) {
-                total += price.toDouble()
-            }
+            total += (item.price * item.quantity)
+
         }
-        return ("${getString(R.string.total_price)} $total €")
+        return String.format("%.2f €", total)
     }
 
     /**
@@ -211,7 +210,6 @@ class ShoppingCartActivity : AppCompatActivity() {
 
     /**
      * Fetch the shopping cart items from cloud
-     * @param firestore instance
      */
     private fun fetchItemsFromCloud() {
         total = 0.00
@@ -224,20 +222,19 @@ class ShoppingCartActivity : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener { result ->
                         var title = ""
-                        var price = ""
-                        var qty = "" // quantity chosen by the client
+                        var price = 0.00
+                        var qty: Long = 0 // quantity chosen by the client
 
-                        for (map in result.get(shoppingCart) as ArrayList<Map<String, String>>) {
+                        for (map in result.get(shoppingCart) as ArrayList<Map<String, Any?>>) {
                             for (item in map) {
                                 when (item.key) {
-                                    "title" -> title = item.value
-                                    "price" -> price = item.value
-                                    "qty" -> qty = item.value
+                                    "title" -> title = item.value as String
+                                    "price" -> price = item.value as Double
+                                    "qty" -> qty = item.value as Long
                                 }
-
                             }
                             products = products.plus(
-                                ProductItem("", title, "", price, qty)
+                                ProductItem("", title, "", price, qty.toInt())
                             )
                         }
 
@@ -255,7 +252,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                                 products
                             )
 
-                            binding.totalPriceLabel.text = getTotalPrice()
+                            binding.totalPriceLabel.text = "${getString(R.string.total_price)} ${getTotalPrice()}"
 
                         } else { // empty cart
                             Toast.makeText(baseContext, "EMPTY", Toast.LENGTH_SHORT).show()

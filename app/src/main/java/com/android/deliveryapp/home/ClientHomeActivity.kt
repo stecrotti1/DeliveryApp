@@ -96,7 +96,7 @@ class ClientHomeActivity : AppCompatActivity() {
             }
 
             val dialogProductPrice: TextView? = dialogView.findViewById(R.id.productPriceDialog)
-            dialogProductPrice?.text = productList[i].price
+            dialogProductPrice?.text = "${productList[i].price}€"
 
             val productDesc: TextView? = dialogView.findViewById(R.id.descriptionDialog)
             productDesc?.text = productList[i].description
@@ -148,7 +148,7 @@ class ClientHomeActivity : AppCompatActivity() {
                         firestore,
                         productList[i].title,
                         productList[i].price,
-                        "$productCount"
+                        productCount
                 )
                 dialog.dismiss()
             }
@@ -172,8 +172,8 @@ class ClientHomeActivity : AppCompatActivity() {
         var imageUrl = ""
         var title = ""
         var desc = ""
-        var price = ""
-        var qty = ""
+        var price = 0.00
+        var qty: Long = 0
 
         productList = emptyArray()
 
@@ -183,12 +183,12 @@ class ClientHomeActivity : AppCompatActivity() {
                     "image" -> imageUrl = item.value as String
                     "title" -> title = item.value as String
                     "description" -> desc = item.value as String
-                    "price" -> price = item.value as String
-                    "quantity" -> qty = item.value as String
+                    "price" -> price = item.value as Double
+                    "quantity" -> qty = item.value as Long
                 }
             }
-            if (qty != "0") { // don't add items with qty 0
-                productList = productList.plus(ProductItem(imageUrl, title, desc, price, qty))
+            if (qty.toInt() != 0) { // don't add items with qty 0
+                productList = productList.plus(ProductItem(imageUrl, title, desc, price, qty.toInt()))
             }
         }
     }
@@ -197,8 +197,8 @@ class ClientHomeActivity : AppCompatActivity() {
             auth: FirebaseAuth,
             firestore: FirebaseFirestore,
             title: String,
-            price: String,
-            quantity: String
+            price: Double,
+            quantity: Int
     ) {
         val user = auth.currentUser
 

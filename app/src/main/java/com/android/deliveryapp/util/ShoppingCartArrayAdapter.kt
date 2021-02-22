@@ -36,8 +36,8 @@ class ShoppingCartArrayAdapter(
 
         val holder = view?.tag as ViewHolder
         holder.title?.text = array[position].title
-        holder.price?.text = array[position].price
-        holder.quantity?.text = array[position].quantity
+        holder.price?.text = String.format( "%.2f€", array[position].price)
+        holder.quantity?.text = array[position].quantity.toString()
 
         return view
     }

@@ -84,22 +84,22 @@ class ManagerHomeActivity : AppCompatActivity() {
         var imageUrl = ""
         var title = ""
         var desc = ""
-        var price = ""
-        var qty = ""
+        var price = 0.00
+        var qty: Long = 0
 
         var array = emptyArray<ProductItem>()
 
         for (child in snapshot.children) {
             for (item in child.children) {
                 when (item.key) {
-                    "image" -> imageUrl = item.value.toString()
-                    "title" -> title = item.value.toString()
-                    "description" -> desc = item.value.toString()
-                    "price" -> price = item.value.toString()
-                    "quantity" -> qty = item.value.toString()
+                    "image" -> imageUrl = item.value as String
+                    "title" -> title = item.value as String
+                    "description" -> desc = item.value as String
+                    "price" -> price = item.value as Double
+                    "quantity" -> qty = item.value as Long
                 }
             }
-            array = array.plus(ProductItem(imageUrl, title, desc, price, qty))
+            array = array.plus(ProductItem(imageUrl, title, desc, price, qty.toInt()))
         }
         return array
     }

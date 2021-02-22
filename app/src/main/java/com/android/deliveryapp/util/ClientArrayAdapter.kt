@@ -55,7 +55,7 @@ class ClientArrayAdapter(
             build()
         }
         holder.title?.text = array[position].title
-        holder.price?.text = array[position].price
+        holder.price?.text = String.format( "%.2f€", array[position].price)
 
         return view
     }
