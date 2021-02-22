@@ -8,6 +8,7 @@ import com.android.deliveryapp.databinding.ActivitySelectUserTypeBinding
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
+import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 
@@ -34,6 +35,8 @@ class SelectUserTypeActivity : AppCompatActivity() {
             if (binding.manager.isChecked) {
                 editor.putString(userType, MANAGER)
             }
+
+            editor.putBoolean(hasLocation, false)
 
             editor.apply()
 

@@ -30,6 +30,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
@@ -149,6 +150,7 @@ class ClientHomeActivity : AppCompatActivity() {
                         productList[i].price,
                         "$productCount"
                 )
+                dialog.dismiss()
             }
 
             /*************************************************************************************/
@@ -202,16 +204,14 @@ class ClientHomeActivity : AppCompatActivity() {
 
         if (user != null) {
             val entry = mapOf(
-                    shoppingCart to mapOf
-                    (
-                            "title" to title,
-                            "price" to price,
-                            "qty" to quantity
-                    )
+                "title" to title,
+                "price" to price,
+                "qty" to quantity
             )
 
+            // FIXME: 22/02/2021 quantity arrayRemove()
             firestore.collection(clients).document(user.email!!)
-                    .update(entry) // update the existing document with user email
+                    .update(shoppingCart, FieldValue.arrayUnion(entry)) // update the existing document with user email
                     .addOnSuccessListener { documentRef ->
                         Log.d("FIREBASEFIRESTORE", "Document added with id: $documentRef")
                         Toast.makeText(

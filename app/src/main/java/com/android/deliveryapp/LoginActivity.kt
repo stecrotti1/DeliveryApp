@@ -18,6 +18,7 @@ import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
 import com.android.deliveryapp.util.Keys.Companion.clients
+import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.isLogged
 import com.android.deliveryapp.util.Keys.Companion.isRegistered
 import com.android.deliveryapp.util.Keys.Companion.manager
@@ -50,6 +51,7 @@ class LoginActivity : AppCompatActivity() {
         database = FirebaseFirestore.getInstance()
 
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
 
         binding.submitButton.setOnClickListener {
             loginUser(binding.loginEmail, binding.loginPassword)
@@ -57,6 +59,8 @@ class LoginActivity : AppCompatActivity() {
 
         binding.signUpLabel.setOnClickListener {
             startActivity(Intent(this@LoginActivity, SelectUserTypeActivity::class.java))
+            editor.putBoolean(hasLocation, false)
+            editor.apply()
         }
     }
 
@@ -91,7 +95,6 @@ class LoginActivity : AppCompatActivity() {
                     editor.putBoolean(isLogged, false)
                 }
                 editor.apply()
-                // FIXME: 20/02/2021
                 when (sharedPreferences.getString(userType, null)) {
                     CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))
                     RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))

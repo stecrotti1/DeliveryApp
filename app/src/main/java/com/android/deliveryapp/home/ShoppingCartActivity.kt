@@ -21,6 +21,7 @@ import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.PaymentType
 import com.android.deliveryapp.util.ProductItem
 import com.android.deliveryapp.util.ShoppingCartArrayAdapter
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -40,7 +41,7 @@ class ShoppingCartActivity : AppCompatActivity() {
     private lateinit var products: Array<ProductItem>
 
     private var total: Double = 0.00
-    private var formatter = DateTimeFormatter.RFC_1123_DATE_TIME
+    private var formatter = DateTimeFormatter.BASIC_ISO_DATE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,23 +54,7 @@ class ShoppingCartActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        fetchItemsFromCloud(firestore)
-
-        // if client has put some items in shopping cart then he can place the order
-        if (products.isNotEmpty()) {
-            binding.emptyCartLabel.visibility = View.INVISIBLE
-            binding.checkoutBtn.visibility = View.VISIBLE
-            binding.shoppingListView.visibility = View.VISIBLE
-
-            binding.totalPriceLabel.text = getTotalPrice()
-
-        } else { // empty cart
-            binding.emptyCartLabel.visibility = View.VISIBLE
-            binding.checkoutBtn.visibility = View.INVISIBLE
-            binding.shoppingListView.visibility = View.INVISIBLE
-
-            binding.totalPriceLabel.text = ("${getString(R.string.total_price)} 0.00 €")
-        }
+        fetchItemsFromCloud()
     }
 
     override fun onStart() {
@@ -83,6 +68,7 @@ class ShoppingCartActivity : AppCompatActivity() {
             var quantity = products[i].quantity.toInt()
 
             removeItemButton.setOnClickListener {
+                Toast.makeText(baseContext, "Remove: ${products[i].title}", Toast.LENGTH_SHORT).show()
                 if (quantity == 0) {
                     removeItem(products[i])
                 } else {
@@ -114,12 +100,12 @@ class ShoppingCartActivity : AppCompatActivity() {
 
                 val dialog: AlertDialog?
 
-                val totalPrice: TextView? = dialogView.findViewById(R.id.totalPriceDialog)
-                totalPrice?.text = getTotalPrice()
+                val totalPrice: TextView = dialogView.findViewById(R.id.totalPriceDialog)
+                totalPrice.text = getTotalPrice()
 
-                val payment: RadioGroup? = dialogView.findViewById(R.id.paymentOptions)
+                val payment: RadioGroup = dialogView.findViewById(R.id.paymentOptions)
 
-                val placeOrderBtn: FloatingActionButton = dialogView.findViewById(R.id.placeOrderBtn)
+                val placeOrderBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.placeOrderBtn)
 
                 val dialogBuilder = AlertDialog.Builder(this)
                         .setView(dialogView)
@@ -128,7 +114,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                 dialog = dialogBuilder.create()
                 dialog.show()
 
-                payment?.setOnClickListener {
+                payment.setOnClickListener {
                     when(payment.checkedRadioButtonId) {
                         R.id.cash -> paymentType = PaymentType.CASH
                         R.id.creditCard -> paymentType = PaymentType.CREDIT_CARD
@@ -160,7 +146,6 @@ class ShoppingCartActivity : AppCompatActivity() {
                 ).show()
                 Log.w("FIREBASEAUTH", "Error fetching user")
             }
-
         }
     }
 
@@ -171,6 +156,7 @@ class ShoppingCartActivity : AppCompatActivity() {
 
         for (item in products) {
             productMap = productMap.plus("title" to item.title)
+            productMap = productMap.plus("price" to item.price)
             productMap = productMap.plus("quantity" to item.quantity)
         }
 
@@ -227,7 +213,7 @@ class ShoppingCartActivity : AppCompatActivity() {
      * Fetch the shopping cart items from cloud
      * @param firestore instance
      */
-    private fun fetchItemsFromCloud(firestore: FirebaseFirestore) {
+    private fun fetchItemsFromCloud() {
         total = 0.00
         products = emptyArray()
 
@@ -241,26 +227,44 @@ class ShoppingCartActivity : AppCompatActivity() {
                         var price = ""
                         var qty = "" // quantity chosen by the client
 
-                        // get Map<> shoppingCart in Cloud
-                        for (item in result.get(shoppingCart) as Map<*, *>) {
-                            when (item.key) {
-                                "title" -> {
-                                    title = item.value as String
-                                    price = item.value as String
-                                    qty = item.value as String
+                        for (map in result.get(shoppingCart) as ArrayList<Map<String, String>>) {
+                            for (item in map) {
+                                when (item.key) {
+                                    "title" -> title = item.value
+                                    "price" -> price = item.value
+                                    "qty" -> qty = item.value
                                 }
+
                             }
-                            products = products.plus(ProductItem(
-                                    "",
-                                    title,
-                                    "",
-                                    price,
-                                    qty))
+                            products = products.plus(
+                                ProductItem("", title, "", price, qty)
+                            )
                         }
 
-                        binding.shoppingListView.adapter = ShoppingCartArrayAdapter(this,
+                        /****************************** UPDATE VIEW *******************************/
+
+                        // if client has put some items in shopping cart then he can place the order
+                        if (products.isNotEmpty()) {
+                            binding.emptyCartLabel.visibility = View.INVISIBLE
+                            binding.checkoutBtn.visibility = View.VISIBLE
+                            binding.shoppingListView.visibility = View.VISIBLE
+
+                            binding.shoppingListView.adapter = ShoppingCartArrayAdapter(
+                                this,
                                 R.layout.list_element_shopping_cart,
-                                products)
+                                products
+                            )
+
+                            binding.totalPriceLabel.text = getTotalPrice()
+
+                        } else { // empty cart
+                            Toast.makeText(baseContext, "EMPTY", Toast.LENGTH_SHORT).show()
+                            binding.emptyCartLabel.visibility = View.VISIBLE
+                            binding.checkoutBtn.visibility = View.INVISIBLE
+                            binding.shoppingListView.visibility = View.INVISIBLE
+
+                            binding.totalPriceLabel.text = ("${getString(R.string.total_price)} 0.00 €")
+                        }
                     }
                     .addOnFailureListener { e ->
                         Log.w("FIREBASEFIRESTORE", "Error fetching data", e)
@@ -270,7 +274,6 @@ class ShoppingCartActivity : AppCompatActivity() {
                                 Toast.LENGTH_LONG
                         ).show()
                     }
-
         } else {
             Toast.makeText(
                     baseContext,
