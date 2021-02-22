@@ -1,3 +1,3 @@
 package com.android.deliveryapp.util
 
-class ProductItem(val imgUrl: String, val title: String, val price: String, val quantity: String)
+class ProductItem(val imgUrl: String, val title: String, val description: String, val price: String, var quantity: String)

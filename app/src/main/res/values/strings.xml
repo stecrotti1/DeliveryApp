@@ -86,6 +86,20 @@
 
     <!-- ADD PRODUCT ACTIVITY -->
     <string name="add_product_activity">Add a new product</string>
+    
+    <!-- SHOPPING CART ACTIVITY -->
+    <string name="total_price">Total:</string>
+    <string name="empty_cart">Your cart is empty</string>
+    <string name="place_order">Place order</string>
+
+    <!-- checkout dialog -->
+    <string name="dialog_title">Your order</string>
+    <string name="payment_info">Payment will occur exclusively through the rider</string>
+    <string name="cash">Cash</string>
+    <string name="credit_card">Credit Card</string>
+
+    <string name="order_success">Order placed successfully</string>
+    <string name="order_failure">Failed to place order</string>
 
     <!-- hints -->
     <string name="fname_hint">First Name</string>

@@ -41,6 +41,8 @@ class ClientHomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var productList: Array<ProductItem>
 
+    private var productCount = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityClientHomeBinding.inflate(layoutInflater)
@@ -55,7 +57,7 @@ class ClientHomeActivity : AppCompatActivity() {
 
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                productList = processItems(snapshot) // create the product list
+                processItems(snapshot) // create the product list
 
                 binding.productListView.adapter = ClientArrayAdapter(
                         this@ClientHomeActivity, R.layout.list_element, productList
@@ -75,10 +77,10 @@ class ClientHomeActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
+        // AlertDialog
         binding.productListView.setOnItemClickListener { _, _, i, _ ->
+            productCount = 1
             val productTitle: String = productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
-            var productCount = 1
 
             val dialogView = LayoutInflater.from(this).inflate(R.layout.product_dialog, null)
 
@@ -94,6 +96,9 @@ class ClientHomeActivity : AppCompatActivity() {
 
             val dialogProductPrice: TextView? = dialogView.findViewById(R.id.productPriceDialog)
             dialogProductPrice?.text = productList[i].price
+
+            val productDesc: TextView? = dialogView.findViewById(R.id.descriptionDialog)
+            productDesc?.text = productList[i].description
 
             val productQty: TextInputEditText = dialogView.findViewById(R.id.productQtyCounter)
             productQty.setText("$productCount")
@@ -112,22 +117,27 @@ class ClientHomeActivity : AppCompatActivity() {
             dialog = dialogBuilder.create()
             dialog.show()
 
+            /************************ ALERT DIALOG BUTTONS ****************************************/
             removeQty.setOnClickListener {
                 if (productCount == 1) {
                     dialog.dismiss()
                 }
                 else {
-                    productQty.setText((productCount--).toString())
+                    productQty.setText((--productCount).toString())
                 }
             }
 
             addQty.setOnClickListener {
                 // product desired by the user > quantity available
-                if (productCount > productList[i].quantity.toInt()) {
-                productQty.error = getString(R.string.error_product_quantity)
+                if (productCount == productList[i].quantity.toInt()) {
+                    Toast.makeText(
+                            baseContext,
+                            getString(R.string.error_product_quantity),
+                            Toast.LENGTH_SHORT
+                    ).show()
                 }
                 else {
-                    productQty.setText((productCount++).toString())
+                    productQty.setText((++productCount).toString())
                 }
             }
 
@@ -140,12 +150,15 @@ class ClientHomeActivity : AppCompatActivity() {
                         "$productCount"
                 )
             }
+
+            /*************************************************************************************/
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         productList = emptyArray()
+        productCount = 1
     }
 
     /**
@@ -153,28 +166,29 @@ class ClientHomeActivity : AppCompatActivity() {
      * @return an array containing data related to the market products
      * if an item has quantity 0 it will not be shown at the user (CLIENT)
      */
-    private fun processItems(snapshot: DataSnapshot): Array<ProductItem> {
+    private fun processItems(snapshot: DataSnapshot) {
         var imageUrl = ""
         var title = ""
+        var desc = ""
         var price = ""
         var qty = ""
 
-        var array = emptyArray<ProductItem>()
+        productList = emptyArray()
 
         for (child in snapshot.children) {
             for (item in child.children) {
                 when (item.key) {
-                    "image" -> imageUrl = item.value.toString()
-                    "title" -> title = item.value.toString()
-                    "price" -> price = item.value.toString()
-                    "quantity" -> qty = item.value.toString()
+                    "image" -> imageUrl = item.value as String
+                    "title" -> title = item.value as String
+                    "description" -> desc = item.value as String
+                    "price" -> price = item.value as String
+                    "quantity" -> qty = item.value as String
                 }
             }
             if (qty != "0") { // don't add items with qty 0
-                array = array.plus(ProductItem(imageUrl, title, price, qty))
+                productList = productList.plus(ProductItem(imageUrl, title, desc, price, qty))
             }
         }
-        return array
     }
 
     private fun addToShoppingCart(
@@ -187,8 +201,8 @@ class ClientHomeActivity : AppCompatActivity() {
         val user = auth.currentUser
 
         if (user != null) {
-            val entry = hashMapOf(
-                    shoppingCart to hashMapOf
+            val entry = mapOf(
+                    shoppingCart to mapOf
                     (
                             "title" to title,
                             "price" to price,
@@ -197,7 +211,7 @@ class ClientHomeActivity : AppCompatActivity() {
             )
 
             firestore.collection(clients).document(user.email!!)
-                    .set(entry)
+                    .update(entry) // update the existing document with user email
                     .addOnSuccessListener { documentRef ->
                         Log.d("FIREBASEFIRESTORE", "Document added with id: $documentRef")
                         Toast.makeText(
@@ -242,7 +256,7 @@ class ClientHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.shoppingCart -> {
-                // TODO: 07/02/2021 start activity shopping cart or fragment??
+                startActivity(Intent(this@ClientHomeActivity, ShoppingCartActivity::class.java))
                 true
             }
             R.id.logout -> {

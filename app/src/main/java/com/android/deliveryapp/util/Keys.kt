@@ -32,6 +32,8 @@ class Keys {
         const val clientAddress: String = "address"
         const val shoppingCart: String = "shoppingCart"
 
+        const val orders: String = "orders"
+
         const val marketPosFirestore: String = "marketPos"
         const val marketDocument: String = "MARKET"
         const val fieldPosition: String = "position"

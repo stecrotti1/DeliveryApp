@@ -54,39 +54,37 @@ class ClientProfileActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
-        // if user has already set the location
-        if (sharedPreferences.getBoolean(hasLocation, false)) {
+        // if user has already set the location or has location saved on cloud
+        if (sharedPreferences.getBoolean(hasLocation, false) || user != null) {
             binding.setLocationBtn.visibility = View.INVISIBLE
 
-            database.collection(clients) // fetch user address from cloud
-                    .get()
-                    .addOnSuccessListener { result ->
-                        for (document in result) {
-                            if (document.id == user?.email) {
-                                val clientGeoPoint = document.getGeoPoint(clientAddress)
+            if (user != null) {
+                database.collection(clients).document(user.email!!) // fetch user address from cloud
+                        .get()
+                        .addOnSuccessListener { result ->
+                            val clientGeoPoint = result.getGeoPoint(clientAddress)
 
-                                if (clientGeoPoint != null) {
-                                    try {
-                                        geocoder = Geocoder(this).getFromLocation(clientGeoPoint.latitude,
-                                                clientGeoPoint.longitude,
-                                                1)
-                                    } catch (e: IOException) {
-                                        Log.w("Geocoder", e.message.toString())
-                                    }
+                            if (clientGeoPoint != null) {
+                                try {
+                                    geocoder = Geocoder(this).getFromLocation(clientGeoPoint.latitude,
+                                            clientGeoPoint.longitude,
+                                            1)
+                                } catch (e: IOException) {
+                                    Log.w("Geocoder", e.message.toString())
+                                }
 
-                                    if (geocoder != null) {
-                                        binding.location.setText("${geocoder!![0].getAddressLine(0)}, " +
-                                                "${geocoder!![0].getAddressLine(1)}, " +
-                                                "${geocoder!![0].adminArea}, " +
-                                                geocoder!![0].postalCode)
-                                    }
+                                if (geocoder != null) {
+                                    binding.location.setText("${geocoder!![0].getAddressLine(0)}, " +
+                                            "${geocoder!![0].getAddressLine(1)}, " +
+                                            "${geocoder!![0].adminArea}, " +
+                                            geocoder!![0].postalCode)
                                 }
                             }
                         }
-                    }
-                .addOnFailureListener {
-                    Toast.makeText(baseContext, getString(R.string.error_user_data), Toast.LENGTH_LONG).show()
-                }
+                        .addOnFailureListener {
+                            Toast.makeText(baseContext, getString(R.string.error_user_data), Toast.LENGTH_LONG).show()
+                        }
+            }
         } else {
             binding.setLocationBtn.visibility = View.VISIBLE
         }

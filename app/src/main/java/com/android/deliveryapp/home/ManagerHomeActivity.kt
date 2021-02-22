@@ -10,7 +10,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.android.deliveryapp.AddProductActivity
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
@@ -84,6 +83,7 @@ class ManagerHomeActivity : AppCompatActivity() {
     private fun processItems(snapshot: DataSnapshot): Array<ProductItem> {
         var imageUrl = ""
         var title = ""
+        var desc = ""
         var price = ""
         var qty = ""
 
@@ -94,11 +94,12 @@ class ManagerHomeActivity : AppCompatActivity() {
                 when (item.key) {
                     "image" -> imageUrl = item.value.toString()
                     "title" -> title = item.value.toString()
+                    "description" -> desc = item.value.toString()
                     "price" -> price = item.value.toString()
                     "quantity" -> qty = item.value.toString()
                 }
             }
-            array = array.plus(ProductItem(imageUrl, title, price, qty))
+            array = array.plus(ProductItem(imageUrl, title, desc, price, qty))
         }
         return array
     }

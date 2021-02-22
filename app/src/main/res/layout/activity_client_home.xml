@@ -35,6 +35,6 @@
         android:layout_centerInParent="true"
         android:layout_below="@+id/productLabel"
         android:layout_margin="20dp"
-        android:scrollbarSize="2dp"/>
+        android:scrollbarSize="1dp"/>
 
 </RelativeLayout>

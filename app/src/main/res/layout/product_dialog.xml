@@ -13,13 +13,22 @@
         android:layout_margin="20dp" />
 
     <TextView
+        android:id="@+id/descriptionDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="15sp"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/productImageDialog" />
+
+    <TextView
         android:id="@+id/productPriceDialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:layout_below="@id/productImageDialog"
+        android:layout_below="@id/descriptionDialog"
         android:layout_margin="10dp"
         android:layout_centerHorizontal="true" />
 
