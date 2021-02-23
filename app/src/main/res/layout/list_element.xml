@@ -13,7 +13,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center_vertical|start"
-        android:paddingEnd="5dp"
+        android:layout_marginEnd="10dp"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:textColor="@color/black"
-        android:padding="5dp"
+        android:layout_margin="10dp"
         android:textAppearance="?android:textAppearanceMedium" />
 
     <TextView
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         android:textColor="@color/black"
-        android:paddingStart="5dp"
+        android:layout_margin="10dp"
         android:textAppearance="?android:textAppearanceMedium" />
 
     <TextView
@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center|end"
         android:textColor="@color/black"
-        android:paddingStart="5dp"
+        android:layout_marginStart="10dp"
         android:textAppearance="?android:textAppearanceMedium" />
 
 </LinearLayout>

@@ -30,7 +30,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
@@ -130,7 +129,7 @@ class ClientHomeActivity : AppCompatActivity() {
 
             addQty.setOnClickListener {
                 // product desired by the user > quantity available
-                if (productCount == productList[i].quantity.toInt()) {
+                if (productCount == productList[i].quantity) {
                     Toast.makeText(
                             baseContext,
                             getString(R.string.error_product_quantity),
@@ -143,6 +142,9 @@ class ClientHomeActivity : AppCompatActivity() {
             }
 
             addToCart.setOnClickListener {
+                // remove the old entry if placed before
+
+                // add the new entry
                 addToShoppingCart(
                         auth,
                         firestore,
@@ -193,6 +195,15 @@ class ClientHomeActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * add a new entry to the database with a subcollection
+     * "user.id/shoppingCart/product.title/"
+     * @param auth firebase auth instance
+     * @param firestore firestore instance
+     * @param title product title
+     * @param price product price
+     * @param quantity product quantity
+     */
     private fun addToShoppingCart(
             auth: FirebaseAuth,
             firestore: FirebaseFirestore,
@@ -204,14 +215,14 @@ class ClientHomeActivity : AppCompatActivity() {
 
         if (user != null) {
             val entry = mapOf(
-                "title" to title,
-                "price" to price,
-                "qty" to quantity
+                    "title" to title,
+                    "price" to price,
+                    "qty" to quantity
             )
 
-            // FIXME: 22/02/2021 quantity arrayRemove()
             firestore.collection(clients).document(user.email!!)
-                    .update(shoppingCart, FieldValue.arrayUnion(entry)) // update the existing document with user email
+                    .collection(shoppingCart).document(title)
+                    .set(entry) // update the existing document with user email
                     .addOnSuccessListener { documentRef ->
                         Log.d("FIREBASEFIRESTORE", "Document added with id: $documentRef")
                         Toast.makeText(

@@ -92,6 +92,8 @@
     <string name="empty_cart">Your cart is empty</string>
     <string name="place_order">Place order</string>
 
+    <string name="update_cart_error">Failed to update shopping cart</string>
+
     <!-- checkout dialog -->
     <string name="dialog_title">Your order</string>
     <string name="payment_info">Payment will occur exclusively through the rider</string>
