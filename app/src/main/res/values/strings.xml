@@ -68,7 +68,14 @@
     <string name="home">HomePage</string>
     <string name="products">Products</string>
 
+    <string name="error_location_not_provided">You must provide an address in order to buy products!</string>
+    <string name="ok">I understand</string>
+    <string name="error">Warning!</string>
+
     <string name="add_cart_success">Product added to shopping cart successfully</string>
+    <string name="product_removed_from_cart_success">Product removed from cart with success</string>
+
+    <string name="error_removing_from_cart">Error removing product from cart</string>
 
     <string name="image_loading_error">Failed to retrieve products</string>
 

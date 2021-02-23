@@ -41,7 +41,7 @@ class ClientHomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var productList: Array<ProductItem>
 
-    private var productCount = 1
+    private var singleProductCount = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,9 +77,11 @@ class ClientHomeActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // AlertDialog
+
+        /***************************** ADD TO CART DIALOG ****************************************/
+
         binding.productListView.setOnItemClickListener { _, _, i, _ ->
-            productCount = 1
+            singleProductCount = 1
             val productTitle: String = productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
 
             val dialogView = LayoutInflater.from(this).inflate(R.layout.product_dialog, null)
@@ -101,7 +103,7 @@ class ClientHomeActivity : AppCompatActivity() {
             productDesc?.text = productList[i].description
 
             val productQty: TextInputEditText = dialogView.findViewById(R.id.productQtyCounter)
-            productQty.setText("$productCount")
+            productQty.setText("$singleProductCount")
             productQty.keyListener = null // not editable with keyboard but visible
 
             val removeQty: FloatingActionButton = dialogView.findViewById(R.id.minusButton)
@@ -118,18 +120,21 @@ class ClientHomeActivity : AppCompatActivity() {
             dialog.show()
 
             /************************ ALERT DIALOG BUTTONS ****************************************/
+
             removeQty.setOnClickListener {
-                if (productCount == 1) {
+                if (singleProductCount == 1) { // remove product from cart
+                    removeFromShoppintCart(auth, firestore, productList[i].title)
+
                     dialog.dismiss()
                 }
                 else {
-                    productQty.setText((--productCount).toString())
+                    productQty.setText((--singleProductCount).toString())
                 }
             }
 
             addQty.setOnClickListener {
-                // product desired by the user > quantity available
-                if (productCount == productList[i].quantity) {
+                // product desired by the user == quantity available
+                if (singleProductCount == productList[i].quantity) {
                     Toast.makeText(
                             baseContext,
                             getString(R.string.error_product_quantity),
@@ -137,20 +142,18 @@ class ClientHomeActivity : AppCompatActivity() {
                     ).show()
                 }
                 else {
-                    productQty.setText((++productCount).toString())
+                    productQty.setText((++singleProductCount).toString())
                 }
             }
 
             addToCart.setOnClickListener {
-                // remove the old entry if placed before
-
                 // add the new entry
                 addToShoppingCart(
                         auth,
                         firestore,
                         productList[i].title,
                         productList[i].price,
-                        productCount
+                        singleProductCount
                 )
                 dialog.dismiss()
             }
@@ -162,7 +165,7 @@ class ClientHomeActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         productList = emptyArray()
-        productCount = 1
+        singleProductCount = 1
     }
 
     /**
@@ -220,9 +223,10 @@ class ClientHomeActivity : AppCompatActivity() {
                     "qty" to quantity
             )
 
+            // set entry under "user.email/shoppingCart/product.title"
             firestore.collection(clients).document(user.email!!)
                     .collection(shoppingCart).document(title)
-                    .set(entry) // update the existing document with user email
+                    .set(entry)
                     .addOnSuccessListener { documentRef ->
                         Log.d("FIREBASEFIRESTORE", "Document added with id: $documentRef")
                         Toast.makeText(
@@ -249,6 +253,48 @@ class ClientHomeActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Remove the document from the sub-collection "shoppingCart"
+     * @param auth firebase auth instance
+     * @param firestore firestore instance
+     * @param title product title to be removed
+     */
+    private fun removeFromShoppintCart(
+            auth: FirebaseAuth,
+            firestore: FirebaseFirestore,
+            title: String
+    ) {
+        val user = auth.currentUser
+
+        if (user != null) {
+            firestore.collection(clients).document(user.email!!)
+                    .collection(shoppingCart).document(title)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        if (result.exists()) { // if it exists then remove it, otherwise, do nothing
+                            result.reference.delete()
+                            Log.d("FIREBASE_FIRESTORE", "Product removed with success")
+                            Toast.makeText(baseContext,
+                                    getString(R.string.product_removed_from_cart_success),
+                                    Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .addOnFailureListener {
+                        Log.w("FIREBASE_FIRESTORE", "Error removing product from cart")
+                        Toast.makeText(baseContext,
+                                getString(R.string.error_removing_from_cart),
+                                Toast.LENGTH_LONG).show()
+                    }
+        } else {
+            auth.currentUser?.reload()
+            Toast.makeText(
+                    baseContext,
+                    getString(R.string.error_user_data),
+                    Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.client_home_menu, menu)
@@ -263,7 +309,7 @@ class ClientHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.orders -> {
-                // TODO: 07/02/2021 start activity orders or fragment??
+                // TODO: 07/02/2021 start activity orders
                 true
             }
             R.id.shoppingCart -> {

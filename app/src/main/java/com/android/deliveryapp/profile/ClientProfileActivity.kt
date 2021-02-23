@@ -53,7 +53,6 @@ class ClientProfileActivity : AppCompatActivity() {
         }
 
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
-        // FIXME: 22/02/2021
         // if user has already set the location or has location saved on cloud
         if (sharedPreferences.getBoolean(hasLocation, false)) {
             binding.setLocationBtn.visibility = View.INVISIBLE
@@ -84,6 +83,13 @@ class ClientProfileActivity : AppCompatActivity() {
                         .addOnFailureListener {
                             Toast.makeText(baseContext, getString(R.string.error_user_data), Toast.LENGTH_LONG).show()
                         }
+            } else {
+                auth.currentUser?.reload()
+                Toast.makeText(
+                        baseContext,
+                        getString(R.string.error_user_data),
+                        Toast.LENGTH_LONG
+                ).show()
             }
         } else {
             binding.setLocationBtn.visibility = View.VISIBLE

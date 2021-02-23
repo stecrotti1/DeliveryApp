@@ -1,6 +1,7 @@
 package com.android.deliveryapp.home
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityShoppingCartBinding
+import com.android.deliveryapp.profile.ClientProfileActivity
 import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
@@ -22,15 +24,13 @@ import com.android.deliveryapp.util.PaymentType
 import com.android.deliveryapp.util.ProductItem
 import com.android.deliveryapp.util.ShoppingCartArrayAdapter
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.util.*
 
 class ShoppingCartActivity : AppCompatActivity() {
 
@@ -41,7 +41,7 @@ class ShoppingCartActivity : AppCompatActivity() {
     private lateinit var products: Array<ProductItem>
 
     private var total: Double = 0.00
-    private var formatter = DateTimeFormatter.BASIC_ISO_DATE
+    //private var formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,32 +60,7 @@ class ShoppingCartActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        /************************************ LISTVIEW ************************************/
-
-        binding.shoppingListView.setOnItemClickListener { _, view, i, _ ->
-            val removeItemButton = view.findViewById<FloatingActionButton>(R.id.removeItemButton)
-
-            var quantity = products[i].quantity.toInt()
-
-            removeItemButton.setOnClickListener {
-                Toast.makeText(baseContext, "Remove: ${products[i].title}", Toast.LENGTH_SHORT).show()
-                if (quantity == 0) {
-                    removeItem(products[i])
-                } else {
-                    products[i].quantity = --quantity
-                }
-                // update the view
-                binding.shoppingListView.adapter = ShoppingCartArrayAdapter(
-                        this, R.layout.list_element_shopping_cart, products
-                )
-
-                binding.totalPriceLabel.text = "${getString(R.string.total_price)} ${getTotalPrice()}"
-            }
-        }
-
-        /****************************************************************************************/
-
-        /******************************** PLACE ORDER ******************************************/
+        /*************************+***** PLACE ORDER DIALOG ***************************************/
 
         binding.checkoutBtn.setOnClickListener {
             // check if user has set a location
@@ -93,12 +68,17 @@ class ShoppingCartActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
             // has location
-            if (sharedPreferences.getBoolean(hasLocation, false) || user != null) {
+            if (sharedPreferences.getBoolean(hasLocation, false) && user != null) {
                 val dialogView = LayoutInflater.from(this).inflate(R.layout.checkout_dialog, null)
 
-                var paymentType: PaymentType = PaymentType.CASH
+                // radio group has "credit cart" as set default checked
+                var paymentType: PaymentType = PaymentType.CREDIT_CARD
 
                 val dialog: AlertDialog?
+
+                val dialogBuilder = AlertDialog.Builder(this)
+                        .setView(dialogView)
+                        .setTitle(getString(R.string.place_order))
 
                 val totalPrice: TextView = dialogView.findViewById(R.id.totalPriceDialog)
                 totalPrice.text = "${getString(R.string.total_price)} ${getTotalPrice()}"
@@ -107,12 +87,12 @@ class ShoppingCartActivity : AppCompatActivity() {
 
                 val placeOrderBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.placeOrderBtn)
 
-                val dialogBuilder = AlertDialog.Builder(this)
-                        .setView(dialogView)
-                        .setTitle(getString(R.string.place_order))
+
 
                 dialog = dialogBuilder.create()
                 dialog.show()
+
+                // FIXME: 23/02/2021 dialog not properly wrapping
 
                 payment.setOnClickListener {
                     when(payment.checkedRadioButtonId) {
@@ -121,36 +101,51 @@ class ShoppingCartActivity : AppCompatActivity() {
                     }
                 }
 
-                /************************ ALERT DIALOG BUTTONS ****************************************/
-
                 placeOrderBtn.setOnClickListener {
                     var position: GeoPoint?
                     firestore.collection(clients).document(user?.email!!) // fetch user address from cloud
                             .get()
                             .addOnSuccessListener { result ->
                                 position = result.getGeoPoint(Keys.clientAddress)
-                                createOrder(database.reference, user, position, paymentType)
+                                createOrder(firestore, database.reference, user, position, paymentType)
                             }
                             .addOnFailureListener { e ->
                                 Log.w("FIREBASEFIRESTORE", "Failed to get client position", e)
                             }
+                    dialog.dismiss()
                 }
 
-                /**********************************************************************************/
+            /*************************************************************************************/
 
             } else {
-                Toast.makeText(
-                        baseContext,
-                        getString(R.string.error_user_data),
-                        Toast.LENGTH_LONG
-                ).show()
-                Log.w("FIREBASEAUTH", "Error fetching user")
+
+                /******************** NO LOCATION DIALOG *****************************************/
+
+                val dialogView = LayoutInflater.from(this).inflate(R.layout.location_error_dialog, null)
+
+                val dialog: AlertDialog?
+
+                val errorButton: ExtendedFloatingActionButton = findViewById(R.id.errorButton)
+
+                val dialogBuilder = AlertDialog.Builder(this)
+                        .setView(dialogView)
+                        .setTitle(getString(R.string.error))
+
+                dialog = dialogBuilder.create()
+                dialog.show()
+
+                // return to profile so client can set his location
+                errorButton.setOnClickListener {
+                    dialog.dismiss()
+                    startActivity(Intent(this@ShoppingCartActivity, ClientProfileActivity::class.java))
+                }
             }
         }
     }
 
-    private fun createOrder(reference: DatabaseReference, user: FirebaseUser, position: GeoPoint?, paymentType: PaymentType) {
-        val today = LocalDate.now().format(formatter)
+    private fun createOrder(firestore: FirebaseFirestore, database: DatabaseReference, user: FirebaseUser, position: GeoPoint?, paymentType: PaymentType) {
+        val cal = Calendar.getInstance()
+        val today: String = cal.time.toString()
 
         var productMap: Map<String, Any?> = emptyMap()
 
@@ -162,24 +157,58 @@ class ShoppingCartActivity : AppCompatActivity() {
 
         val entry = mapOf(
                 "products" to productMap,
-                "total" to total,
+                "total" to getTotalPrice(),
                 "position" to position,
                 "payment" to paymentType.toString(),
                 "date" to today
         )
 
-        reference.child(orders).child(user.email!!).setValue(entry)
+        firestore.collection(clients).document(user.email!!)
+                .collection(orders).document(today)
+                .set(entry)
                 .addOnSuccessListener {
-                    Log.d("FIREBASE_DATABASE", "Data uploaded with success")
-                    Toast.makeText(baseContext,
-                            getString(R.string.order_success),
-                            Toast.LENGTH_LONG).show()
+                    // set user orders/user.email in database so manager can easily identify client in firestore
+                    database.child(orders).setValue(user.email)
+                            .addOnSuccessListener {
+                                Log.d("FIREBASE_DATABASE", "Data uploaded with success")
+                                Toast.makeText(baseContext,
+                                        getString(R.string.order_success),
+                                        Toast.LENGTH_LONG).show()
+
+                                // empty the shopping cart
+                                emptyShoppingCart(firestore, user.email!!)
+                                products = emptyArray()
+
+                                // update view
+
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
+                                Toast.makeText(baseContext,
+                                        getString(R.string.order_failure),
+                                        Toast.LENGTH_LONG).show()
+                            }
                 }
                 .addOnFailureListener { e ->
-                    Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
+                    Log.w("FIREBASE_FIRESTORE", "Failed to upload data", e)
                     Toast.makeText(baseContext,
                             getString(R.string.order_failure),
                             Toast.LENGTH_LONG).show()
+                }
+    }
+
+    private fun emptyShoppingCart(firestore: FirebaseFirestore, userEmail: String) {
+        firestore.collection(clients).document(userEmail)
+                .collection(shoppingCart)
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result.documents) {
+                        document.reference.delete()
+                    }
+                    Log.d("FIREBASE_FIRESTORE", "Documents deleted")
+                }
+                .addOnFailureListener {
+                    Log.w("FIREBASE_FIRESTORE", "Error deleting documents")
                 }
     }
 
@@ -195,20 +224,6 @@ class ShoppingCartActivity : AppCompatActivity() {
     }
 
     /**
-     * Remove an item from the product list
-     * @param item the item to be removed
-     */
-    private fun removeItem(item: ProductItem) {
-        if (products.isNotEmpty()) {
-            val temp = products.toMutableList()
-
-            temp.remove(item)
-            products = emptyArray()
-            products = temp.toTypedArray()
-        }
-    }
-
-    /**
      * Fetch the shopping cart items from cloud
      */
     private fun fetchItemsFromCloud() {
@@ -219,14 +234,15 @@ class ShoppingCartActivity : AppCompatActivity() {
 
         if (user != null) {
             firestore.collection(clients).document(user.email!!)
+                    .collection(shoppingCart)
                     .get()
                     .addOnSuccessListener { result ->
                         var title = ""
                         var price = 0.00
-                        var qty: Long = 0 // quantity chosen by the client
+                        var qty: Long = 0
 
-                        for (map in result.get(shoppingCart) as ArrayList<Map<String, Any?>>) {
-                            for (item in map) {
+                        for (document in result.documents) {
+                            for (item in document.data as Map<String, Any?>) {
                                 when (item.key) {
                                     "title" -> title = item.value as String
                                     "price" -> price = item.value as Double
@@ -234,34 +250,12 @@ class ShoppingCartActivity : AppCompatActivity() {
                                 }
                             }
                             products = products.plus(
-                                ProductItem("", title, "", price, qty.toInt())
+                                    ProductItem("", title, "", price, qty.toInt())
                             )
                         }
 
-                        /****************************** UPDATE VIEW *******************************/
-
-                        // if client has put some items in shopping cart then he can place the order
-                        if (products.isNotEmpty()) {
-                            binding.emptyCartLabel.visibility = View.INVISIBLE
-                            binding.checkoutBtn.visibility = View.VISIBLE
-                            binding.shoppingListView.visibility = View.VISIBLE
-
-                            binding.shoppingListView.adapter = ShoppingCartArrayAdapter(
-                                this,
-                                R.layout.list_element_shopping_cart,
-                                products
-                            )
-
-                            binding.totalPriceLabel.text = "${getString(R.string.total_price)} ${getTotalPrice()}"
-
-                        } else { // empty cart
-                            Toast.makeText(baseContext, "EMPTY", Toast.LENGTH_SHORT).show()
-                            binding.emptyCartLabel.visibility = View.VISIBLE
-                            binding.checkoutBtn.visibility = View.INVISIBLE
-                            binding.shoppingListView.visibility = View.INVISIBLE
-
-                            binding.totalPriceLabel.text = ("${getString(R.string.total_price)} 0.00 €")
-                        }
+                        // update view
+                        updateView(products)
                     }
                     .addOnFailureListener { e ->
                         Log.w("FIREBASEFIRESTORE", "Error fetching data", e)
@@ -277,6 +271,34 @@ class ShoppingCartActivity : AppCompatActivity() {
                     getString(R.string.error_user_data),
                     Toast.LENGTH_LONG
             ).show()
+        }
+    }
+
+    /**
+     * Update the view: if there are products in the shopping cart, then show them, otherwise
+     * show "empty cart"
+     */
+    private fun updateView(products: Array<ProductItem>) {
+        // if client has put some items in shopping cart then he can place the order
+        if (products.isNotEmpty()) {
+            binding.emptyCartLabel.visibility = View.INVISIBLE
+            binding.checkoutBtn.visibility = View.VISIBLE
+            binding.shoppingListView.visibility = View.VISIBLE
+
+            binding.shoppingListView.adapter = ShoppingCartArrayAdapter(
+                    this,
+                    R.layout.list_element_shopping_cart,
+                    products
+            )
+
+            binding.totalPriceLabel.text = "${getString(R.string.total_price)} ${getTotalPrice()}"
+
+        } else { // empty cart
+            binding.emptyCartLabel.visibility = View.VISIBLE
+            binding.checkoutBtn.visibility = View.INVISIBLE
+            binding.shoppingListView.visibility = View.INVISIBLE
+
+            binding.totalPriceLabel.text = ("${getString(R.string.total_price)} 0.00 €")
         }
     }
 

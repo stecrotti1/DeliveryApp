@@ -59,7 +59,7 @@ class LoginActivity : AppCompatActivity() {
 
         binding.signUpLabel.setOnClickListener {
             startActivity(Intent(this@LoginActivity, SelectUserTypeActivity::class.java))
-            editor.putBoolean(hasLocation, false)
+            editor.putBoolean(hasLocation, false) // if user isn't registered he hasn't a location
             editor.apply()
         }
     }

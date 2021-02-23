@@ -22,7 +22,6 @@
         android:text="@string/payment_info"
         android:textColor="@color/blue"
         android:textStyle="normal"
-        android:padding="20dp"
         android:layout_margin="10dp"
         android:textSize="13sp"
         android:layout_centerHorizontal="true"
