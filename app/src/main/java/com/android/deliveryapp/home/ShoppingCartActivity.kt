@@ -70,6 +70,8 @@ class ShoppingCartActivity : AppCompatActivity() {
             if (sharedPreferences.getBoolean(hasLocation, false) && user != null) {
                 val dialogView = LayoutInflater.from(this).inflate(R.layout.checkout_dialog, null)
 
+                // FIXME: 23/02/2021 dialog not properly wrapping
+
                 // radio group has "credit cart" as set default checked
                 var paymentType: PaymentType = PaymentType.CREDIT_CARD
 
@@ -80,7 +82,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                         .setTitle(getString(R.string.place_order))
 
                 val totalPrice: TextView = dialogView.findViewById(R.id.totalPriceDialog)
-                totalPrice.text = "${getString(R.string.total_price)} ${getTotalPrice()}"
+                totalPrice.text = binding.totalPriceLabel.text
 
                 val payment: RadioGroup = dialogView.findViewById(R.id.paymentOptions)
 
@@ -90,16 +92,14 @@ class ShoppingCartActivity : AppCompatActivity() {
 
                 dialog = dialogBuilder.create()
                 dialog.show()
-
-                // FIXME: 23/02/2021 dialog not properly wrapping
-
+                /*
                 payment.setOnClickListener {
                     when(payment.checkedRadioButtonId) {
                         R.id.cash -> paymentType = PaymentType.CASH
                         R.id.creditCard -> paymentType = PaymentType.CREDIT_CARD
                     }
                 }
-
+                */
                 placeOrderBtn.setOnClickListener {
                     var position: GeoPoint?
                     firestore.collection(clients).document(user?.email!!) // fetch user address from cloud

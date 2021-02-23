@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical"
     android:layout_height="match_parent">
 
     <TextView
@@ -12,26 +14,13 @@
         android:layout_margin="10dp"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@id/paymentInfo" />
-
-    <TextView
-        android:id="@+id/paymentInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/payment_info"
-        android:textColor="@color/blue"
-        android:textStyle="normal"
-        android:layout_margin="10dp"
-        android:textSize="13sp"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@id/paymentOptions" />
+        android:layout_gravity="center" />
 
     <RadioGroup
         android:id="@+id/paymentOptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+       android:layout_gravity="center">
 
         <RadioButton
             android:id="@+id/cash"
@@ -47,13 +36,23 @@
             android:text="@string/credit_card" />
     </RadioGroup>
 
+    <TextView
+        android:id="@+id/paymentInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/payment_info"
+        android:textColor="@color/blue"
+        android:textStyle="normal"
+        android:layout_margin="10dp"
+        android:textSize="13sp"
+        android:layout_gravity="center" />
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/placeOrderBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/place_order"
-        android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
-        android:layout_below="@id/paymentOptions" />
+        android:layout_gravity="center" />
 
-</RelativeLayout>
+</LinearLayout>

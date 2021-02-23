@@ -146,6 +146,7 @@
     <string name="save_location_failed">Could not save your location</string>
     <string name="error_user_data">Error fetching user data</string>
 
+    <string name="please_add_quantity">Please add some quantity</string>
     <string name="error_product_quantity">Max quantity reached</string>
     <string name="error_shopping_cart">There was an error adding product to shopping cart</string>
 

@@ -41,7 +41,7 @@ class ClientHomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var productList: Array<ProductItem>
 
-    private var singleProductCount = 1
+    private var singleProductCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +81,7 @@ class ClientHomeActivity : AppCompatActivity() {
         /***************************** ADD TO CART DIALOG ****************************************/
 
         binding.productListView.setOnItemClickListener { _, _, i, _ ->
-            singleProductCount = 1
+            singleProductCount = 0
             val productTitle: String = productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
 
             val dialogView = LayoutInflater.from(this).inflate(R.layout.product_dialog, null)
@@ -122,7 +122,7 @@ class ClientHomeActivity : AppCompatActivity() {
             /************************ ALERT DIALOG BUTTONS ****************************************/
 
             removeQty.setOnClickListener {
-                if (singleProductCount == 1) { // remove product from cart
+                if (singleProductCount == 0) { // remove product from cart
                     removeFromShoppintCart(auth, firestore, productList[i].title)
 
                     dialog.dismiss()
@@ -147,15 +147,23 @@ class ClientHomeActivity : AppCompatActivity() {
             }
 
             addToCart.setOnClickListener {
-                // add the new entry
-                addToShoppingCart(
-                        auth,
-                        firestore,
-                        productList[i].title,
-                        productList[i].price,
-                        singleProductCount
-                )
-                dialog.dismiss()
+                if (singleProductCount == 0) {
+                    Toast.makeText(
+                            baseContext,
+                            getString(R.string.please_add_quantity),
+                            Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    // add the new entry
+                    addToShoppingCart(
+                            auth,
+                            firestore,
+                            productList[i].title,
+                            productList[i].price,
+                            singleProductCount
+                    )
+                    dialog.dismiss()
+                }
             }
 
             /*************************************************************************************/
@@ -165,7 +173,7 @@ class ClientHomeActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         productList = emptyArray()
-        singleProductCount = 1
+        singleProductCount = 0
     }
 
     /**
