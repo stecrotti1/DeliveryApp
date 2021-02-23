@@ -12,7 +12,6 @@ import com.android.deliveryapp.databinding.ActivityClientOrdersBinding
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.OrderItem
-import com.android.deliveryapp.util.PaymentType
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -47,7 +46,7 @@ class ClientOrdersActivity : AppCompatActivity() {
 
         if (user != null) {
             firestore.collection(clients).document(user.email!!)
-                .collection(orders)
+                .collection(orders) // TODO: 23/02/2021 order by recent date
                 .get()
                 .addOnSuccessListener { result ->
                     var date = ""
@@ -59,15 +58,7 @@ class ClientOrdersActivity : AppCompatActivity() {
                             when (item.key) {
                                 "date" -> date = item.value as String
                                 "total" -> totalPrice = item.value as Double
-                                "payment" -> {
-                                    when (item.value) { // replace with string
-                                        PaymentType.CREDIT_CARD.toString() -> paymentType = getString(R.string.credit_card)
-                                        PaymentType.CASH.toString() -> paymentType = getString(R.string.cash)
-                                    }
-
-
-
-                                }
+                                "payment" -> paymentType = item.value as String
                             }
                         orderList = orderList.plus(OrderItem(date, totalPrice, paymentType))
                     }

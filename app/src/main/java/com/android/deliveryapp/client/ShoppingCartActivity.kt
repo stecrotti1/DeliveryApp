@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -21,7 +22,6 @@ import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.Keys.Companion.shoppingCart
 import com.android.deliveryapp.util.Keys.Companion.userInfo
-import com.android.deliveryapp.util.PaymentType
 import com.android.deliveryapp.util.ProductItem
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
@@ -30,8 +30,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.text.DateFormat
 import java.util.*
 
 class ShoppingCartActivity : AppCompatActivity() {
@@ -43,8 +42,6 @@ class ShoppingCartActivity : AppCompatActivity() {
     private lateinit var products: Array<ProductItem>
 
     private var total: Double = 0.00
-
-    private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,10 +74,8 @@ class ShoppingCartActivity : AppCompatActivity() {
             if (sharedPreferences.getBoolean(hasLocation, false) && user != null) {
                 val dialogView = LayoutInflater.from(this).inflate(R.layout.checkout_dialog, null)
 
-                // FIXME: 23/02/2021 dialog not properly wrapping
-
                 // radio group has "credit cart" as set default checked
-                var paymentType: PaymentType = PaymentType.CREDIT_CARD
+                var paymentType = ""
 
                 val dialog: AlertDialog?
 
@@ -93,6 +88,9 @@ class ShoppingCartActivity : AppCompatActivity() {
 
                 val payment: RadioGroup = dialogView.findViewById(R.id.paymentOptions)
 
+                val creditCardRadioButton: RadioButton = dialogView.findViewById(R.id.creditCard)
+                val cashRadioButton: RadioButton = dialogView.findViewById(R.id.cash)
+
                 val placeOrderBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.placeOrderBtn)
 
 
@@ -100,16 +98,18 @@ class ShoppingCartActivity : AppCompatActivity() {
                 dialog = dialogBuilder.create()
                 dialog.show()
 
-                payment.setOnClickListener {
-                    when(payment.checkedRadioButtonId) {
-                        R.id.cash -> paymentType = PaymentType.CASH
-                        R.id.creditCard -> paymentType = PaymentType.CREDIT_CARD
+                payment.setOnCheckedChangeListener { _, _ ->
+                    if (creditCardRadioButton.isChecked) {
+                        paymentType = getString(R.string.credit_card)
+                    }
+                    else if (cashRadioButton.isChecked) {
+                        paymentType = getString(R.string.cash)
                     }
                 }
 
                 placeOrderBtn.setOnClickListener {
                     var position: GeoPoint?
-                    firestore.collection(clients).document(user?.email!!) // fetch user address from cloud
+                    firestore.collection(clients).document(user.email!!) // fetch user address from cloud
                             .get()
                             .addOnSuccessListener { result ->
                                 position = result.getGeoPoint(Keys.clientAddress)
@@ -149,8 +149,14 @@ class ShoppingCartActivity : AppCompatActivity() {
         }
     }
 
-    private fun createOrder(firestore: FirebaseFirestore, database: DatabaseReference, user: FirebaseUser, position: GeoPoint?, paymentType: PaymentType) {
-        val today: String = LocalDate.now().format(formatter)
+    private fun getDate(): String {
+        val today: Date = Calendar.getInstance().time
+
+        return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT).format(today)
+    }
+
+    private fun createOrder(firestore: FirebaseFirestore, database: DatabaseReference, user: FirebaseUser, position: GeoPoint?, paymentType: String) {
+        val today = getDate()
 
         var productMap: Map<String, Any?> = emptyMap()
 
