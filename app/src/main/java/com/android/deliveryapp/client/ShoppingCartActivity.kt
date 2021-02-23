@@ -150,7 +150,6 @@ class ShoppingCartActivity : AppCompatActivity() {
     }
 
     private fun createOrder(firestore: FirebaseFirestore, database: DatabaseReference, user: FirebaseUser, position: GeoPoint?, paymentType: PaymentType) {
-        val cal = Calendar.getInstance()
         val today: String = LocalDate.now().format(formatter)
 
         var productMap: Map<String, Any?> = emptyMap()
@@ -163,7 +162,7 @@ class ShoppingCartActivity : AppCompatActivity() {
 
         val entry = mapOf(
                 "products" to productMap,
-                "total" to getTotalPrice(),
+                "total" to total,
                 "position" to position,
                 "payment" to paymentType.toString(),
                 "date" to today
