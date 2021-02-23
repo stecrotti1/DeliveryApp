@@ -96,6 +96,11 @@ class ClientProfileActivity : AppCompatActivity() {
         binding.setLocationBtn.setOnClickListener {
             startActivity(Intent(this@ClientProfileActivity, ClientLocationActivity::class.java))
         }
+
+        binding.homepageButton.setOnClickListener {
+            startActivity(Intent(this@ClientProfileActivity, ClientHomeActivity::class.java))
+            finish()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
