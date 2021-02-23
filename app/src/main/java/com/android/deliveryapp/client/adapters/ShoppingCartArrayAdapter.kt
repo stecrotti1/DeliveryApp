@@ -1,4 +1,4 @@
-package com.android.deliveryapp.util
+package com.android.deliveryapp.client.adapters
 
 import android.app.Activity
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.android.deliveryapp.R
+import com.android.deliveryapp.util.ProductItem
 
 class ShoppingCartArrayAdapter(
         private val activity: Activity,

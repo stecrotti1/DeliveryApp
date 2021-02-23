@@ -1,4 +1,4 @@
-package com.android.deliveryapp.home
+package com.android.deliveryapp.rider
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +8,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRiderHomeBinding
-import com.android.deliveryapp.profile.RiderProfileActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RiderHomeActivity : AppCompatActivity() {

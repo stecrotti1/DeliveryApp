@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.deliveryapp"
-    android:versionCode="16"
-    android:versionName="v0.0.16-a">
+    android:versionCode="19"
+    android:versionName="v0.1.1-a">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -33,27 +33,31 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".home.ShoppingCartActivity"
-            android:screenOrientation="unspecified"
-            android:label="@string/shopping_cart" />
+        <activity android:name=".client.ClientOrdersActivity"
+            android:label="@string/orders"
+            android:screenOrientation="unspecified" />
         <activity
-            android:name=".home.AddProductActivity"
+            android:name=".client.ShoppingCartActivity"
+            android:label="@string/shopping_cart"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".manager.AddProductActivity"
             android:label="@string/add_product_activity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".RidersListActivity"
+            android:name=".manager.RidersListActivity"
             android:label="@string/your_riders"
             android:screenOrientation="unspecified" />
         <activity
-            android:name=".home.ManagerHomeActivity"
+            android:name=".manager.ManagerHomeActivity"
             android:label="@string/home"
             android:screenOrientation="unspecified" />
         <activity
-            android:name=".home.RiderHomeActivity"
+            android:name=".rider.RiderHomeActivity"
             android:label="@string/home"
             android:screenOrientation="unspecified" />
         <activity
-            android:name=".home.ClientHomeActivity"
+            android:name=".client.ClientHomeActivity"
             android:label="@string/home"
             android:screenOrientation="unspecified" />
         <activity
@@ -63,17 +67,17 @@
             android:screenOrientation="unspecified"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ClientLocationActivity"
+            android:name=".client.ClientLocationActivity"
             android:label="@string/title_activity_location"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".profile.ClientProfileActivity"
+            android:name=".client.ClientProfileActivity"
             android:screenOrientation="unspecified" />
         <activity
-            android:name=".profile.RiderProfileActivity"
+            android:name=".rider.RiderProfileActivity"
             android:screenOrientation="unspecified" />
         <activity
-            android:name=".profile.ManagerProfileActivity"
+            android:name=".manager.ManagerProfileActivity"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".SelectUserTypeActivity"

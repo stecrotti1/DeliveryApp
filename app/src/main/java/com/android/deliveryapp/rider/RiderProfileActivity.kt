@@ -1,4 +1,4 @@
-package com.android.deliveryapp.profile
+package com.android.deliveryapp.rider
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRiderProfileBinding
-import com.android.deliveryapp.home.RiderHomeActivity
 import com.android.deliveryapp.util.Keys.Companion.riderStatus
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.google.firebase.auth.FirebaseAuth

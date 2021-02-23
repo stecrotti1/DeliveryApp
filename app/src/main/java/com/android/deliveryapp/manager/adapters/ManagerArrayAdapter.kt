@@ -1,4 +1,4 @@
-package com.android.deliveryapp.util
+package com.android.deliveryapp.manager.adapters
 
 import android.app.Activity
 import android.view.View
@@ -11,21 +11,23 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import coil.transition.CrossfadeTransition
 import com.android.deliveryapp.R
+import com.android.deliveryapp.util.ProductItem
 
 /**
- * Array adapter used for ClientHomeActivity
+ * Array adapter used for ManagerHomeActivity
  */
-class ClientArrayAdapter(
-    private val activity: Activity,
-    layout: Int,
-    private val array: Array<ProductItem>
+class ManagerArrayAdapter(
+        private val activity: Activity,
+        layout: Int,
+        private val array: Array<ProductItem>
 ): ArrayAdapter<ProductItem>(activity, layout, array) {
 
-        internal class ViewHolder {
-            var image: ImageView? = null
-            var title: TextView? = null
-            var price: TextView? = null
-        }
+    internal class ViewHolder {
+        var image: ImageView? = null
+        var title: TextView? = null
+        var price: TextView? = null
+        var quantity: TextView? = null
+    }
 
     @ExperimentalCoilApi
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -38,6 +40,7 @@ class ClientArrayAdapter(
             viewHolder.image = view.findViewById(R.id.productImage)
             viewHolder.title = view.findViewById(R.id.productName)
             viewHolder.price = view.findViewById(R.id.productPrice)
+            viewHolder.quantity = view.findViewById(R.id.productQty)
             view.tag = viewHolder
         } else {
             view = convertView
@@ -46,16 +49,15 @@ class ClientArrayAdapter(
         val holder = view?.tag as ViewHolder
         holder.image?.load(array[position].imgUrl) {
             transformations(CircleCropTransformation())
-            getItemId(position)
+            getItem(position)
             placeholder(R.drawable.image)
             error(R.drawable.error_image)
-            transition(CrossfadeTransition(150))
-            crossfade(true)
-
+            transition(CrossfadeTransition(100))
             build()
         }
         holder.title?.text = array[position].title
         holder.price?.text = String.format( "%.2f€", array[position].price)
+        holder.quantity?.text = array[position].quantity.toString()
 
         return view
     }

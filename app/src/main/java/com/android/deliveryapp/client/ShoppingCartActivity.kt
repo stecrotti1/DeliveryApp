@@ -1,10 +1,11 @@
-package com.android.deliveryapp.home
+package com.android.deliveryapp.client
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -12,8 +13,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
+import com.android.deliveryapp.client.adapters.ShoppingCartArrayAdapter
 import com.android.deliveryapp.databinding.ActivityShoppingCartBinding
-import com.android.deliveryapp.profile.ClientProfileActivity
 import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
@@ -22,7 +23,6 @@ import com.android.deliveryapp.util.Keys.Companion.shoppingCart
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.PaymentType
 import com.android.deliveryapp.util.ProductItem
-import com.android.deliveryapp.util.ShoppingCartArrayAdapter
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -30,6 +30,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class ShoppingCartActivity : AppCompatActivity() {
@@ -41,6 +43,8 @@ class ShoppingCartActivity : AppCompatActivity() {
     private lateinit var products: Array<ProductItem>
 
     private var total: Double = 0.00
+
+    private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +58,9 @@ class ShoppingCartActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         fetchItemsFromCloud()
+
+        // show a back arrow button in actionBar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onStart() {
@@ -92,14 +99,14 @@ class ShoppingCartActivity : AppCompatActivity() {
 
                 dialog = dialogBuilder.create()
                 dialog.show()
-                /*
+
                 payment.setOnClickListener {
                     when(payment.checkedRadioButtonId) {
                         R.id.cash -> paymentType = PaymentType.CASH
                         R.id.creditCard -> paymentType = PaymentType.CREDIT_CARD
                     }
                 }
-                */
+
                 placeOrderBtn.setOnClickListener {
                     var position: GeoPoint?
                     firestore.collection(clients).document(user?.email!!) // fetch user address from cloud
@@ -144,7 +151,7 @@ class ShoppingCartActivity : AppCompatActivity() {
 
     private fun createOrder(firestore: FirebaseFirestore, database: DatabaseReference, user: FirebaseUser, position: GeoPoint?, paymentType: PaymentType) {
         val cal = Calendar.getInstance()
-        val today: String = cal.time.toString()
+        val today: String = LocalDate.now().format(formatter)
 
         var productMap: Map<String, Any?> = emptyMap()
 
@@ -179,6 +186,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                                 products = emptyArray()
 
                                 // update view
+                                updateView(products)
 
                             }
                             .addOnFailureListener { e ->
@@ -214,12 +222,12 @@ class ShoppingCartActivity : AppCompatActivity() {
     /**
      * Get the total price
      */
-    private fun getTotalPrice(): String {
+    private fun getTotalPrice(): Double {
         for (item in products) {
             total += (item.price * item.quantity)
 
         }
-        return String.format("%.2f €", total)
+        return total // 2 decimals
     }
 
     /**
@@ -257,7 +265,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                         updateView(products)
                     }
                     .addOnFailureListener { e ->
-                        Log.w("FIREBASEFIRESTORE", "Error fetching data", e)
+                        Log.w("FIREBASE_FIRESTORE", "Error fetching data", e)
                         Toast.makeText(
                                 baseContext,
                                 getString(R.string.error_user_data),
@@ -290,7 +298,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                     products
             )
 
-            binding.totalPriceLabel.text = "${getString(R.string.total_price)} ${getTotalPrice()}"
+            binding.totalPriceLabel.text = "${getString(R.string.total_price)} ${String.format("%.2f €", getTotalPrice())}"
 
         } else { // empty cart
             binding.emptyCartLabel.visibility = View.VISIBLE
@@ -298,6 +306,17 @@ class ShoppingCartActivity : AppCompatActivity() {
             binding.shoppingListView.visibility = View.INVISIBLE
 
             binding.totalPriceLabel.text = ("${getString(R.string.total_price)} 0.00 €")
+        }
+    }
+
+    // when the back button is pressed in actionbar, finish this activity
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

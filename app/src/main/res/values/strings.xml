@@ -93,7 +93,7 @@
 
     <!-- ADD PRODUCT ACTIVITY -->
     <string name="add_product_activity">Add a new product</string>
-    
+
     <!-- SHOPPING CART ACTIVITY -->
     <string name="total_price">Total:</string>
     <string name="empty_cart">Your cart is empty</string>
@@ -109,6 +109,17 @@
 
     <string name="order_success">Order placed successfully</string>
     <string name="order_failure">Failed to place order</string>
+
+    <!-- CLIENT ORDERS ACTIVITY -->
+
+    <string name="order_history">Order history</string>
+    <string name="recent_orders">Your recent orders</string>
+
+    <string name="date">Date: </string>
+    <string name="total">Total: </string>
+    <string name="payment">Payment: </string>
+
+    <string name="empty_orders">You have no recent orders</string>
 
     <!-- hints -->
     <string name="fname_hint">First Name</string>

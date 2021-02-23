@@ -1,4 +1,4 @@
-package com.android.deliveryapp
+package com.android.deliveryapp.manager
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

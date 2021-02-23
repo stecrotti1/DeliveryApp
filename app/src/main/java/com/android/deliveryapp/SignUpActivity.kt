@@ -9,10 +9,10 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.client.ClientProfileActivity
 import com.android.deliveryapp.databinding.ActivitySignUpBinding
-import com.android.deliveryapp.profile.ClientProfileActivity
-import com.android.deliveryapp.profile.ManagerProfileActivity
-import com.android.deliveryapp.profile.RiderProfileActivity
+import com.android.deliveryapp.manager.ManagerProfileActivity
+import com.android.deliveryapp.rider.RiderProfileActivity
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER

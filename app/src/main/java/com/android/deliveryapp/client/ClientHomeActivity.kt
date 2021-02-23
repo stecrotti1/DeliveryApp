@@ -1,4 +1,4 @@
-package com.android.deliveryapp.home
+package com.android.deliveryapp.client
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,9 +16,8 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
+import com.android.deliveryapp.client.adapters.ClientArrayAdapter
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
-import com.android.deliveryapp.profile.ClientProfileActivity
-import com.android.deliveryapp.util.ClientArrayAdapter
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.Keys.Companion.shoppingCart
@@ -97,7 +96,7 @@ class ClientHomeActivity : AppCompatActivity() {
             }
 
             val dialogProductPrice: TextView? = dialogView.findViewById(R.id.productPriceDialog)
-            dialogProductPrice?.text = "${productList[i].price}€"
+            dialogProductPrice?.text = String.format( "%.2f€", productList[i].price)
 
             val productDesc: TextView? = dialogView.findViewById(R.id.descriptionDialog)
             productDesc?.text = productList[i].description
@@ -317,7 +316,7 @@ class ClientHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.orders -> {
-                // TODO: 07/02/2021 start activity orders
+                startActivity(Intent(this@ClientHomeActivity, ClientOrdersActivity::class.java))
                 true
             }
             R.id.shoppingCart -> {

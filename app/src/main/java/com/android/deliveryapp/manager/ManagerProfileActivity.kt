@@ -1,4 +1,4 @@
-package com.android.deliveryapp.profile
+package com.android.deliveryapp.manager
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerProfileBinding
-import com.android.deliveryapp.home.ManagerHomeActivity
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.manager
 import com.android.deliveryapp.util.Keys.Companion.managerID

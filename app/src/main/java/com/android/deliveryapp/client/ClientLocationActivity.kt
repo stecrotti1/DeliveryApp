@@ -1,4 +1,4 @@
-package com.android.deliveryapp
+package com.android.deliveryapp.client
 
 import android.Manifest
 import android.content.Context
@@ -18,8 +18,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientLocationBinding
-import com.android.deliveryapp.profile.ClientProfileActivity
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.fieldPosition

@@ -1,4 +1,4 @@
-package com.android.deliveryapp.profile
+package com.android.deliveryapp.client
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,11 +12,9 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.android.deliveryapp.ClientLocationActivity
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientProfileBinding
-import com.android.deliveryapp.home.ClientHomeActivity
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.hasLocation

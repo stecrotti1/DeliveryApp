@@ -1,4 +1,4 @@
-package com.android.deliveryapp.home
+package com.android.deliveryapp.manager
 
 import android.app.Activity
 import android.content.ContentValues

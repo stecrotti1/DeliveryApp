@@ -1,4 +1,4 @@
-package com.android.deliveryapp.home
+package com.android.deliveryapp.manager
 
 import android.Manifest
 import android.content.Intent
@@ -13,9 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
-import com.android.deliveryapp.profile.ManagerProfileActivity
+import com.android.deliveryapp.manager.adapters.ManagerArrayAdapter
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
-import com.android.deliveryapp.util.ManagerArrayAdapter
 import com.android.deliveryapp.util.ProductItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
