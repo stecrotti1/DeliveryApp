@@ -41,7 +41,6 @@ class ShoppingCartActivity : AppCompatActivity() {
     private lateinit var products: Array<ProductItem>
 
     private var total: Double = 0.00
-    //private var formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -10,9 +10,11 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,12 +34,15 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
+import kotlin.math.*
+import kotlin.system.exitProcess
 
 /**
  * Client set his home location
@@ -225,47 +230,89 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             } else { // if user has searched for a location
                 GeoPoint(searchPosition.latitude, searchPosition.longitude)
             }
-            // TODO: 07/02/2021 if client is > 10 km from market, cannot save
-            try {
-                geocoder = Geocoder(this).getFromLocation(clientPosition.latitude,
-                    clientPosition.longitude, 1)
-            } catch (e: IOException) {
-                Log.w(TAG, e.message.toString())
-            }
-            GlobalScope.launch {
-                if (geocoder != null) {
-                    val user = auth.currentUser
 
-                    if (user != null) {
-                        val entry = hashMapOf(
-                            clientAddress to clientGeoPoint
-                        )
+            if (calculateDistanceFromMarket(marketPos, clientGeoPoint) < 10.0) {
+                // TODO: 07/02/2021 if client is > 10 km from market, cannot save
+                try {
+                    geocoder = Geocoder(this).getFromLocation(clientPosition.latitude,
+                            clientPosition.longitude, 1)
+                } catch (e: IOException) {
+                    Log.w(TAG, e.message.toString())
+                }
+                GlobalScope.launch {
+                    if (geocoder != null) {
+                        val user = auth.currentUser
 
-                        // adds a document with user email
-                        database.collection(clients).document(user.email!!)
-                            .set(entry)
-                            .addOnSuccessListener { documentRef ->
-                                Log.d(FIREBASEFIRESTORE,
-                                    "DocumentSnapshot added with id $documentRef")
+                        if (user != null) {
+                            val entry = hashMapOf(
+                                    clientAddress to clientGeoPoint
+                            )
 
-                                editor.putBoolean(hasLocation, true) // set preference
-                                editor.apply()
+                            // adds a document with user email
+                            database.collection(clients).document(user.email!!)
+                                    .set(entry)
+                                    .addOnSuccessListener { documentRef ->
+                                        Log.d(FIREBASEFIRESTORE,
+                                                "DocumentSnapshot added with id $documentRef")
 
-                                startActivity(Intent(this@ClientLocationActivity, ClientProfileActivity::class.java))
-                                finish()
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w(FIREBASEFIRESTORE, "Error adding document", e)
-                                Toast.makeText(
-                                    baseContext,
-                                    getString(R.string.save_location_failed),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
+                                        editor.putBoolean(hasLocation, true) // set preference
+                                        editor.apply()
+
+                                        startActivity(Intent(this@ClientLocationActivity, ClientProfileActivity::class.java))
+                                        finish()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w(FIREBASEFIRESTORE, "Error adding document", e)
+                                        Toast.makeText(
+                                                baseContext,
+                                                getString(R.string.save_location_failed),
+                                                Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                        }
                     }
                 }
+            } else {
+                showErrorDialog()
             }
         }
+    }
+
+    private fun showErrorDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.location_distance_error_dialog, null)
+
+        val dialog: AlertDialog?
+
+        val dialogBuilder = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setTitle(getString(R.string.too_far_title))
+
+        val confirmButton: ExtendedFloatingActionButton = findViewById(R.id.confirmButton)
+
+        dialog = dialogBuilder.create()
+        dialog.show()
+
+        confirmButton.setOnClickListener {
+            dialog.dismiss()
+            finishAndRemoveTask()
+            exitProcess(0) // close the application entirely
+        }
+    }
+
+    private fun calculateDistanceFromMarket(market: GeoPoint, clientGeoPoint: GeoPoint): Double {
+        val lon1: Double = Math.toRadians(market.longitude)
+        val lat1: Double = Math.toRadians(market.latitude)
+
+        val lon2: Double = Math.toRadians(clientGeoPoint.longitude)
+        val lat2: Double = Math.toRadians(clientGeoPoint.latitude)
+
+        val distanceLng: Double = lon2 - lon1
+        val distanceLat: Double = lat2 - lat1
+
+        val a: Double = sin(distanceLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(distanceLng / 2).pow(2.0)
+        val c = 2 * asin(sqrt(a))
+
+        return (6367 * c)
     }
 
     /**

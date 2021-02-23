@@ -69,7 +69,7 @@
     <string name="products">Products</string>
 
     <string name="error_location_not_provided">You must provide an address in order to buy products!</string>
-    <string name="ok">I understand</string>
+    <string name="ok">Confirm</string>
     <string name="error">Warning!</string>
 
     <string name="add_cart_success">Product added to shopping cart successfully</string>
@@ -148,5 +148,9 @@
 
     <string name="error_product_quantity">Max quantity reached</string>
     <string name="error_shopping_cart">There was an error adding product to shopping cart</string>
+
+    <!-- client location is > 10 km from market -->
+    <string name="location_distance_error">Unfortunately you\'re too far from service area. You have to be within 10 km from the market</string>
+    <string name="too_far_title">You\'re too far :(</string>
 
 </resources>
