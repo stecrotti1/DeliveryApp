@@ -46,7 +46,7 @@ class ClientOrdersActivity : AppCompatActivity() {
 
         if (user != null) {
             firestore.collection(clients).document(user.email!!)
-                .collection(orders) // TODO: 23/02/2021 order by recent date
+                .collection(orders)
                 .get()
                 .addOnSuccessListener { result ->
                     var date = ""

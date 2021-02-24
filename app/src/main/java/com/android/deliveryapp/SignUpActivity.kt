@@ -13,6 +13,7 @@ import com.android.deliveryapp.client.ClientProfileActivity
 import com.android.deliveryapp.databinding.ActivitySignUpBinding
 import com.android.deliveryapp.manager.ManagerHomeActivity
 import com.android.deliveryapp.rider.RiderProfileActivity
+import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
@@ -95,7 +96,24 @@ class SignUpActivity : AppCompatActivity() {
                     when (sharedPreferences.getString(userType, null)) {
                         CLIENT -> startActivity(Intent(this@SignUpActivity, ClientProfileActivity::class.java))
                         RIDER -> startActivity(Intent(this@SignUpActivity, RiderProfileActivity::class.java))
-                        MANAGER -> startActivity(Intent(this@SignUpActivity, ManagerHomeActivity::class.java))
+                        MANAGER -> {
+                            startActivity(Intent(this@SignUpActivity, ManagerHomeActivity::class.java))
+
+                            // save the manager email in the firestore cloud
+                            val entry = hashMapOf(
+                                Keys.managerEmail to email.text.toString()
+                            )
+
+                            database.collection(Keys.manager)
+                                .document(MANAGER)
+                                .set(entry)
+                                .addOnSuccessListener { documentRef ->
+                                    Log.d("FIREBASEFIRESTORE", "DocumentSnapshot added with id $documentRef")
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w("FIREBASEFIRESTORE", "Error adding document", e)
+                                }
+                        }
                     }
                     finish()
 

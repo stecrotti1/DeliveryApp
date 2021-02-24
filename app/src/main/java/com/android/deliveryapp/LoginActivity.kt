@@ -22,6 +22,7 @@ import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.isLogged
 import com.android.deliveryapp.util.Keys.Companion.isRegistered
 import com.android.deliveryapp.util.Keys.Companion.manager
+import com.android.deliveryapp.util.Keys.Companion.managerEmail
 import com.android.deliveryapp.util.Keys.Companion.pwd
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.Keys.Companion.userInfo
@@ -94,17 +95,33 @@ class LoginActivity : AppCompatActivity() {
                     editor.putBoolean(isLogged, false)
                 }
                 editor.apply()
-                // FIXME: 24/02/2021
+                // FIXME: 24/02/2021 too slow
                 when (sharedPreferences.getString(userType, null)) {
                     CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))
                     RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
                     MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
                     else -> { // need to get userType on cloud
-                        when (getUserType(database, editor)) {
-                            CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))
-                            RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
-                            MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
-                        }
+                            when (getUserType(database, editor, email.text.toString())) {
+                                CLIENT -> startActivity(
+                                    Intent(
+                                        this@LoginActivity,
+                                        ClientHomeActivity::class.java
+                                    )
+                                )
+                                RIDER -> startActivity(
+                                    Intent(
+                                        this@LoginActivity,
+                                        RiderHomeActivity::class.java
+                                    )
+                                )
+                                MANAGER ->
+                                    startActivity(
+                                        Intent(
+                                            this@LoginActivity,
+                                            ManagerHomeActivity::class.java
+                                        )
+                                    )
+                            }
                     }
                 }
             }
@@ -115,22 +132,22 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun getUserType(database: FirebaseFirestore, editor: SharedPreferences.Editor): String? {
+    private fun getUserType(database: FirebaseFirestore, editor: SharedPreferences.Editor, email: String): String? {
         val collections = arrayOf(clients, manager, riders)
 
         for (collection in collections) {
-            fetchUser(database, collection, editor)
+            fetchUser(database, collection, editor, email)
         }
 
         return sharedPreferences.getString(userType, null)
     }
 
-    private fun fetchUser(database: FirebaseFirestore, collection: String, editor: SharedPreferences.Editor) {
+    private fun fetchUser(database: FirebaseFirestore, collection: String, editor: SharedPreferences.Editor, email: String) {
         database.collection(collection)
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    if (document.id == binding.loginEmail.text.toString()) {
+                    if (document.getString(managerEmail) == email) {
                         when (collection) {
                             clients -> {
                                 editor.putString(userType, CLIENT)
@@ -163,7 +180,6 @@ class LoginActivity : AppCompatActivity() {
             }
         return
     }
-
 
     // hide keyboard when user clicks outside EditText
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
