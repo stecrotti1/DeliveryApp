@@ -1,5 +1,6 @@
 package com.android.deliveryapp.manager
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,11 +8,13 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerProfileBinding
+import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.manager
-import com.android.deliveryapp.util.Keys.Companion.managerID
+import com.android.deliveryapp.util.Keys.Companion.managerEmail
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -39,7 +42,7 @@ class ManagerProfileActivity : AppCompatActivity() {
             binding.email.keyListener = null // not editable by user, but still visible
 
             val entry = hashMapOf(
-                managerID to user.uid
+                managerEmail to user.email
             )
 
             database.collection(manager) // save the manager uid in the firestore cloud
@@ -64,6 +67,17 @@ class ManagerProfileActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.homePage -> {
                 startActivity(Intent(this@ManagerProfileActivity, ManagerHomeActivity::class.java))
+                finish()
+                true
+            }
+            R.id.logout -> {
+                auth.signOut()
+                val sharedPreferences = getSharedPreferences(Keys.userInfo, Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.clear() // delete all shared preferences
+                editor.apply()
+
+                startActivity(Intent(this@ManagerProfileActivity, LoginActivity::class.java))
                 finish()
                 true
             }

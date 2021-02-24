@@ -30,8 +30,6 @@ import com.android.deliveryapp.util.Keys.Companion.username
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
@@ -58,9 +56,10 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.signUpLabel.setOnClickListener {
-            startActivity(Intent(this@LoginActivity, SelectUserTypeActivity::class.java))
-            editor.putBoolean(hasLocation, false) // if user isn't registered he hasn't a location
+            editor.clear() // delete all preferences
             editor.apply()
+
+            startActivity(Intent(this@LoginActivity, SelectUserTypeActivity::class.java))
         }
     }
 
@@ -95,17 +94,16 @@ class LoginActivity : AppCompatActivity() {
                     editor.putBoolean(isLogged, false)
                 }
                 editor.apply()
+                // FIXME: 24/02/2021
                 when (sharedPreferences.getString(userType, null)) {
                     CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))
                     RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
                     MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
-                    else -> { // user hasn't registered preferences, need to get userType on cloud
-                        GlobalScope.launch { // coroutine
-                            when (getUserType(database, editor)) {
-                                CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))
-                                RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
-                                MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
-                            }
+                    else -> { // need to get userType on cloud
+                        when (getUserType(database, editor)) {
+                            CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))
+                            RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
+                            MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
                         }
                     }
                 }
@@ -152,6 +150,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
                 }
+                editor.putBoolean(hasLocation, true)
                 editor.commit() // force instant commit
             }
             .addOnFailureListener { e ->

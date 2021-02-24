@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.deliveryapp"
-    android:versionCode="22"
-    android:versionName="v0.1.4-a">
+    android:versionCode="25"
+    android:versionName="v0.2.2-a">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -33,7 +33,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".client.ClientOrdersActivity"
+        <activity android:name=".manager.ManagerOrderActivity"
+            android:label="@string/orders"/>
+        <activity
+            android:name=".client.ClientOrdersActivity"
             android:label="@string/orders"
             android:screenOrientation="unspecified" />
         <activity

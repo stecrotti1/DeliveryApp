@@ -1,5 +1,6 @@
 package com.android.deliveryapp.client
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +19,7 @@ import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.client.adapters.ClientArrayAdapter
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
+import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.Keys.Companion.shoppingCart
@@ -325,6 +327,12 @@ class ClientHomeActivity : AppCompatActivity() {
             }
             R.id.logout -> {
                 auth.signOut()
+
+                val sharedPreferences = getSharedPreferences(Keys.userInfo, Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.clear() // delete all shared preferences
+                editor.apply()
+
                 startActivity(Intent(this@ClientHomeActivity, LoginActivity::class.java))
                 finish()
                 true

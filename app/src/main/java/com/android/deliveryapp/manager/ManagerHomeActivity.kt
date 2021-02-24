@@ -1,6 +1,7 @@
 package com.android.deliveryapp.manager
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -15,6 +16,8 @@ import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
 import com.android.deliveryapp.manager.adapters.ManagerArrayAdapter
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
+import com.android.deliveryapp.util.Keys.Companion.userInfo
+import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.ProductItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -103,7 +106,6 @@ class ManagerHomeActivity : AppCompatActivity() {
         return array
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.manager_home_menu, menu)
@@ -112,6 +114,7 @@ class ManagerHomeActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         auth = FirebaseAuth.getInstance()
+        deleteSharedPreferences(userType)
         return when (item.itemId) {
             R.id.managerProfile -> {
                 startActivity(Intent(this@ManagerHomeActivity, ManagerProfileActivity::class.java))
@@ -121,8 +124,17 @@ class ManagerHomeActivity : AppCompatActivity() {
                 // TODO: 19/02/2021 activity list riders
                 true
             }
+            R.id.orders -> {
+                startActivity(Intent(this@ManagerHomeActivity, ManagerOrderActivity::class.java))
+                true
+            }
             R.id.logout -> {
                 auth.signOut()
+                val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.clear() // delete all shared preferences
+                editor.apply()
+
                 startActivity(Intent(this@ManagerHomeActivity, LoginActivity::class.java))
                 finish()
                 true

@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.android.deliveryapp.R
-import com.android.deliveryapp.util.OrderItem
+import com.android.deliveryapp.util.ClientOrderItem
 
 class ClientOrdersArrayAdapter(
     private val activity: Activity,
     layout: Int,
-    private val array: Array<OrderItem>
-): ArrayAdapter<OrderItem>(activity, layout, array) {
+    private val array: Array<ClientOrderItem>
+): ArrayAdapter<ClientOrderItem>(activity, layout, array) {
 
     internal class ViewHolder {
         var date: TextView? = null

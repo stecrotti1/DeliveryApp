@@ -121,6 +121,21 @@
 
     <string name="empty_orders">You have no recent orders</string>
 
+    <!-- MANAGER ORDER ACTIVITY -->
+
+    <string name="new_orders">New orders</string>
+    <string name="no_new_orders">There aren\'t new orders</string>
+
+    <string name="select_order">Select an order to give it to your riders</string>
+
+    <string name="order_details">view details</string>
+
+    <string name="client_email">Email: </string>
+
+    <string name="incoming_orders">Incoming orders</string>
+
+    <string name="failure_data">Failed to get data</string>
+
     <!-- hints -->
     <string name="fname_hint">First Name</string>
     <string name="lname_hint">Last Name</string>

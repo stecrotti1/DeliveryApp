@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.client.adapters.ClientOrdersArrayAdapter
 import com.android.deliveryapp.databinding.ActivityClientOrdersBinding
+import com.android.deliveryapp.util.ClientOrderItem
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.orders
-import com.android.deliveryapp.util.OrderItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -20,7 +20,7 @@ class ClientOrdersActivity : AppCompatActivity() {
     private lateinit var binding: ActivityClientOrdersBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-    private lateinit var orderList: Array<OrderItem>
+    private lateinit var orderList: Array<ClientOrderItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +60,10 @@ class ClientOrdersActivity : AppCompatActivity() {
                                 "total" -> totalPrice = item.value as Double
                                 "payment" -> paymentType = item.value as String
                             }
-                        orderList = orderList.plus(OrderItem(date, totalPrice, paymentType))
+                        orderList = orderList.plus(ClientOrderItem(date, totalPrice, paymentType))
                     }
+
+                    orderList.reverse() // order by the last order
 
                     updateView(orderList)
                 }
@@ -76,7 +78,7 @@ class ClientOrdersActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateView(orderList: Array<OrderItem>) {
+    private fun updateView(orderList: Array<ClientOrderItem>) {
         // client has orders
         if (orderList.isNotEmpty()) {
             binding.ordersList.visibility = View.VISIBLE

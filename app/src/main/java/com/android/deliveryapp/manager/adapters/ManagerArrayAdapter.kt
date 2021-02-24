@@ -50,8 +50,8 @@ class ManagerArrayAdapter(
         holder.image?.load(array[position].imgUrl) {
             transformations(CircleCropTransformation())
             getItem(position)
-            placeholder(R.drawable.image)
-            error(R.drawable.error_image)
+            placeholder(R.drawable.image) // image to put while loading
+            error(R.drawable.error_image) // error image
             transition(CrossfadeTransition(100))
             build()
         }

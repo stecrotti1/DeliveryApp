@@ -25,7 +25,7 @@ class Keys {
         const val manager: String = "manager"
         const val riders: String = "riders"
 
-        const val managerID: String = "managerID"
+        const val managerEmail: String = "managerEmail"
 
         const val riderStatus: String = "riderStatus"
 

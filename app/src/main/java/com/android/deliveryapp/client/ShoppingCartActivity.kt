@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -16,10 +15,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.client.adapters.ShoppingCartArrayAdapter
 import com.android.deliveryapp.databinding.ActivityShoppingCartBinding
-import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.orders
+import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.Keys.Companion.shoppingCart
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.ProductItem
@@ -29,7 +28,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
 import java.text.DateFormat
 import java.util.*
 
@@ -86,38 +84,25 @@ class ShoppingCartActivity : AppCompatActivity() {
                 val totalPrice: TextView = dialogView.findViewById(R.id.totalPriceDialog)
                 totalPrice.text = binding.totalPriceLabel.text
 
-                val payment: RadioGroup = dialogView.findViewById(R.id.paymentOptions)
-
                 val creditCardRadioButton: RadioButton = dialogView.findViewById(R.id.creditCard)
                 val cashRadioButton: RadioButton = dialogView.findViewById(R.id.cash)
 
                 val placeOrderBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.placeOrderBtn)
 
-
-
                 dialog = dialogBuilder.create()
                 dialog.show()
 
-                payment.setOnCheckedChangeListener { _, _ ->
-                    if (creditCardRadioButton.isChecked) {
-                        paymentType = getString(R.string.credit_card)
-                    }
-                    else if (cashRadioButton.isChecked) {
-                        paymentType = getString(R.string.cash)
-                    }
+                if (creditCardRadioButton.isChecked) {
+                    paymentType = getString(R.string.credit_card)
+                }
+                else if (cashRadioButton.isChecked) {
+                    paymentType = getString(R.string.cash)
                 }
 
                 placeOrderBtn.setOnClickListener {
-                    var position: GeoPoint?
-                    firestore.collection(clients).document(user.email!!) // fetch user address from cloud
-                            .get()
-                            .addOnSuccessListener { result ->
-                                position = result.getGeoPoint(Keys.clientAddress)
-                                createOrder(firestore, database.reference, user, position, paymentType)
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w("FIREBASEFIRESTORE", "Failed to get client position", e)
-                            }
+                    val reference = database.getReference(productListFirebase)
+
+                    createOrder(firestore, reference, user, paymentType)
                     dialog.dismiss()
                 }
 
@@ -152,15 +137,20 @@ class ShoppingCartActivity : AppCompatActivity() {
     private fun getDate(): String {
         val today: Date = Calendar.getInstance().time
 
-        return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT).format(today)
+        return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(today)
     }
 
-    private fun createOrder(firestore: FirebaseFirestore, database: DatabaseReference, user: FirebaseUser, position: GeoPoint?, paymentType: String) {
+    private fun createOrder(firestore: FirebaseFirestore, reference: DatabaseReference, user: FirebaseUser, paymentType: String) {
         val today = getDate()
 
         var productMap: Map<String, Any?> = emptyMap()
 
+        var productTitle = ""
+        var quantity = 0
+
         for (item in products) {
+            productTitle = item.title
+            quantity = item.quantity
             productMap = productMap.plus("title" to item.title)
             productMap = productMap.plus("price" to item.price)
             productMap = productMap.plus("quantity" to item.quantity)
@@ -169,37 +159,72 @@ class ShoppingCartActivity : AppCompatActivity() {
         val entry = mapOf(
                 "products" to productMap,
                 "total" to total,
-                "position" to position,
-                "payment" to paymentType.toString(),
+                "payment" to paymentType,
                 "date" to today
+        )
+
+        val orderEntry = mapOf(
+            "date" to today
         )
 
         firestore.collection(clients).document(user.email!!)
                 .collection(orders).document(today)
                 .set(entry)
                 .addOnSuccessListener {
-                    // set user orders/user.email in database so manager can easily identify client in firestore
-                    database.child(orders).setValue(user.email)
-                            .addOnSuccessListener {
-                                Log.d("FIREBASE_DATABASE", "Data uploaded with success")
-                                Toast.makeText(baseContext,
-                                        getString(R.string.order_success),
-                                        Toast.LENGTH_LONG).show()
 
-                                // empty the shopping cart
-                                emptyShoppingCart(firestore, user.email!!)
-                                products = emptyArray()
+                    // set user orders/user.email in firestore so manager can see them
+                    firestore.collection(orders).document(user.email!!)
+                        .collection(orders).document()
+                        .set(orderEntry)
+                        .addOnSuccessListener {
 
-                                // update view
-                                updateView(products)
+                            // update the quantity on product list
+                            reference.child(productTitle).child("quantity")
+                                    .get()
+                                    .addOnSuccessListener { result ->
+                                        val oldQuantity = result.value as Long
 
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
-                                Toast.makeText(baseContext,
-                                        getString(R.string.order_failure),
-                                        Toast.LENGTH_LONG).show()
-                            }
+                                        reference.child(productTitle).child("quantity")
+                                                .setValue((oldQuantity - quantity))
+                                                .addOnSuccessListener {
+                                                    Log.d("FIREBASE_DATABASE",
+                                                            "Data uploaded with success")
+                                                    Toast.makeText(baseContext,
+                                                            getString(R.string.order_success),
+                                                            Toast.LENGTH_LONG).show()
+
+                                                    // empty the shopping cart
+                                                    emptyShoppingCart(firestore, user.email!!)
+                                                    products = emptyArray()
+
+                                                    // update view
+                                                    updateView(products)
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.w("FIREBASE_DATABASE",
+                                                            "Failed to upload data",
+                                                            e)
+                                                    Toast.makeText(baseContext,
+                                                            getString(R.string.order_failure),
+                                                            Toast.LENGTH_LONG).show()
+                                                }
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w("FIREBASE_DATABASE",
+                                                "Failed to upload data",
+                                                e)
+                                        Toast.makeText(baseContext,
+                                                getString(R.string.order_failure),
+                                                Toast.LENGTH_LONG).show()
+                                    }
+
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
+                            Toast.makeText(baseContext,
+                                getString(R.string.order_failure),
+                                Toast.LENGTH_LONG).show()
+                        }
                 }
                 .addOnFailureListener { e ->
                     Log.w("FIREBASE_FIRESTORE", "Failed to upload data", e)

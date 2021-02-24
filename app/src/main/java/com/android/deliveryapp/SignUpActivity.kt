@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.client.ClientProfileActivity
 import com.android.deliveryapp.databinding.ActivitySignUpBinding
-import com.android.deliveryapp.manager.ManagerProfileActivity
+import com.android.deliveryapp.manager.ManagerHomeActivity
 import com.android.deliveryapp.rider.RiderProfileActivity
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
@@ -95,7 +95,7 @@ class SignUpActivity : AppCompatActivity() {
                     when (sharedPreferences.getString(userType, null)) {
                         CLIENT -> startActivity(Intent(this@SignUpActivity, ClientProfileActivity::class.java))
                         RIDER -> startActivity(Intent(this@SignUpActivity, RiderProfileActivity::class.java))
-                        MANAGER -> startActivity(Intent(this@SignUpActivity, ManagerProfileActivity::class.java))
+                        MANAGER -> startActivity(Intent(this@SignUpActivity, ManagerHomeActivity::class.java))
                     }
                     finish()
 

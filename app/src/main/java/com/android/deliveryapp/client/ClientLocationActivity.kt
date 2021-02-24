@@ -232,7 +232,6 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             if (calculateDistanceFromMarket(marketPos, clientGeoPoint) < 10.0) {
-                // TODO: 07/02/2021 if client is > 10 km from market, cannot save
                 try {
                     geocoder = Geocoder(this).getFromLocation(clientPosition.latitude,
                             clientPosition.longitude, 1)
@@ -287,15 +286,15 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 .setView(dialogView)
                 .setTitle(getString(R.string.too_far_title))
 
-        val confirmButton: ExtendedFloatingActionButton = findViewById(R.id.confirmButton)
+        val confirmButton: ExtendedFloatingActionButton = dialogView.findViewById(R.id.confirmButtonDialog)
 
         dialog = dialogBuilder.create()
         dialog.show()
 
         confirmButton.setOnClickListener {
             dialog.dismiss()
-            finishAndRemoveTask()
-            exitProcess(0) // close the application entirely
+            finishAffinity()
+            exitProcess(-1) // close the application entirely
         }
     }
 

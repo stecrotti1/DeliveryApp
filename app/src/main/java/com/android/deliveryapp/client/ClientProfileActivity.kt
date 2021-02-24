@@ -51,7 +51,7 @@ class ClientProfileActivity : AppCompatActivity() {
         }
 
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
-        // if user has already set the location or has location saved on cloud
+        // if user has already set the location
         if (sharedPreferences.getBoolean(hasLocation, false)) {
             binding.setLocationBtn.visibility = View.INVISIBLE
 
@@ -118,6 +118,12 @@ class ClientProfileActivity : AppCompatActivity() {
             }
             R.id.logout -> {
                 auth.signOut()
+
+                val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.clear() // delete all shared preferences
+                editor.apply()
+
                 startActivity(Intent(this@ClientProfileActivity, LoginActivity::class.java))
                 finish()
             }
