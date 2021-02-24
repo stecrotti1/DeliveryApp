@@ -15,6 +15,7 @@ class ManagerOrdersArrayAdapter(
 ): ArrayAdapter<ManagerOrderItem>(activity, layout, array) {
 
     internal class ViewHolder {
+        var email: TextView? = null
         var date: TextView? = null
         var total: TextView? = null
         var payment: TextView? = null
@@ -27,6 +28,7 @@ class ManagerOrdersArrayAdapter(
             view = activity.layoutInflater.inflate(R.layout.manager_order_list_element, null)
 
             val viewHolder = ViewHolder()
+            viewHolder.email = view.findViewById(R.id.orderEmail)
             viewHolder.date = view.findViewById(R.id.date)
             viewHolder.total = view.findViewById(R.id.total)
             viewHolder.payment = view.findViewById(R.id.payment)
@@ -36,6 +38,7 @@ class ManagerOrdersArrayAdapter(
         }
 
         val holder = view?.tag as ViewHolder
+        holder.email?.text = array[position].email
         holder.date?.text = array[position].date
         holder.total?.text = array[position].total.toString()
         holder.payment?.text = array[position].payment

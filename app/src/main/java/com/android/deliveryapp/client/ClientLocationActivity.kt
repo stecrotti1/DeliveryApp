@@ -248,7 +248,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                                     clientAddress to clientGeoPoint
                             )
 
-                            // adds a document with user email
+                            // adds a document with user orderEmail
                             database.collection(clients).document(user.email!!)
                                     .set(entry)
                                     .addOnSuccessListener { documentRef ->

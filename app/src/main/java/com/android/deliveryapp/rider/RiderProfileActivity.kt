@@ -38,8 +38,8 @@ class RiderProfileActivity : AppCompatActivity() {
         val user = auth.currentUser
 
         if (user != null) {
-            binding.email.setText(user.email) // show email at the user
-            binding.email.keyListener = null // not editable by user, but still visible
+            binding.riderEmail.setText(user.email) // show orderEmail at the user
+            binding.riderEmail.keyListener = null // not editable by user, but still visible
 
             binding.riderStatus.setOnCheckedChangeListener { _, isChecked ->
                 GlobalScope.launch { // coroutine

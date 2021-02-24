@@ -93,7 +93,7 @@ class SignUpActivity : AppCompatActivity() {
                     editor.putBoolean(isRegistered, true) // user flagged as registered
                     editor.apply()
 
-                    // TODO: 24/02/2021 save user email and type in firestore
+                    // TODO: 24/02/2021 save user orderEmail and type in firestore
                     saveUserInfo(sharedPreferences.getString(userType, null), firestore, email.text.toString())
 
                     when (sharedPreferences.getString(userType, null)) {
@@ -140,7 +140,7 @@ class SignUpActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putString("email", binding.email.text.toString())
+        outState.putString("orderEmail", binding.email.text.toString())
         outState.putString("pwd", binding.password.text.toString())
         outState.putString("confirmPwd", binding.confirmPassword.text.toString())
     }
@@ -148,7 +148,7 @@ class SignUpActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
-        binding.email.setText(savedInstanceState.getString("email"))
+        binding.email.setText(savedInstanceState.getString("orderEmail"))
         binding.password.setText(savedInstanceState.getString("pwd"))
         binding.confirmPassword.setText(savedInstanceState.getString("confirmPwd"))
     }

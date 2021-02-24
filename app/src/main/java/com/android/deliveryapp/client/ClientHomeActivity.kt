@@ -236,7 +236,7 @@ class ClientHomeActivity : AppCompatActivity() {
                     "qty" to quantity
             )
 
-            // set entry under "user.email/shoppingCart/product.title"
+            // set entry under "user.orderEmail/shoppingCart/product.title"
             firestore.collection(clients).document(user.email!!)
                     .collection(shoppingCart).document(title)
                     .set(entry)

@@ -34,8 +34,8 @@ class ManagerProfileActivity : AppCompatActivity() {
         val user = auth.currentUser
 
         if (user != null) {
-            binding.email.setText(user.email) // show email at the user
-            binding.email.keyListener = null // not editable by user, but still visible
+            binding.managerEmail.setText(user.email) // show orderEmail at the user
+            binding.managerEmail.keyListener = null // not editable by user, but still visible
 
         }
     }

@@ -46,8 +46,8 @@ class ClientProfileActivity : AppCompatActivity() {
         val user = auth.currentUser
 
         if (user != null) {
-            binding.email.setText(user.email) // show email at the user
-            binding.email.keyListener = null // not editable by user, but still visible
+            binding.userEmail.setText(user.email) // show orderEmail at the user
+            binding.userEmail.keyListener = null // not editable by user, but still visible
         }
 
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)

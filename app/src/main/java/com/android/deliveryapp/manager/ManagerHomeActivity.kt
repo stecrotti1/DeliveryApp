@@ -47,7 +47,6 @@ class ManagerHomeActivity : AppCompatActivity() {
 
         val user = auth.currentUser
 
-
         databaseRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 productList = processItems(snapshot)

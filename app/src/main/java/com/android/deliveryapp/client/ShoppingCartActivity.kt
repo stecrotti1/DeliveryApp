@@ -177,7 +177,7 @@ class ShoppingCartActivity : AppCompatActivity() {
         )
 
         val orderEntry = mapOf(
-            "date" to today
+            user.email!! to today
         )
 
         firestore.collection(clients).document(user.email!!)
@@ -185,9 +185,8 @@ class ShoppingCartActivity : AppCompatActivity() {
                 .set(entry)
                 .addOnSuccessListener {
 
-                    // set user orders/user.email in firestore so manager can see them
-                    firestore.collection(orders).document(user.email!!)
-                        .collection(orders).document()
+                    // set user order in firestore so manager can see them
+                    firestore.collection(orders).document()
                         .set(orderEntry)
                         .addOnSuccessListener {
 
