@@ -3,7 +3,6 @@ package com.android.deliveryapp.manager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -12,9 +11,6 @@ import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerProfileBinding
 import com.android.deliveryapp.util.Keys
-import com.android.deliveryapp.util.Keys.Companion.MANAGER
-import com.android.deliveryapp.util.Keys.Companion.manager
-import com.android.deliveryapp.util.Keys.Companion.managerEmail
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -41,19 +37,6 @@ class ManagerProfileActivity : AppCompatActivity() {
             binding.email.setText(user.email) // show email at the user
             binding.email.keyListener = null // not editable by user, but still visible
 
-            val entry = hashMapOf(
-                managerEmail to user.email
-            )
-
-            database.collection(manager) // save the manager uid in the firestore cloud
-                .document(MANAGER)
-                .set(entry)
-                .addOnSuccessListener { documentRef ->
-                    Log.d("FIREBASEFIRESTORE", "DocumentSnapshot added with id $documentRef")
-                }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASEFIRESTORE", "Error adding document", e)
-                }
         }
     }
 

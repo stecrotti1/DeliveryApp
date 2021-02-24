@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.deliveryapp"
-    android:versionCode="25"
-    android:versionName="v0.2.2-a">
+    android:versionCode="27"
+    android:versionName="v0.2.4-a">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -68,7 +68,7 @@
             android:label="@string/login"
             android:noHistory="true"
             android:screenOrientation="unspecified"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".client.ClientLocationActivity"
             android:label="@string/title_activity_location"
@@ -88,7 +88,7 @@
         <activity
             android:name=".SignUpActivity"
             android:screenOrientation="unspecified"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".MainActivity"
             android:noHistory="true"

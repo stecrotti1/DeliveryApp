@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                         }
                 } else {
                     startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                }
+                } // TODO: 24/02/2021 put invalid user 
             } else {
                 editor.putBoolean(hasLocation, false)
                 editor.apply()

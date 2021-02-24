@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -84,6 +85,8 @@ class ShoppingCartActivity : AppCompatActivity() {
                 val totalPrice: TextView = dialogView.findViewById(R.id.totalPriceDialog)
                 totalPrice.text = binding.totalPriceLabel.text
 
+                val paymentRadioGroup: RadioGroup = dialogView.findViewById(R.id.paymentOptions)
+
                 val creditCardRadioButton: RadioButton = dialogView.findViewById(R.id.creditCard)
                 val cashRadioButton: RadioButton = dialogView.findViewById(R.id.cash)
 
@@ -92,18 +95,28 @@ class ShoppingCartActivity : AppCompatActivity() {
                 dialog = dialogBuilder.create()
                 dialog.show()
 
-                if (creditCardRadioButton.isChecked) {
-                    paymentType = getString(R.string.credit_card)
-                }
-                else if (cashRadioButton.isChecked) {
-                    paymentType = getString(R.string.cash)
+                paymentRadioGroup.setOnCheckedChangeListener { _, i ->
+                    if (creditCardRadioButton.isChecked && creditCardRadioButton.id == i) {
+                        paymentType = getString(R.string.credit_card)
+                    }
+                    else if (cashRadioButton.isChecked && cashRadioButton.id == i) {
+                        paymentType = getString(R.string.cash)
+                    }
                 }
 
                 placeOrderBtn.setOnClickListener {
-                    val reference = database.getReference(productListFirebase)
+                    if (paymentType.isNotEmpty()) {
+                        val reference = database.getReference(productListFirebase)
 
-                    createOrder(firestore, reference, user, paymentType)
-                    dialog.dismiss()
+                        createOrder(firestore, reference, user, paymentType)
+                        dialog.dismiss()
+                    } else {
+                        Toast.makeText(
+                            baseContext,
+                            getString(R.string.please_select_payment),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
 
             /*************************************************************************************/

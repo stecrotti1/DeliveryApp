@@ -74,6 +74,10 @@ class ClientHomeActivity : AppCompatActivity() {
                 Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
             }
         })
+
+        binding.shoppingCartButton.setOnClickListener {
+            startActivity(Intent(this@ClientHomeActivity, ShoppingCartActivity::class.java))
+        }
     }
 
     override fun onStart() {

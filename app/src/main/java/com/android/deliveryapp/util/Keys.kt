@@ -17,6 +17,9 @@ class Keys {
         const val pwd: String = "password"
 
 
+        const val invalidUser = "invalidUser"
+
+
         const val isRegistered: String = "isRegistered"
         const val hasLocation: String = "hasLocation"
 

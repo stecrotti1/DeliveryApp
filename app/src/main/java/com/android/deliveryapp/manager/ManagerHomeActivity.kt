@@ -15,6 +15,7 @@ import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
 import com.android.deliveryapp.manager.adapters.ManagerArrayAdapter
+import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
@@ -24,12 +25,14 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
 
 class ManagerHomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityManagerHomeBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var auth: FirebaseAuth
+    private lateinit var firebase: FirebaseFirestore
     private lateinit var productList: Array<ProductItem>
 
     private val PERMISSION_CODE = 1000
@@ -44,6 +47,26 @@ class ManagerHomeActivity : AppCompatActivity() {
         val databaseRef = database.getReference(productListFirebase)
 
         auth = FirebaseAuth.getInstance()
+        firebase = FirebaseFirestore.getInstance()
+
+        val user = auth.currentUser
+
+        if (user != null) {
+
+            val entry = hashMapOf(
+                Keys.managerEmail to user.email
+            )
+
+            firebase.collection(Keys.manager) // save the manager email in the firestore cloud
+                .document(Keys.MANAGER)
+                .set(entry)
+                .addOnSuccessListener { documentRef ->
+                    Log.d("FIREBASEFIRESTORE", "DocumentSnapshot added with id $documentRef")
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASEFIRESTORE", "Error adding document", e)
+                }
+        }
 
         databaseRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

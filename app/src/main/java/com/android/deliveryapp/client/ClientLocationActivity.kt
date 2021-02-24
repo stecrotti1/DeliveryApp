@@ -24,6 +24,7 @@ import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.fieldPosition
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
+import com.android.deliveryapp.util.Keys.Companion.invalidUser
 import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.google.android.gms.location.LocationServices
@@ -272,6 +273,8 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
             } else {
+                editor.putBoolean(invalidUser, true)
+                editor.apply()
                 showErrorDialog()
             }
         }

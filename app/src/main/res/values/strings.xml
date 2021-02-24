@@ -99,6 +99,8 @@
     <string name="empty_cart">Your cart is empty</string>
     <string name="place_order">Place order</string>
 
+    <string name="please_select_payment">Please select payment type</string>
+
     <string name="update_cart_error">Failed to update shopping cart</string>
 
     <!-- checkout dialog -->

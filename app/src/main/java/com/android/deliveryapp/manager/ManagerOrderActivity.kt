@@ -2,11 +2,12 @@ package com.android.deliveryapp.manager
 
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerOrderBinding
-import com.android.deliveryapp.manager.adapters.ManagerOrdersArrayAdapter
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.ManagerOrderItem
@@ -27,6 +28,9 @@ class ManagerOrderActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
 
         emailList = emptyMap()
+
+        // show a back arrow button in actionBar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // listen for new orders and get client email
 
@@ -92,8 +96,27 @@ class ManagerOrderActivity : AppCompatActivity() {
                             Toast.LENGTH_LONG).show()
                 }
         }
-        binding.ordersList.adapter = ManagerOrdersArrayAdapter(this,
-                R.layout.manager_order_list_element,
-                orderList)
+        updateView()
+    }
+
+    private fun updateView() {
+        if (orderList.isNotEmpty()) {
+            binding.ordersList.visibility = View.VISIBLE
+            binding.emptyOrdersLabel.visibility = View.INVISIBLE
+        } else { // empty
+            binding.ordersList.visibility = View.INVISIBLE
+            binding.emptyOrdersLabel.visibility = View.VISIBLE
+        }
+    }
+
+    // when the back button is pressed in actionbar, finish this activity
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
