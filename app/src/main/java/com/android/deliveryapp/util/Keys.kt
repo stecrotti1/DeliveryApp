@@ -2,6 +2,7 @@ package com.android.deliveryapp.util
 
 class Keys {
     companion object {
+        const val users: String = "users"
         // user types
         const val CLIENT: String = "CLIENT"
         const val RIDER: String = "RIDER"
@@ -15,7 +16,6 @@ class Keys {
         // if is logged
         const val username: String = "username"
         const val pwd: String = "password"
-
 
         const val invalidUser = "invalidUser"
 
