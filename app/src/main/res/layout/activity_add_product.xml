@@ -89,8 +89,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/plus"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp"
+        android:layout_margin="20dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/productQtyInputLayout"
         tools:ignore="ContentDescription" />
