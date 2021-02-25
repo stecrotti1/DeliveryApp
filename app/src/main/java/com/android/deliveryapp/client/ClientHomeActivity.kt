@@ -89,23 +89,23 @@ class ClientHomeActivity : AppCompatActivity() {
             singleProductCount = 0
             val productTitle: String = productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
 
-            val dialogView = LayoutInflater.from(this).inflate(R.layout.product_dialog, null)
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.client_product_dialog, null)
 
             val dialog: AlertDialog?
 
-            val dialogImage: ImageView? = dialogView.findViewById(R.id.productImageDialog)
-            dialogImage?.load(productList[i].imgUrl) {
+            val dialogImage: ImageView = dialogView.findViewById(R.id.productImageDialog)
+            dialogImage.load(productList[i].imgUrl) {
                 transformations(CircleCropTransformation())
-                error(R.mipmap.ic_launcher_round)
+                error(R.drawable.error_image)
                 crossfade(true)
                 build()
             }
 
-            val dialogProductPrice: TextView? = dialogView.findViewById(R.id.productPriceDialog)
-            dialogProductPrice?.text = String.format( "%.2f€", productList[i].price)
+            val dialogProductPrice: TextView = dialogView.findViewById(R.id.productPriceDialog)
+            dialogProductPrice.text = String.format( "%.2f €", productList[i].price)
 
-            val productDesc: TextView? = dialogView.findViewById(R.id.descriptionDialog)
-            productDesc?.text = productList[i].description
+            val productDesc: TextView = dialogView.findViewById(R.id.descriptionDialog)
+            productDesc.text = productList[i].description
 
             val productQty: TextInputEditText = dialogView.findViewById(R.id.productQtyCounter)
             productQty.setText("$singleProductCount")
@@ -128,7 +128,7 @@ class ClientHomeActivity : AppCompatActivity() {
 
             removeQty.setOnClickListener {
                 if (singleProductCount == 0) { // remove product from cart
-                    removeFromShoppintCart(auth, firestore, productList[i].title)
+                    removeFromShoppingCart(auth, firestore, productList[i].title)
 
                     dialog.dismiss()
                 }
@@ -272,7 +272,7 @@ class ClientHomeActivity : AppCompatActivity() {
      * @param firestore firestore instance
      * @param title product title to be removed
      */
-    private fun removeFromShoppintCart(
+    private fun removeFromShoppingCart(
             auth: FirebaseAuth,
             firestore: FirebaseFirestore,
             title: String

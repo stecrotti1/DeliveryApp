@@ -1,5 +1,6 @@
 package com.android.deliveryapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -7,6 +8,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityManagerOrderDetailBinding
+import com.android.deliveryapp.manager.RidersListActivity
 import com.android.deliveryapp.manager.adapters.OrderDetailAdapter
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.orders
@@ -39,10 +41,12 @@ class ManagerOrderDetailActivity : AppCompatActivity() {
             getOrderDetails(firestore, email, date)
         }
 
-        // TODO: 25/02/2021 button riders select 
-
         // show a back arrow button in actionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        binding.selectRidersBtn.setOnClickListener {
+            startActivity(Intent(this@ManagerOrderDetailActivity, RidersListActivity::class.java))
+        }
     }
 
     private fun getOrderDetails(firestore: FirebaseFirestore, email: String, date: String) {

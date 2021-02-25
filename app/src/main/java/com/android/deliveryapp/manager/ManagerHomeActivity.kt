@@ -1,20 +1,18 @@
 package com.android.deliveryapp.manager
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.*
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
@@ -24,12 +22,12 @@ import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.ProductItem
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.*
 
 class ManagerHomeActivity : AppCompatActivity() {
 
@@ -56,24 +54,8 @@ class ManagerHomeActivity : AppCompatActivity() {
 
         val user = auth.currentUser
 
-        databaseRef.addValueEventListener(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                productList = processItems(snapshot)
+        fetchDatabase(databaseRef)
 
-                binding.productListView.adapter = ManagerArrayAdapter(
-                        this@ManagerHomeActivity, R.layout.list_element, productList
-                )
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(
-                        baseContext,
-                        getString(R.string.image_loading_error),
-                        Toast.LENGTH_LONG
-                ).show()
-                Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
-            }
-        })
 
         binding.addProductButton.setOnClickListener {
             if (checkSelfPermission(Manifest.permission.CAMERA)
@@ -90,6 +72,32 @@ class ManagerHomeActivity : AppCompatActivity() {
                 startActivity(Intent(this@ManagerHomeActivity, AddProductActivity::class.java))
             }
         }
+
+        binding.productListView.setOnItemClickListener { _, _, i, _ ->
+            showItemDialog(i, databaseRef)
+
+            // update list view even if there are no changes
+            fetchDatabase(databaseRef)
+        }
+    }
+
+    private fun fetchDatabase(reference: DatabaseReference) {
+        reference.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                productList = processItems(snapshot)
+
+                updateView()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.image_loading_error),
+                    Toast.LENGTH_LONG
+                ).show()
+                Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
+            }
+        })
     }
 
     override fun onStart() {
@@ -105,6 +113,104 @@ class ManagerHomeActivity : AppCompatActivity() {
                 0)
 
         listenForNewOrders(firestore, pendingIntent, notificationManager)
+    }
+
+    private fun showItemDialog(i: Int, reference: DatabaseReference) {
+        val dialog: AlertDialog?
+
+        val productTitle: String = productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
+
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.manager_product_dialog, null)
+
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle(productTitle)
+
+        val image: ImageView = dialogView.findViewById(R.id.managerImageDialog)
+
+        image.load(productList[i].imgUrl) {
+            transformations(CircleCropTransformation())
+            error(R.drawable.error_image)
+            crossfade(true)
+            build()
+        }
+
+        val productName: TextInputEditText = dialogView.findViewById(R.id.managerProductTitleDialog)
+        val productDesc: TextInputEditText = dialogView.findViewById(R.id.managerDescriptionDialog)
+        val productPrice: TextInputEditText = dialogView.findViewById(R.id.managerPriceDialog)
+        val productQty: TextInputEditText = dialogView.findViewById(R.id.managerProductCounterDialog)
+
+        val doneBtn: FloatingActionButton = dialogView.findViewById(R.id.editDoneBtn)
+
+        productName.setText(productList[i].title)
+        productDesc.setText(productList[i].description)
+        productPrice.setText(String.format("%.2f €", productList[i].price))
+        productQty.setText(productList[i].quantity)
+
+        dialog = dialogBuilder.create()
+        dialog.show()
+
+        doneBtn.setOnClickListener {
+            // TODO: 25/02/2021 upload image
+
+            dialog.dismiss()
+        }
+    }
+
+    private fun updateItemValues(
+        reference: DatabaseReference,
+        imgUrl: String,
+        title: String,
+        desc: String,
+        price: Double,
+        quantity: Int,
+        oldTitle: String
+    ) {
+        reference.child(oldTitle).removeValue() // remove the old entry
+            .addOnSuccessListener {
+                Log.d("FIREBASE_DATABASE", "Data removed with success")
+
+                val entry = mapOf<String, Any?>(
+                    "description" to desc,
+                    "image" to imgUrl,
+                    "price" to price,
+                    "title" to title,
+                    "quantity" to quantity
+                )
+
+                reference.child(title)
+                    .updateChildren(entry)
+                    .addOnSuccessListener { // add the new entry with updated values
+                        Log.d("FIREBASE_DATABASE", "Data uploaded with success")
+                        Toast.makeText(
+                            baseContext,
+                            getString(R.string.data_update_success),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_DATABASE", "Error removing data", e)
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.error_updating_database),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+    }
+
+    private fun updateView() {
+        if (productList.isNotEmpty()) {
+            binding.emptyList.visibility = View.INVISIBLE
+            binding.productListView.visibility = View.VISIBLE
+
+            binding.productListView.adapter = ManagerArrayAdapter(
+                this@ManagerHomeActivity, R.layout.list_element, productList
+            )
+        } else {
+            binding.emptyList.visibility = View.VISIBLE
+            binding.productListView.visibility = View.INVISIBLE
+        }
     }
 
     private fun processItems(snapshot: DataSnapshot): Array<ProductItem> {

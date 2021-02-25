@@ -132,6 +132,12 @@
 
     <string name="empty_orders">You have no recent orders</string>
 
+    <!-- MANAGER HOME ACTIVITY -->
+    <string name="data_update_success">Data updated with success</string>
+    <string name="error_updating_database">Error updating database</string>
+
+    <string name="empty">Empty</string>
+
     <!-- MANAGER ORDER ACTIVITY -->
 
     <string name="new_orders">New orders</string>
