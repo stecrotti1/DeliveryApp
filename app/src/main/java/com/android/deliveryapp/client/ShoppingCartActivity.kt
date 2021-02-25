@@ -20,6 +20,7 @@ import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
+import com.android.deliveryapp.util.Keys.Companion.productsDocument
 import com.android.deliveryapp.util.Keys.Companion.shoppingCart
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.ProductItem
@@ -129,7 +130,7 @@ class ShoppingCartActivity : AppCompatActivity() {
 
                 val dialog: AlertDialog?
 
-                val errorButton: ExtendedFloatingActionButton = findViewById(R.id.errorButton)
+                val errorButton: ExtendedFloatingActionButton = dialogView.findViewById(R.id.errorButton)
 
                 val dialogBuilder = AlertDialog.Builder(this)
                         .setView(dialogView)
@@ -156,21 +157,15 @@ class ShoppingCartActivity : AppCompatActivity() {
     private fun createOrder(firestore: FirebaseFirestore, reference: DatabaseReference, user: FirebaseUser, paymentType: String) {
         val today = getDate()
 
-        var productMap: Map<String, Any?> = emptyMap()
+        val productMap = mapOf(
+            "products" to products.toList()
+        )
 
-        var productTitle = ""
-        var quantity = 0
+        // FIXME: 25/02/2021
 
-        for (item in products) {
-            productTitle = item.title
-            quantity = item.quantity
-            productMap = productMap.plus("title" to item.title)
-            productMap = productMap.plus("price" to item.price)
-            productMap = productMap.plus("quantity" to item.quantity)
-        }
+        binding.emptyCartLabel.text = productMap.size.toString()
 
         val entry = mapOf(
-                "products" to productMap,
                 "total" to total,
                 "payment" to paymentType,
                 "date" to today
@@ -185,54 +180,35 @@ class ShoppingCartActivity : AppCompatActivity() {
                 .set(entry)
                 .addOnSuccessListener {
 
-                    // set user order in firestore so manager can see them
-                    firestore.collection(orders).document()
-                        .set(orderEntry)
+                    firestore.collection(clients).document(user.email!!)
+                        .collection(orders).document(today)
+                        .collection(productsDocument).document()
+                        .set(productMap)
                         .addOnSuccessListener {
-
-                            // update the quantity on product list
-                            reference.child(productTitle).child("quantity")
-                                    .get()
-                                    .addOnSuccessListener { result ->
-                                        val oldQuantity = result.value as Long
-
-                                        reference.child(productTitle).child("quantity")
-                                                .setValue((oldQuantity - quantity))
-                                                .addOnSuccessListener {
-                                                    Log.d("FIREBASE_DATABASE",
-                                                            "Data uploaded with success")
-                                                    Toast.makeText(baseContext,
-                                                            getString(R.string.order_success),
-                                                            Toast.LENGTH_LONG).show()
-
-                                                    // empty the shopping cart
-                                                    emptyShoppingCart(firestore, user.email!!)
-                                                    products = emptyArray()
-
-                                                    // update view
-                                                    updateView(products)
-                                                }
-                                                .addOnFailureListener { e ->
-                                                    Log.w("FIREBASE_DATABASE",
-                                                            "Failed to upload data",
-                                                            e)
-                                                    Toast.makeText(baseContext,
-                                                            getString(R.string.order_failure),
-                                                            Toast.LENGTH_LONG).show()
-                                                }
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.w("FIREBASE_DATABASE",
-                                                "Failed to upload data",
-                                                e)
-                                        Toast.makeText(baseContext,
-                                                getString(R.string.order_failure),
-                                                Toast.LENGTH_LONG).show()
+                            // set user order in firestore so manager can see them
+                            firestore.collection(orders).document()
+                                .set(orderEntry)
+                                .addOnSuccessListener {
+                                    for (item in products) {
+                                        updateProductQuantity(reference, item.title, item.quantity)
                                     }
 
+                                    // empty the shopping cart
+                                    emptyShoppingCart(firestore, user.email!!)
+                                    products = emptyArray()
+
+                                    // update view
+                                    updateView(products)
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
+                                    Toast.makeText(baseContext,
+                                        getString(R.string.order_failure),
+                                        Toast.LENGTH_LONG).show()
+                                }
                         }
                         .addOnFailureListener { e ->
-                            Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
+                            Log.w("FIREBASE_FIRESTORE", "Failed to upload data", e)
                             Toast.makeText(baseContext,
                                 getString(R.string.order_failure),
                                 Toast.LENGTH_LONG).show()
@@ -241,9 +217,39 @@ class ShoppingCartActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Log.w("FIREBASE_FIRESTORE", "Failed to upload data", e)
                     Toast.makeText(baseContext,
+                        getString(R.string.order_failure),
+                        Toast.LENGTH_LONG).show()
+                }
+    }
+
+    /**
+     * Update the product quantity on firebase firestore
+     */
+    private fun updateProductQuantity(reference: DatabaseReference, productTitle: String, quantity: Int) {
+        reference.child(productTitle).child("quantity")
+            .get()
+            .addOnSuccessListener { result ->
+                val oldQuantity = result.value as Long
+
+                reference.child(productTitle).child("quantity")
+                    .setValue((oldQuantity - quantity))
+                    .addOnSuccessListener {
+                        Log.d("FIREBASE_DATABASE",
+                            "Data uploaded with success")
+                        Toast.makeText(baseContext,
+                            getString(R.string.order_success),
+                            Toast.LENGTH_LONG).show()
+
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_DATABASE",
+                            "Failed to upload data",
+                            e)
+                        Toast.makeText(baseContext,
                             getString(R.string.order_failure),
                             Toast.LENGTH_LONG).show()
-                }
+                    }
+            }
     }
 
     private fun emptyShoppingCart(firestore: FirebaseFirestore, userEmail: String) {

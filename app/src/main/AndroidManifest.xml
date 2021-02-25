@@ -33,8 +33,12 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".manager.ManagerOrderActivity"
-            android:label="@string/orders"/>
+        <activity android:name=".ManagerOrderDetailActivity"
+            android:label="@string/order_detail"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".manager.ManagerOrderActivity"
+            android:label="@string/orders" />
         <activity
             android:name=".client.ClientOrdersActivity"
             android:label="@string/orders"

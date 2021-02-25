@@ -40,7 +40,7 @@ class ManagerOrdersArrayAdapter(
         val holder = view?.tag as ViewHolder
         holder.email?.text = array[position].email
         holder.date?.text = array[position].date
-        holder.total?.text = array[position].total.toString()
+        holder.total?.text = String.format("%.2f €", array[position].total)
         holder.payment?.text = array[position].payment
 
         return view

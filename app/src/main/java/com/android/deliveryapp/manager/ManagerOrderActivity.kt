@@ -1,11 +1,14 @@
 package com.android.deliveryapp.manager
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.ManagerOrderDetailActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerOrderBinding
 import com.android.deliveryapp.manager.adapters.ManagerOrdersArrayAdapter
@@ -34,7 +37,7 @@ class ManagerOrderActivity : AppCompatActivity() {
         // show a back arrow button in actionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // listen for new orders and get client orderEmail
+        // get new orders and get client orderEmail
 
         firestore.collection(orders).get()
             .addOnSuccessListener { result ->
@@ -44,20 +47,29 @@ class ManagerOrderActivity : AppCompatActivity() {
                         emailList = emailList.plus(data.key to data.value)
                     }
                 }
-
-                getOrderDetails(firestore, emailList)
+                getOrder(firestore, emailList)
             }
+                .addOnCanceledListener {  }
             .addOnFailureListener { e ->
                 Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
                 Toast.makeText(baseContext,
                     getString(R.string.failure_data),
                     Toast.LENGTH_LONG).show()
             }
+
+        binding.ordersList.setOnItemClickListener { _, view, _, _ ->
+
+            val clientEmail: String = view.findViewById<TextView>(R.id.orderEmail).text.toString()
+            val date = emailList[clientEmail]
+
+            val intent = Intent(this@ManagerOrderActivity, ManagerOrderDetailActivity::class.java)
+            intent.putExtra("clientEmail", clientEmail)
+            intent.putExtra("orderDate", date)
+            startActivity(intent)
+        }
     }
 
-    private fun getOrderDetails(firestore: FirebaseFirestore, emailList: Map<String, String>) {
-        var products: Map<String, Any?> = emptyMap()
-
+    private fun getOrder(firestore: FirebaseFirestore, emailList: Map<String, String>) {
         for (data in emailList) {
             firestore.collection(clients).document(data.key)
                 .collection(orders).document(data.value)
@@ -72,7 +84,6 @@ class ManagerOrderActivity : AppCompatActivity() {
                             "date" -> date = field.value as String
                             "payment" -> payment = field.value as String
                             "total" -> total = field.value as Double
-                            // TODO: 24/02/2021  
                         }
                     }
                     orderList = orderList.plus(ManagerOrderItem(data.key, date, total, payment))
@@ -86,7 +97,6 @@ class ManagerOrderActivity : AppCompatActivity() {
                             Toast.LENGTH_LONG).show()
                 }
         }
-
     }
 
     private fun updateView() {

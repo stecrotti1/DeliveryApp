@@ -92,9 +92,18 @@
     <string name="your_riders">Your riders</string>
 
     <!-- ADD PRODUCT ACTIVITY -->
+
     <string name="add_product_activity">Add a new product</string>
 
+    <string name="description_hint">Description</string>
+
+    <!-- ORDER DETAIL ACTIVITY -->
+
+    <string name="order_detail">Order detail</string>
+    <string name="order_info">Order of %s</string>
+
     <!-- SHOPPING CART ACTIVITY -->
+
     <string name="total_price">Total:</string>
     <string name="empty_cart">Your cart is empty</string>
     <string name="place_order">Place order</string>
@@ -133,6 +142,9 @@
     <string name="order_details">view details</string>
 
     <string name="client_email">Email: </string>
+
+    <string name="new_order_notification_msg">You have a new order</string>
+    <string name="new_order_description">A new order has been sent to your market</string>
 
     <string name="incoming_orders">Incoming orders</string>
 

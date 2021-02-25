@@ -36,6 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|start"
+            android:layout_marginTop="10dp"
             android:text="@string/date"
             android:textColor="@color/black"
             android:layout_below="@id/emailLabel"
@@ -48,6 +49,7 @@
             android:gravity="center_vertical|start"
             android:layout_toEndOf="@id/dateLabel"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
             android:textColor="@color/black"
             android:layout_below="@id/orderEmail"
             android:textAppearance="?android:textAppearanceMedium" />
@@ -93,20 +95,6 @@
             android:layout_marginStart="10dp"
             android:layout_below="@id/total"
             android:textAppearance="?android:textAppearanceMedium" />
-
-
-        <Button
-            android:id="@+id/detailsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/order_details"
-            android:layout_marginTop="10dp"
-            android:layout_below="@id/paymentLabel" />
-
-
-
+        
     </RelativeLayout>
-
-
-
 </LinearLayout>

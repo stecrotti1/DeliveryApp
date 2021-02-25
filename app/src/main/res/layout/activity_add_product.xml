@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_centerHorizontal="true"
         android:scaleType="centerCrop" />
 
@@ -49,12 +49,30 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/productQtyInputLayout"
+        android:id="@+id/productDescriptionInputLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_margin="10dp"
         android:layout_below="@id/productPriceInputLayout"
+        android:layout_centerHorizontal="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/productDescription"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/description_hint"
+            android:inputType="text"
+            android:imeOptions="actionDone" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/productQtyInputLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_margin="10dp"
+        android:layout_below="@id/productDescriptionInputLayout"
         android:layout_centerHorizontal="true">
 
         <com.google.android.material.textfield.TextInputEditText

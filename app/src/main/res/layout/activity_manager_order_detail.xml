@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ManagerOrderDetailActivity">
+
+    <TextView
+        android:id="@+id/orderInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="@string/order_info"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="20dp" />
+
+    <ListView
+        android:id="@+id/orderProductList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:dividerHeight="7sp"
+        android:scrollbarSize="1dp"
+        android:layout_below="@id/orderInfo"
+        android:layout_margin="40dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/selectRidersBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/notification_icon"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="20dp"
+        tools:ignore="ContentDescription" />
+
+</RelativeLayout>

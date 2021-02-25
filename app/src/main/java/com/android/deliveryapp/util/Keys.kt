@@ -41,6 +41,8 @@ class Keys {
         const val marketDocument: String = "MARKET"
         const val fieldPosition: String = "position"
 
+        const val productsDocument: String = "orderProducts"
+
         const val productListFirebase: String = "productList"
         const val productImages: String = "productImages"
 
