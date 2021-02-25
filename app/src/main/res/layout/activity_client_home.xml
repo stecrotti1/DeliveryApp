@@ -28,6 +28,13 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp" />
 
+    <TextView
+        android:id="@+id/emptyListClient"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/empty"
+        android:layout_centerInParent="true" />
+
     <ListView
         android:id="@+id/productListView"
         android:layout_width="wrap_content"

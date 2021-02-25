@@ -4,10 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -60,9 +57,7 @@ class ClientHomeActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 processItems(snapshot) // create the product list
 
-                binding.productListView.adapter = ClientArrayAdapter(
-                        this@ClientHomeActivity, R.layout.list_element, productList
-                )
+                updateView()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -77,6 +72,20 @@ class ClientHomeActivity : AppCompatActivity() {
 
         binding.shoppingCartButton.setOnClickListener {
             startActivity(Intent(this@ClientHomeActivity, ShoppingCartActivity::class.java))
+        }
+    }
+
+    private fun updateView() {
+        if (productList.isNotEmpty()) {
+            binding.emptyListClient.visibility = View.INVISIBLE
+            binding.productListView.visibility = View.VISIBLE
+
+            binding.productListView.adapter = ClientArrayAdapter(
+                this@ClientHomeActivity, R.layout.list_element, productList
+            )
+        } else {
+            binding.emptyListClient.visibility = View.VISIBLE
+            binding.productListView.visibility = View.INVISIBLE
         }
     }
 
