@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center|start"
         android:layout_marginStart="10dp"
+        android:textColor="@color/black"
         android:textAppearance="?android:textAppearanceMedium" />
 
     <ImageView

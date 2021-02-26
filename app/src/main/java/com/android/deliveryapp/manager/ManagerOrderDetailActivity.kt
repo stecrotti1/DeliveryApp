@@ -45,7 +45,11 @@ class ManagerOrderDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.selectRidersBtn.setOnClickListener {
-            startActivity(Intent(this@ManagerOrderDetailActivity, RidersListActivity::class.java))
+            val intent = Intent(this@ManagerOrderDetailActivity,
+                    RidersListActivity::class.java)
+            intent.putExtra("clientEmail", email)
+
+            startActivity(intent)
         }
     }
 

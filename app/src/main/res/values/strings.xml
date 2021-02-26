@@ -69,7 +69,7 @@
     <string name="products">Products</string>
 
     <string name="error_location_not_provided">You must provide an address in order to buy products!</string>
-    <string name="ok">Confirm</string>
+    <string name="confirm">Confirm</string>
     <string name="error">Warning!</string>
 
     <string name="add_cart_success">Product added to shopping cart successfully</string>
@@ -98,6 +98,10 @@
     <string name="your_riders">Your riders</string>
 
     <string name="error_getting_riders">Error getting rider list</string>
+
+    <string name="driver_unavailable">Attention, the driver selected is currently unavailable</string>
+
+    <string name="ok">OK</string>
 
     <!-- ADD PRODUCT ACTIVITY -->
 
