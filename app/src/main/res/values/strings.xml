@@ -99,6 +99,12 @@
 
     <string name="camera_permission_denied">Camera permission denied</string>
 
+    <string name="new_image_title">New image</string>
+    <string name="new_image_desc_camera">From camera</string>
+    <string name="new_image_desc_gallery">From gallery</string>
+
+    <string name="dialog_select_image_title">Select image from...</string>
+
     <!-- CHANGE PRODUCT IMAGE ACTIVITY -->
     <string name="image_upload_success">Image uploaded with success</string>
     <string name="image_upload_failure">Failed to upload image</string>
