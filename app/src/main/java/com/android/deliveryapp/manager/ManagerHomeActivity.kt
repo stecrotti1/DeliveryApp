@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -56,28 +57,27 @@ class ManagerHomeActivity : AppCompatActivity() {
 
         fetchDatabase(databaseRef)
 
-
         binding.addProductButton.setOnClickListener {
-            if (checkSelfPermission(Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_DENIED ||
-                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            == PackageManager.PERMISSION_DENIED) {
-                // permission not enabled
-                val permission = arrayOf(
+            val intent = Intent(this@ManagerHomeActivity, AddProductActivity::class.java)
+            checkCameraPermissions(intent)
+        }
+    }
+    
+    private fun checkCameraPermissions(intent: Intent) {
+        // check permissions to use camera
+        if (checkSelfPermission(Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED ||
+                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_DENIED) {
+            // permission not enabled
+            val permission = arrayOf(
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-                requestPermissions(permission, PERMISSION_CODE)
-            } else {
-                startActivity(Intent(this@ManagerHomeActivity, AddProductActivity::class.java))
-            }
-        }
-
-        binding.productListView.setOnItemClickListener { _, _, i, _ ->
-            showItemDialog(i, databaseRef)
-
-            // update list view even if there are no changes
-            fetchDatabase(databaseRef)
+            )
+            requestPermissions(permission, PERMISSION_CODE)
+        } else {
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -113,6 +113,15 @@ class ManagerHomeActivity : AppCompatActivity() {
                 0)
 
         listenForNewOrders(firestore, pendingIntent, notificationManager)
+
+        val databaseRef = database.getReference(productListFirebase)
+
+        binding.productListView.setOnItemClickListener { _, _, i, _ ->
+            showItemDialog(i, databaseRef)
+
+            // update list view even if there are no changes
+            fetchDatabase(databaseRef)
+        }
     }
 
     private fun showItemDialog(i: Int, reference: DatabaseReference) {
@@ -144,15 +153,38 @@ class ManagerHomeActivity : AppCompatActivity() {
 
         productName.setText(productList[i].title)
         productDesc.setText(productList[i].description)
-        productPrice.setText(String.format("%.2f €", productList[i].price))
-        productQty.setText(productList[i].quantity)
+        productPrice.setText(String.format("%.2f", productList[i].price))
+        productQty.setText(productList[i].quantity.toString())
 
         dialog = dialogBuilder.create()
         dialog.show()
 
-        doneBtn.setOnClickListener {
-            // TODO: 25/02/2021 upload image
+        val intent = Intent(
+            this@ManagerHomeActivity,
+            ChangeProductImageActivity::class.java
+        )
+        intent.putExtra("name", productName.text.toString())
+        
+        image.setOnClickListener { // manager wants to modify product image
+            checkCameraPermissions(intent)
+            dialog.dismiss()
 
+        }
+
+        doneBtn.setOnClickListener {
+            // if extra is null/"" take it from the list
+            val imageUrl = intent.getStringExtra("url") ?: productList[i].imgUrl
+
+            updateItemValues(
+                    reference,
+                    imageUrl,
+                    productName.text.toString().toLowerCase(Locale.ROOT),
+                    productDesc.text.toString(),
+                    productPrice.text.toString().toDouble(),
+                    productQty.text.toString().toInt(),
+                    productTitle
+            )
+            
             dialog.dismiss()
         }
     }
@@ -319,5 +351,14 @@ class ManagerHomeActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    // hide keyboard when user clicks outside EditText
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(event)
     }
 }

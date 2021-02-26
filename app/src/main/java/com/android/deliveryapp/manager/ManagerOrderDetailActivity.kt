@@ -1,4 +1,4 @@
-package com.android.deliveryapp
+package com.android.deliveryapp.manager
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +7,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerOrderDetailBinding
-import com.android.deliveryapp.manager.RidersListActivity
 import com.android.deliveryapp.manager.adapters.OrderDetailAdapter
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.orders
@@ -95,7 +95,7 @@ class ManagerOrderDetailActivity : AppCompatActivity() {
 
             binding.orderProductList.adapter = OrderDetailAdapter(
                 this,
-                R.layout.manager_order_detail_list_element,
+                    R.layout.manager_order_detail_list_element,
                 products
             )
         } else {

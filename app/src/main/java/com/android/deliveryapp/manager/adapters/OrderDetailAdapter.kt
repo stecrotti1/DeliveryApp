@@ -12,7 +12,7 @@ class OrderDetailAdapter(
     private val activity: Activity,
     layout: Int,
     private val array: Array<ProductItem>
-): ArrayAdapter<ProductItem>(activity, layout, array) {
+) : ArrayAdapter<ProductItem>(activity, layout, array) {
 
     internal class ViewHolder {
         var title: TextView? = null

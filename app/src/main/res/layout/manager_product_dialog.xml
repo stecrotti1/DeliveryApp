@@ -27,7 +27,7 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="@string/product_name_hint"
-            android:inputType="textEmailAddress"
+            android:inputType="text"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -43,9 +43,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/managerDescriptionDialog"
             android:layout_width="300dp"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:hint="@string/description_hint"
-            android:inputType="textEmailAddress"
+            android:inputType="text"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,7 +62,8 @@
             android:id="@+id/managerPriceDialog"
             android:layout_width="140dp"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:inputType="numberDecimal"
+            android:hint="@string/product_price_hint"
             android:textStyle="bold"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -80,10 +81,22 @@
             android:id="@+id/managerProductCounterDialog"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:inputType="number"
             android:textStyle="bold"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/euroSymbol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/euro"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_toEndOf="@id/managerPriceDialogLayout"
+        android:layout_below="@id/managerDescriptionDialogLayout"
+        android:layout_marginTop="30dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/editDoneBtn"

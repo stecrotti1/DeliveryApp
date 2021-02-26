@@ -7,8 +7,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityAddProductBinding
 
 class AddProductActivity : AppCompatActivity() {
@@ -24,9 +26,10 @@ class AddProductActivity : AppCompatActivity() {
         binding = ActivityAddProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.hide()
-
         openCamera()
+
+        // show a back arrow button in actionBar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun openCamera() {
@@ -51,7 +54,11 @@ class AddProductActivity : AppCompatActivity() {
                 }
                 else{
                     //permission from popup was denied
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.camera_permission_denied),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -59,10 +66,22 @@ class AddProductActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        //called when image was captured from camera intent
+        // called when image was captured from camera intent
         if (resultCode == Activity.RESULT_OK){
-            //set image captured to image view
             binding.imageView.setImageURI(imageUri)
+        }
+    }
+
+    // when the back button is pressed in actionbar, finish this activity
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                startActivity(Intent(this@AddProductActivity,
+                        ManagerHomeActivity::class.java))
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

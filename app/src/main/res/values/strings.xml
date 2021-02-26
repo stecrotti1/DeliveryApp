@@ -97,6 +97,12 @@
 
     <string name="description_hint">Description</string>
 
+    <string name="camera_permission_denied">Camera permission denied</string>
+
+    <!-- CHANGE PRODUCT IMAGE ACTIVITY -->
+    <string name="image_upload_success">Image uploaded with success</string>
+    <string name="image_upload_failure">Failed to upload image</string>
+
     <!-- ORDER DETAIL ACTIVITY -->
 
     <string name="order_detail">Order detail</string>
@@ -135,6 +141,7 @@
     <!-- MANAGER HOME ACTIVITY -->
     <string name="data_update_success">Data updated with success</string>
     <string name="error_updating_database">Error updating database</string>
+    <string name="euro" translatable="false">€</string>
 
     <string name="empty">Empty</string>
 

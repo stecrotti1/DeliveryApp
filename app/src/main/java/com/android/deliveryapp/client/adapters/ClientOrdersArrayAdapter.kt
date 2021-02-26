@@ -12,7 +12,7 @@ class ClientOrdersArrayAdapter(
     private val activity: Activity,
     layout: Int,
     private val array: Array<ClientOrderItem>
-): ArrayAdapter<ClientOrderItem>(activity, layout, array) {
+) : ArrayAdapter<ClientOrderItem>(activity, layout, array) {
 
     internal class ViewHolder {
         var date: TextView? = null

@@ -12,7 +12,7 @@ class ManagerOrdersArrayAdapter(
         private val activity: Activity,
         layout: Int,
         private val array: Array<ManagerOrderItem>
-): ArrayAdapter<ManagerOrderItem>(activity, layout, array) {
+) : ArrayAdapter<ManagerOrderItem>(activity, layout, array) {
 
     internal class ViewHolder {
         var email: TextView? = null

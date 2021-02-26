@@ -345,8 +345,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                     R.layout.list_element_shopping_cart,
                     products
             )
-
-            binding.totalPriceLabel.text = "${getString(R.string.total_price)} ${String.format("%.2f €", getTotalPrice())}"
+            binding.totalPriceLabel.text = String.format("%s %.2f", getString(R.string.total_price), getTotalPrice())
 
         } else { // empty cart
             binding.emptyCartLabel.visibility = View.VISIBLE

@@ -20,7 +20,7 @@ class ClientArrayAdapter(
     private val activity: Activity,
     layout: Int,
     private val array: Array<ProductItem>
-): ArrayAdapter<ProductItem>(activity, layout, array) {
+) : ArrayAdapter<ProductItem>(activity, layout, array) {
 
         internal class ViewHolder {
             var image: ImageView? = null
