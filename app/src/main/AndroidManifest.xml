@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.deliveryapp"
-    android:versionCode="34"
-    android:versionName="v0.3.2-a">
+    android:versionCode="35"
+    android:versionName="v0.3.4-a">
     <!-- TODO 25/02/2021 Add saveInstance and restoreInstance in every Activity!! -->
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use

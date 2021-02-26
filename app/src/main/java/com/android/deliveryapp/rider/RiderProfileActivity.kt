@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRiderProfileBinding
 import com.android.deliveryapp.util.Keys.Companion.riderStatus
@@ -15,11 +16,11 @@ import com.android.deliveryapp.util.Keys.Companion.riders
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class RiderProfileActivity : AppCompatActivity() {
 
+    // TODO: 26/02/2021 notifications
+    
     private lateinit var binding: ActivityRiderProfileBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseFirestore
@@ -42,11 +43,14 @@ class RiderProfileActivity : AppCompatActivity() {
             binding.riderEmail.keyListener = null // not editable by user, but still visible
 
             binding.riderStatus.setOnCheckedChangeListener { _, isChecked ->
-                GlobalScope.launch { // coroutine
-                    uploadToCloud(database, user, isChecked)
-                }
+                uploadToCloud(database, user, isChecked)
+
             }
         }
+    }
+
+    private fun listenNewOrders() {
+        // TODO: 26/02/2021
     }
 
     /**
@@ -75,9 +79,23 @@ class RiderProfileActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // in case checkbox hasn't been checked at all
+        database = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+
+        if (auth.currentUser != null) {
+            uploadToCloud(database, auth.currentUser!!, binding.riderStatus.isChecked)
+        }
+
         return when (item.itemId) {
             R.id.homePage -> {
                 startActivity(Intent(this@RiderProfileActivity, RiderHomeActivity::class.java))
+                finish()
+                true
+            }
+            R.id.logout -> {
+                auth.signOut()
+                startActivity(Intent(this@RiderProfileActivity, LoginActivity::class.java))
                 finish()
                 true
             }

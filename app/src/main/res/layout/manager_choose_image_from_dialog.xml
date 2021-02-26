@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:orientation="vertical">
 
@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/image"
         android:layout_gravity="center"
+        app:fabSize="mini"
         android:layout_marginTop="100dp"
         tools:ignore="ContentDescription" />
 
@@ -23,6 +24,7 @@
         android:src="@drawable/camera"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
+        app:fabSize="mini"
         android:layout_marginBottom="100dp"
         tools:ignore="ContentDescription" />
 

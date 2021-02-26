@@ -289,7 +289,6 @@ class ManagerHomeActivity : AppCompatActivity() {
                             notificationManager)
                 }
             }
-
         }
     }
 
@@ -331,7 +330,7 @@ class ManagerHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.ridersList -> {
-                // TODO: 19/02/2021 activity list riders
+                startActivity(Intent(this@ManagerHomeActivity, RidersListActivity::class.java))
                 true
             }
             R.id.orders -> {

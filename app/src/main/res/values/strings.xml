@@ -83,6 +83,12 @@
     <string name="rider_status_save_success">Availability submitted with success</string>
     <string name="rider_status_save_failure">Failed to save availability</string>
 
+    <!-- RIDER HOME ACTIVITY -->
+    <string name="location">Location: %s</string>
+    <string name="date_order">Date: %s</string>
+
+    <string name="rider_home_label">My deliveries</string>
+
     <!-- menu -->
     <string name="shopping_cart">Shopping cart</string>
     <string name="orders">Your orders</string>
@@ -90,6 +96,8 @@
 
     <!-- RIDERS LIST ACTIVITY -->
     <string name="your_riders">Your riders</string>
+
+    <string name="error_getting_riders">Error getting rider list</string>
 
     <!-- ADD PRODUCT ACTIVITY -->
 

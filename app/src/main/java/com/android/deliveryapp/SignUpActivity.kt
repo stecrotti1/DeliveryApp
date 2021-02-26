@@ -93,7 +93,6 @@ class SignUpActivity : AppCompatActivity() {
                     editor.putBoolean(isRegistered, true) // user flagged as registered
                     editor.apply()
 
-                    // TODO: 24/02/2021 save user orderEmail and type in firestore
                     saveUserInfo(sharedPreferences.getString(userType, null), firestore, email.text.toString())
 
                     when (sharedPreferences.getString(userType, null)) {
