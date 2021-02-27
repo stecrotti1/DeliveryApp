@@ -9,6 +9,7 @@
         android:id="@+id/driverUnavailableMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         android:text="@string/driver_unavailable"
         android:textColor="@color/black"
         android:layout_gravity="center"
@@ -22,6 +23,7 @@
         android:text="@string/ok"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:textAlignment="center" />
 
 

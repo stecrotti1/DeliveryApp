@@ -48,6 +48,7 @@ class ManagerOrderDetailActivity : AppCompatActivity() {
             val intent = Intent(this@ManagerOrderDetailActivity,
                     RidersListActivity::class.java)
             intent.putExtra("clientEmail", email)
+            intent.putExtra("orderDate", date)
 
             startActivity(intent)
         }

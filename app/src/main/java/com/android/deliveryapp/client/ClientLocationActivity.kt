@@ -128,7 +128,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
-                        marketPos = document.getGeoPoint(fieldPosition)!!
+                        marketPos = document.getGeoPoint(fieldPosition) as GeoPoint
                     }
 
                     mMap.addMarker(MarkerOptions() // put a marker

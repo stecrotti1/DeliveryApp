@@ -11,17 +11,24 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRidersListBinding
 import com.android.deliveryapp.manager.adapters.RiderListArrayAdapter
-import com.android.deliveryapp.util.Keys.Companion.clientAddress
+import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.clients
+import com.android.deliveryapp.util.Keys.Companion.delivery
 import com.android.deliveryapp.util.Keys.Companion.riderStatus
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.RiderListItem
+import com.android.deliveryapp.util.RiderProductItem
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import java.text.DateFormat
+import java.util.*
 
+/**
+ * Activity used by MANAGER
+ */
 class RidersListActivity : AppCompatActivity() {
-    // TODO: 26/02/2021 get client email from intent
+
     private lateinit var binding: ActivityRidersListBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var riderList: Array<RiderListItem>
@@ -46,39 +53,124 @@ class RidersListActivity : AppCompatActivity() {
             if (!riderList[i].availability) { // if rider is not available, show an alert dialog
                 showUnavailabilityDialog()
             } else {
+                val email = intent.getStringExtra("clientEmail")
+                val clientOrderDate = intent.getStringExtra("orderDate")
 
-                sendOrderToRider(firestore, riderList[i].email)
+                if (email != null && clientOrderDate != null) {
+
+                    sendOrderToRider(firestore, riderList[i].email, email, clientOrderDate)
+                }
             }
         }
+        /*
+        // listen for rider status change
+        firestore.collection(riders)
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
+                        return@addSnapshotListener
+                    } else {
+
+                    }
+                }
+
+         */
     }
 
-    private fun getClientAddress(firestore: FirebaseFirestore): GeoPoint {
-        var geoPoint = GeoPoint(0.0, 0.0)
-
-        val email = intent.getStringExtra("clientEmail")
-
-        if (email != null) {
-            firestore.collection(clients).document(email)
-                    .get()
-                    .addOnSuccessListener { result ->
-                        geoPoint = result.getGeoPoint(clientAddress) as GeoPoint
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASE_FIRESTORE", "Error getting client address", e)
-
-                        Toast.makeText(baseContext,
-                                getString(R.string.error_user_data),
-                                Toast.LENGTH_LONG).show()
-                    }
+    private fun getTotalPrice(productList: List<RiderProductItem>): Double {
+        var total = 0.0
+        if (productList.isNotEmpty()) {
+            for (item in productList) {
+                total += item.price
+            }
         }
-
-        return geoPoint
+        return total
     }
 
-    private fun sendOrderToRider(firestore: FirebaseFirestore, rider: String) {
-        // TODO: 26/02/2021 send client position
-        // TODO: 26/02/2021 send total price 
-        // TODO: 26/02/2021 send products and their quantity 
+    private fun getDate(): String {
+        val today: Date = Calendar.getInstance().time
+
+        return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(today)
+    }
+
+    private fun sendOrderToRider(firestore: FirebaseFirestore, rider: String, email: String, clientOrderDate: String) {
+        val today = getDate()
+
+        var entry = emptyMap<String, Any?>()
+
+        // GET CLIENT ADDRESS
+        firestore.collection(clients).document(email)
+                .get()
+                .addOnSuccessListener { result ->
+                    // GET PRODUCTS
+                    firestore.collection(clients).document(email)
+                            .collection(Keys.orders).document(clientOrderDate)
+                            .collection(Keys.productsDocument)
+                            .get()
+                            .addOnSuccessListener { result2 ->
+                                var productList: List<RiderProductItem> = emptyList()
+
+                                var price = 0.00
+                                var quantity: Long = 0
+                                var title = ""
+
+                                for (document in result2) {
+                                    for (field in document.data) {
+                                        for (item in field.value as ArrayList<Map<String, Any?>>) {
+                                            for (map in item) {
+                                                when (map.key) {
+                                                    "price" -> price = map.value as Double
+                                                    "quantity" -> quantity = map.value as Long
+                                                    "title" -> title = map.value as String
+                                                }
+                                            }
+                                            productList = productList.plus(RiderProductItem(title,
+                                                    quantity.toInt(),
+                                                    price))
+                                        }
+                                    }
+                                }
+
+                                entry = mapOf(
+                                        "products" to productList,
+                                        "total" to getTotalPrice(productList),
+                                        "address" to result.getGeoPoint("address") as GeoPoint
+                                )
+
+                                // send cliend position, total price and products
+                                firestore.collection(riders).document(rider)
+                                        .collection(delivery).document(today)
+                                        .set(entry)
+                                        .addOnSuccessListener {
+                                            Toast.makeText(baseContext,
+                                                    getString(R.string.order_sent_success),
+                                                    Toast.LENGTH_SHORT).show()
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Toast.makeText(baseContext,
+                                                    getString(R.string.order_sent_failure),
+                                                    Toast.LENGTH_SHORT).show()
+
+                                            Log.w("FIREBASE_FIRESTORE",
+                                                    "Error sending order",
+                                                    e)
+                                        }
+
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
+                                Toast.makeText(baseContext,
+                                        getString(R.string.failure_data),
+                                        Toast.LENGTH_LONG).show()
+                            }
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Error getting client address", e)
+
+                    Toast.makeText(baseContext,
+                            getString(R.string.error_user_data),
+                            Toast.LENGTH_LONG).show()
+                }
     }
 
     private fun showUnavailabilityDialog() {

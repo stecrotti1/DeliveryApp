@@ -61,11 +61,6 @@ class ClientHomeActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(
-                        baseContext,
-                        getString(R.string.image_loading_error),
-                        Toast.LENGTH_LONG
-                ).show()
                 Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
             }
         })

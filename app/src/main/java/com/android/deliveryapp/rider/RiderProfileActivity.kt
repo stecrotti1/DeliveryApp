@@ -20,10 +20,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 class RiderProfileActivity : AppCompatActivity() {
 
     // TODO: 26/02/2021 notifications
-    
+
     private lateinit var binding: ActivityRiderProfileBinding
     private lateinit var auth: FirebaseAuth
-    private lateinit var database: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class RiderProfileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        database = FirebaseFirestore.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         supportActionBar?.title = getString(R.string.rider)
 
@@ -42,11 +42,21 @@ class RiderProfileActivity : AppCompatActivity() {
             binding.riderEmail.setText(user.email) // show orderEmail at the user
             binding.riderEmail.keyListener = null // not editable by user, but still visible
 
+            getAvailability(firestore, user.email!!)
+
             binding.riderStatus.setOnCheckedChangeListener { _, isChecked ->
-                uploadToCloud(database, user, isChecked)
+                uploadToCloud(firestore, user, isChecked)
 
             }
         }
+    }
+
+    private fun getAvailability (firestore: FirebaseFirestore, email: String) {
+        firestore.collection(riders).document(email)
+                .get()
+                .addOnSuccessListener { result ->
+                    binding.riderStatus.isChecked = result.getBoolean(riderStatus) as Boolean
+                }
     }
 
     private fun listenNewOrders() {
@@ -64,7 +74,6 @@ class RiderProfileActivity : AppCompatActivity() {
             .set(entry)
             .addOnSuccessListener { documentRef ->
                 Log.d("FIREBASEFIRESTORE", "DocumentSnapshot added with $documentRef")
-                Toast.makeText(baseContext, getString(R.string.rider_status_save_success), Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { e ->
                 Log.w("FIREBASEFIRESTORE", "Error adding document", e)
@@ -80,11 +89,11 @@ class RiderProfileActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // in case checkbox hasn't been checked at all
-        database = FirebaseFirestore.getInstance()
+        firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
         if (auth.currentUser != null) {
-            uploadToCloud(database, auth.currentUser!!, binding.riderStatus.isChecked)
+            uploadToCloud(firestore, auth.currentUser!!, binding.riderStatus.isChecked)
         }
 
         return when (item.itemId) {

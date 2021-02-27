@@ -52,9 +52,7 @@ class ManagerHomeActivity : AppCompatActivity() {
         val databaseRef = database.getReference(productListFirebase)
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-
-        val user = auth.currentUser
-
+        
         fetchDatabase(databaseRef)
 
         binding.addProductButton.setOnClickListener {
@@ -90,11 +88,6 @@ class ManagerHomeActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(
-                    baseContext,
-                    getString(R.string.image_loading_error),
-                    Toast.LENGTH_LONG
-                ).show()
                 Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
             }
         })

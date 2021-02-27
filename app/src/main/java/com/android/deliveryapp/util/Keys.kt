@@ -16,7 +16,6 @@ class Keys {
         // if is logged
         const val username: String = "username"
         const val pwd: String = "password"
-
         const val invalidUser = "invalidUser"
 
 
@@ -27,6 +26,8 @@ class Keys {
         const val clients: String = "clients"
         const val manager: String = "manager"
         const val riders: String = "riders"
+
+        const val delivery: String = "delivery"
 
         const val managerEmail: String = "managerEmail"
 

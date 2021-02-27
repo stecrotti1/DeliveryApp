@@ -84,8 +84,9 @@
     <string name="rider_status_save_failure">Failed to save availability</string>
 
     <!-- RIDER HOME ACTIVITY -->
-    <string name="location">Location: %s</string>
-    <string name="date_order">Date: %s</string>
+    <string name="location">Location:</string>
+    <string name="date_order">Date:</string>
+    <string name="distance">Distance:</string>
 
     <string name="rider_home_label">My deliveries</string>
 
@@ -102,6 +103,9 @@
     <string name="driver_unavailable">Attention, the driver selected is currently unavailable</string>
 
     <string name="ok">OK</string>
+
+    <string name="order_sent_success">Order sent successfully</string>
+    <string name="order_sent_failure">Failed to send order</string>
 
     <!-- ADD PRODUCT ACTIVITY -->
 

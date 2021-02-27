@@ -111,6 +111,9 @@ class ShoppingCartActivity : AppCompatActivity() {
 
                         createOrder(firestore, reference, user, paymentType)
                         dialog.dismiss()
+
+                        startActivity(Intent(this@ShoppingCartActivity,
+                                ClientOrdersActivity::class.java))
                     } else {
                         Toast.makeText(
                             baseContext,
@@ -160,10 +163,6 @@ class ShoppingCartActivity : AppCompatActivity() {
         val productMap = mapOf(
             "products" to products.toList()
         )
-
-        // FIXME: 25/02/2021
-
-        binding.emptyCartLabel.text = productMap.size.toString()
 
         val entry = mapOf(
                 "total" to total,
