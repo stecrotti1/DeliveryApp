@@ -96,7 +96,7 @@ class RidersListActivity : AppCompatActivity() {
     private fun sendOrderToRider(firestore: FirebaseFirestore, rider: String, email: String, clientOrderDate: String) {
         val today = getDate()
 
-        var entry = emptyMap<String, Any?>()
+        var entry: Map<String, Any?>
 
         // GET CLIENT ADDRESS
         firestore.collection(clients).document(email)
@@ -105,7 +105,6 @@ class RidersListActivity : AppCompatActivity() {
                     // GET PRODUCTS
                     firestore.collection(clients).document(email)
                             .collection(Keys.orders).document(clientOrderDate)
-                            .collection(Keys.productsDocument)
                             .get()
                             .addOnSuccessListener { result2 ->
                                 var productList: List<RiderProductItem> = emptyList()
@@ -114,21 +113,17 @@ class RidersListActivity : AppCompatActivity() {
                                 var quantity: Long = 0
                                 var title = ""
 
-                                for (document in result2) {
-                                    for (field in document.data) {
-                                        for (item in field.value as ArrayList<Map<String, Any?>>) {
-                                            for (map in item) {
-                                                when (map.key) {
-                                                    "price" -> price = map.value as Double
-                                                    "quantity" -> quantity = map.value as Long
-                                                    "title" -> title = map.value as String
-                                                }
-                                            }
-                                            productList = productList.plus(RiderProductItem(title,
-                                                    quantity.toInt(),
-                                                    price))
+                                for (field in result2.get("products") as ArrayList<Map<String, Any?>>) {
+                                    for (item in field) {
+                                        when(item.key) {
+                                            "price" -> price = item.value as Double
+                                            "quantity" -> quantity = item.value as Long
+                                            "title" -> title = item.value as String
                                         }
                                     }
+                                    productList = productList.plus(RiderProductItem(title,
+                                            quantity.toInt(),
+                                            price))
                                 }
 
                                 entry = mapOf(

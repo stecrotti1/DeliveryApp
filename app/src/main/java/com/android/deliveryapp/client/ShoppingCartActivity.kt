@@ -20,7 +20,6 @@ import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
-import com.android.deliveryapp.util.Keys.Companion.productsDocument
 import com.android.deliveryapp.util.Keys.Companion.shoppingCart
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.ProductItem
@@ -160,14 +159,11 @@ class ShoppingCartActivity : AppCompatActivity() {
     private fun createOrder(firestore: FirebaseFirestore, reference: DatabaseReference, user: FirebaseUser, paymentType: String) {
         val today = getDate()
 
-        val productMap = mapOf(
-            "products" to products.toList()
-        )
-
         val entry = mapOf(
                 "total" to total,
                 "payment" to paymentType,
-                "date" to today
+                "date" to today,
+                "products" to products.toList()
         )
 
         val orderEntry = mapOf(
@@ -178,12 +174,6 @@ class ShoppingCartActivity : AppCompatActivity() {
                 .collection(orders).document(today)
                 .set(entry)
                 .addOnSuccessListener {
-
-                    firestore.collection(clients).document(user.email!!)
-                        .collection(orders).document(today)
-                        .collection(productsDocument).document()
-                        .set(productMap)
-                        .addOnSuccessListener {
                             // set user order in firestore so manager can see them
                             firestore.collection(orders).document()
                                 .set(orderEntry)
@@ -205,13 +195,6 @@ class ShoppingCartActivity : AppCompatActivity() {
                                         getString(R.string.order_failure),
                                         Toast.LENGTH_LONG).show()
                                 }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w("FIREBASE_FIRESTORE", "Failed to upload data", e)
-                            Toast.makeText(baseContext,
-                                getString(R.string.order_failure),
-                                Toast.LENGTH_LONG).show()
-                        }
                 }
                 .addOnFailureListener { e ->
                     Log.w("FIREBASE_FIRESTORE", "Failed to upload data", e)

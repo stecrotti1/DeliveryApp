@@ -12,7 +12,6 @@ import com.android.deliveryapp.databinding.ActivityManagerOrderDetailBinding
 import com.android.deliveryapp.manager.adapters.OrderDetailAdapter
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.orders
-import com.android.deliveryapp.util.Keys.Companion.productsDocument
 import com.android.deliveryapp.util.ProductItem
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -57,33 +56,27 @@ class ManagerOrderDetailActivity : AppCompatActivity() {
     private fun getOrderDetails(firestore: FirebaseFirestore, email: String, date: String) {
         firestore.collection(clients).document(email)
             .collection(orders).document(date)
-            .collection(productsDocument)
             .get()
             .addOnSuccessListener { result ->
                 var price = 0.00
                 var quantity: Long = 0
                 var title = ""
 
-                for (document in result) {
-                    for (field in document.data) {
-                        for (item in field.value as ArrayList<Map<String, Any?>>) {
-                            for (map in item) {
-                                when (map.key) {
-                                    "price" -> price = map.value as Double
-                                    "quantity" -> quantity = map.value as Long
-                                    "title" -> title = map.value as String
-                                }
-                            }
-                            products = products.plus(ProductItem(
-                                "",
-                                title,
-                                "",
-                                price,
-                                quantity.toInt()
-                            ))
+                for (field in result.get("products") as ArrayList<Map<String, Any?>>) {
+                    for (item in field) {
+                        when(item.key) {
+                            "price" -> price = item.value as Double
+                            "quantity" -> quantity = item.value as Long
+                            "title" -> title = item.value as String
                         }
                     }
+                    products = products.plus(ProductItem("",
+                            title,
+                            "",
+                            price,
+                            quantity.toInt()))
                 }
+
                 updateView()
             }
             .addOnFailureListener { e ->
