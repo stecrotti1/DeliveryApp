@@ -1,5 +1,6 @@
 package com.android.deliveryapp.manager
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentValues
@@ -46,6 +47,25 @@ class ChangeProductImageActivity : AppCompatActivity() {
 
         // show a back arrow button in actionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        checkCameraPermissions()
+    }
+
+    private fun checkCameraPermissions() {
+        // check permissions to use camera
+        if (checkSelfPermission(Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_DENIED ||
+            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            == PackageManager.PERMISSION_DENIED) {
+            // permission not enabled
+            val permission = arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+            requestPermissions(permission, PERMISSION_CODE)
+        } else {
+            showDialog()
+        }
     }
 
     private fun showDialog() {
@@ -81,7 +101,7 @@ class ChangeProductImageActivity : AppCompatActivity() {
         imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
         val galleryIntent = Intent(Intent.ACTION_PICK)
-        galleryIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        galleryIntent.type = "image/*"
         startActivityForResult(galleryIntent, IMAGE_GALLERY_CODE)
     }
 
@@ -120,11 +140,17 @@ class ChangeProductImageActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         // called when image was captured from camera intent
         if (resultCode == Activity.RESULT_OK) {
-            // binding.imageCaptured.setImageURI(imageUri)
-
-            binding.imageCaptured.load(imageUri) {
-                transformations(CircleCropTransformation())
-                crossfade(true)
+            if (requestCode == IMAGE_CAPTURE_CODE) {
+                binding.imageCaptured.load(imageUri) {
+                    transformations(CircleCropTransformation())
+                    crossfade(true)
+                }
+            }
+            else if (requestCode == IMAGE_GALLERY_CODE) {
+                binding.imageCaptured.load(data?.data) {
+                    transformations(CircleCropTransformation())
+                    crossfade(true)
+                }
             }
 
             storage = FirebaseStorage.getInstance()
@@ -158,9 +184,9 @@ class ChangeProductImageActivity : AppCompatActivity() {
 
         val data = baos.toByteArray()
 
-        var uploadTask = nameRef.putBytes(data)
+        val uploadTask = nameRef.putBytes(data)
         uploadTask
-            .addOnSuccessListener { task ->
+            .addOnSuccessListener {
                 Log.d("FIREBASE_STORAGE", "Image uploaded with success")
 
                 imageUri = nameRef.downloadUrl.result

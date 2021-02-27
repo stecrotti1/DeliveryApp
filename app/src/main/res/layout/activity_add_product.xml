@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".manager.AddProductActivity">
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="280dp"
-        android:layout_height="280dp"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
         android:layout_centerHorizontal="true"
         android:scaleType="centerCrop" />
 
@@ -91,6 +92,7 @@
         android:src="@drawable/plus"
         android:layout_margin="20dp"
         android:layout_centerHorizontal="true"
+        app:fabSize="mini"
         android:layout_below="@id/productQtyInputLayout"
         tools:ignore="ContentDescription" />
 

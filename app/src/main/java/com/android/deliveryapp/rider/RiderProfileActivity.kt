@@ -61,7 +61,6 @@ class RiderProfileActivity : AppCompatActivity() {
 
             binding.riderStatus.setOnCheckedChangeListener { _, isChecked ->
                 uploadToCloud(firestore, user, isChecked)
-
             }
         }
     }
@@ -146,9 +145,23 @@ class RiderProfileActivity : AppCompatActivity() {
                                 .addOnSuccessListener { result2 ->
                                     marketPoint = result2.getGeoPoint(Keys.fieldPosition) as GeoPoint
 
-                                    distance = calculateDistanceFromMarket(marketPoint, locationGeoPoint)
+                                    distance = calculateDistanceFromMarket(
+                                            marketPoint,
+                                            locationGeoPoint
+                                    )
 
-                                    createNotification(pendingIntent, notificationManager, location, distance)
+                                    createNotification(
+                                            pendingIntent,
+                                            notificationManager,
+                                            location,
+                                            distance
+                                    )
+                                    createNotificationChannel(
+                                            channelID,
+                                            getString(R.string.app_name),
+                                            getString(R.string.new_delivery_title),
+                                            notificationManager
+                                    )
                                 }
                                 .addOnFailureListener { exception ->
                                     Log.w("Firestore", "Error getting documents", exception)
@@ -175,6 +188,7 @@ class RiderProfileActivity : AppCompatActivity() {
                 .setContentTitle(getString(R.string.new_delivery_title))
                 .setContentText("${getString(R.string.notification_desc_address, location)} " +
                         getString(R.string.notification_desc_distance, distance))
+                .setAutoCancel(true)
                 .setChannelId(channelID)
                 .setContentIntent(pendingIntent)
                 .build()

@@ -1,13 +1,17 @@
 package com.android.deliveryapp.manager
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.Toast
@@ -16,26 +20,56 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityAddProductBinding
+import com.android.deliveryapp.util.Keys.Companion.productImages
+import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import java.io.ByteArrayOutputStream
+import java.text.DateFormat
+import java.util.*
 
 class AddProductActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddProductBinding
     private var imageUri: Uri? = null
+    private lateinit var storage: FirebaseStorage
+    private lateinit var database: FirebaseDatabase
 
     private val IMAGE_CAPTURE_CODE = 1001
     private val PERMISSION_CODE = 1000
     private val IMAGE_GALLERY_CODE = 1
+
+    // TODO: 27/02/2021 upload on cloud
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        showDialog()
+        checkCameraPermissions()
 
         // show a back arrow button in actionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun checkCameraPermissions() {
+        // check permissions to use camera
+        if (checkSelfPermission(Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED ||
+                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_DENIED) {
+            // permission not enabled
+            val permission = arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+            requestPermissions(permission, PERMISSION_CODE)
+        } else {
+            showDialog()
+        }
     }
 
     private fun showDialog() {
@@ -82,7 +116,7 @@ class AddProductActivity : AppCompatActivity() {
         imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
         val galleryIntent = Intent(Intent.ACTION_PICK)
-        galleryIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        galleryIntent.type = "image/*"
         startActivityForResult(galleryIntent, IMAGE_GALLERY_CODE)
     }
 
@@ -93,7 +127,7 @@ class AddProductActivity : AppCompatActivity() {
                 if (grantResults.isNotEmpty() && grantResults[0] ==
                     PackageManager.PERMISSION_GRANTED){
                     //permission from popup was granted
-                    openCamera()
+                    showDialog()
                 }
                 else{
                     //permission from popup was denied
@@ -110,14 +144,154 @@ class AddProductActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // called when image was captured from camera intent
-        if (resultCode == Activity.RESULT_OK){
-            //binding.imageView.setImageURI(imageUri)
-
-            binding.imageView.load(imageUri) {
-                transformations(CircleCropTransformation())
-                crossfade(true)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == IMAGE_CAPTURE_CODE) {
+                binding.imageView.load(imageUri) {
+                    transformations(CircleCropTransformation())
+                    crossfade(true)
+                }
+            }
+            if (requestCode == IMAGE_GALLERY_CODE){
+                binding.imageView.load(data?.data) {
+                    transformations(CircleCropTransformation())
+                    crossfade(true)
+                }
             }
         }
+
+        database = FirebaseDatabase.getInstance()
+        storage = FirebaseStorage.getInstance()
+
+        val databaseRef = database.getReference(productListFirebase)
+
+        val storageRef = storage.getReference(productImages)
+
+        val today: Date = Calendar.getInstance().time
+        var name = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(today)
+
+        name = name.replace(" ", "_") // remove spaces
+        name = name.replace(",", "") // remove ","
+
+        binding.addProductButton.setOnClickListener {
+            uploadImage(storageRef, databaseRef, name)
+        }
+    }
+
+    /**
+     * Upload product image from ImageView
+     */
+    private fun uploadImage(storageReference: StorageReference, reference: DatabaseReference, name: String) {
+        binding.imageView.isDrawingCacheEnabled = true
+        binding.imageView.buildDrawingCache()
+
+        val nameRef = storageReference.child("${productImages}/$name.jpg")
+
+        val bitmap = (binding.imageView.drawable as BitmapDrawable).bitmap
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+
+        val data = baos.toByteArray()
+
+        val uploadTask = nameRef.putBytes(data)
+        uploadTask
+                .addOnSuccessListener { task ->
+                    Log.d("FIREBASE_STORAGE", "Image uploaded with success")
+
+                    val url: Uri = nameRef.downloadUrl.result
+
+                    // upload data
+                    uploadData(reference, url)
+
+                    // then return to home
+                    val intent = Intent(this@AddProductActivity,
+                            ManagerHomeActivity::class.java)
+
+                    intent.putExtra("url", imageUri.toString())
+
+                    startActivity(intent)
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_STORAGE", "Failed to upload image", e)
+
+                    Toast.makeText(
+                            baseContext,
+                            getString(R.string.image_upload_failure),
+                            Toast.LENGTH_SHORT
+                    ).show()
+                }
+    }
+
+    private fun uploadData(reference: DatabaseReference, imageUrl: Uri) {
+        if (isDataValid()) {
+            val entry = mapOf<String, Any?>(
+                    "title" to binding.productName.text.toString(),
+                    "description" to binding.productDescription.text.toString(),
+                    "quantity" to binding.productQty.text.toString().toInt(),
+                    "price" to binding.productPrice.text.toString().toDouble(),
+                    "image" to imageUrl.toString()
+            )
+
+            reference.child(entry[title] as String)
+                    .setValue(entry)
+                    .addOnSuccessListener {
+                        Toast.makeText(baseContext,
+                                getString(R.string.data_upload_success),
+                                Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_DATABASE", "Error uploading data", e)
+
+                        Toast.makeText(baseContext,
+                                getString(R.string.data_upload_failure),
+                                Toast.LENGTH_SHORT
+                        ).show()
+                    }
+        } else {
+            printErrorToast()
+        }
+    }
+
+    private fun isDataValid(): Boolean {
+        if (binding.productName.text.isNullOrEmpty()) {
+            binding.productName.error = getString(R.string.please_fill)
+            binding.productName.requestFocus()
+            return false
+        }
+        if (binding.productDescription.text.isNullOrEmpty()) {
+            binding.productDescription.error = getString(R.string.please_fill)
+            binding.productDescription.requestFocus()
+            return false
+
+        }
+        if (binding.productPrice.text.isNullOrEmpty()) {
+            binding.productPrice.error = getString(R.string.please_fill)
+            binding.productPrice.requestFocus()
+            return false
+        }
+        if (binding.productQty.text.isNullOrEmpty()) {
+            binding.productQty.error = getString(R.string.please_fill)
+            binding.productQty.requestFocus()
+            return false
+        }
+        try {
+            binding.productPrice.text.toString().toDouble()
+        } catch (e: NumberFormatException) {
+            binding.productPrice.error = getString(R.string.invalid_price)
+            binding.productPrice.requestFocus()
+            return false
+        }
+        if (binding.productQty.text.toString().length > 1
+                && binding.productQty.text.toString().startsWith("0")) {
+            binding.productPrice.error = getString(R.string.invalid_quantity)
+            binding.productPrice.requestFocus()
+            return false
+        }
+        return true
+    }
+
+    private fun printErrorToast() {
+        Toast.makeText(baseContext, getString(R.string.invalid_values), Toast.LENGTH_LONG).show()
     }
 
     // when the back button is pressed in actionbar, finish this activity
@@ -132,5 +306,4 @@ class AddProductActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 }

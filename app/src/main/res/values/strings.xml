@@ -123,7 +123,16 @@
     <string name="new_image_desc_camera">From camera</string>
     <string name="new_image_desc_gallery">From gallery</string>
 
-    <string name="dialog_select_image_title">Select image from...</string>
+    <string name="dialog_select_image_title">Select image from…</string>
+
+    <string name="please_fill">Please fill</string>
+    <string name="invalid_price">Invalid price</string>
+    <string name="invalid_quantity">Invalid quantity</string>
+
+    <string name="invalid_values">Error uploading, invalid values inserted</string>
+
+    <string name="data_upload_success">Data uploaded with success</string>
+    <string name="data_upload_failure">Error uploading data</string>
 
     <!-- CHANGE PRODUCT IMAGE ACTIVITY -->
     <string name="image_upload_success">Image uploaded with success</string>

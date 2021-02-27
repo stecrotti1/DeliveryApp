@@ -1,10 +1,8 @@
 package com.android.deliveryapp.manager
 
-import android.Manifest
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -38,8 +36,6 @@ class ManagerHomeActivity : AppCompatActivity() {
     private lateinit var productList: Array<ProductItem>
     private lateinit var firestore: FirebaseFirestore
 
-    private val PERMISSION_CODE = 1000
-
     private val channelID = "1"
     private val notificationID = 1
 
@@ -56,26 +52,11 @@ class ManagerHomeActivity : AppCompatActivity() {
         fetchDatabase(databaseRef)
 
         binding.addProductButton.setOnClickListener {
-            val intent = Intent(this@ManagerHomeActivity, AddProductActivity::class.java)
-            checkCameraPermissions(intent)
-        }
-    }
-    
-    private fun checkCameraPermissions(intent: Intent) {
-        // check permissions to use camera
-        if (checkSelfPermission(Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_DENIED ||
-                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_DENIED) {
-            // permission not enabled
-            val permission = arrayOf(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-            requestPermissions(permission, PERMISSION_CODE)
-        } else {
-            startActivity(intent)
-            finish()
+            startActivity(Intent(
+                this@ManagerHomeActivity,
+                AddProductActivity::class.java
+            ))
+            
         }
     }
 
@@ -156,12 +137,11 @@ class ManagerHomeActivity : AppCompatActivity() {
             this@ManagerHomeActivity,
             ChangeProductImageActivity::class.java
         )
-        intent.putExtra("name", productName.text.toString())
+        intent.putExtra("name", productName.text.toString()) // TODO: 27/02/2021 to check
         
         image.setOnClickListener { // manager wants to modify product image
-            checkCameraPermissions(intent)
+            startActivity(intent)
             dialog.dismiss()
-
         }
 
         doneBtn.setOnClickListener {
