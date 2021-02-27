@@ -18,7 +18,7 @@ import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
 import com.android.deliveryapp.manager.adapters.ManagerArrayAdapter
-import com.android.deliveryapp.util.Keys
+import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
@@ -269,7 +269,7 @@ class ManagerHomeActivity : AppCompatActivity() {
     private fun listenForNewOrders(firestore: FirebaseFirestore,
                                    pendingIntent: PendingIntent,
                                    notificationManager: NotificationManager) {
-        firestore.collection(Keys.orders).addSnapshotListener { value, error ->
+        firestore.collection(orders).addSnapshotListener { value, error ->
             if (error != null) {
                 Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
                 return@addSnapshotListener

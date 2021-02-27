@@ -83,6 +83,10 @@
     <string name="rider_status_save_success">Availability submitted with success</string>
     <string name="rider_status_save_failure">Failed to save availability</string>
 
+    <string name="new_delivery_title">You have a new delivery</string>
+    <string name="notification_desc_address">Address: %s</string>
+    <string name="notification_desc_distance">Distance from market: %f</string>
+
     <!-- RIDER HOME ACTIVITY -->
     <string name="location">Location:</string>
     <string name="date_order">Date:</string>
