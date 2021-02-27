@@ -72,7 +72,6 @@ class ClientProfileActivity : AppCompatActivity() {
 
                                 if (geocoder != null) {
                                     binding.location.setText("${geocoder!![0].getAddressLine(0)}, " +
-                                            "${geocoder!![0].getAddressLine(1)}, " +
                                             "${geocoder!![0].adminArea}, " +
                                             geocoder!![0].postalCode)
                                 }

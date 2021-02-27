@@ -17,6 +17,7 @@ class RiderOrdersArrayAdapter(
     internal class ViewHolder {
         var date: TextView? = null
         var location: TextView? = null
+        var distance: TextView? = null
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -28,6 +29,7 @@ class RiderOrdersArrayAdapter(
             val viewHolder = ViewHolder()
             viewHolder.date = view.findViewById(R.id.date)
             viewHolder.location = view.findViewById(R.id.location)
+            viewHolder.distance = view.findViewById(R.id.distance)
             view.tag = viewHolder
         } else {
             view = convertView
@@ -36,6 +38,7 @@ class RiderOrdersArrayAdapter(
         val holder = view?.tag as ViewHolder
         holder.date?.text = array[position].date
         holder.location?.text = array[position].location
+        holder.distance?.text = String.format("%.2f Km", array[position].distance)
 
         return view
     }

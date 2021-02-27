@@ -19,6 +19,8 @@ import com.android.deliveryapp.rider.adapters.RiderOrdersArrayAdapter
 import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.delivery
+import com.android.deliveryapp.util.Keys.Companion.marketDocument
+import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.RiderOrderItem
 import com.google.firebase.auth.FirebaseAuth
@@ -28,12 +30,10 @@ import java.io.IOException
 import kotlin.math.*
 
 class RiderHomeActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityRiderHomeBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var orders: Array<RiderOrderItem>
-    private lateinit var marketPos: GeoPoint
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +44,8 @@ class RiderHomeActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         val user = auth.currentUser
+
+        orders = emptyArray()
 
         if (user != null) {
             getOrders(firestore, user.email!!)
@@ -60,15 +62,7 @@ class RiderHomeActivity : AppCompatActivity() {
 
     private fun showOrderDialog(i: Int) {
         val dialog: AlertDialog?
-    }
-
-    private fun getOrderDetail(date: String, firestore: FirebaseFirestore, email: String) {
-        firestore.collection(riders).document(email)
-                .collection(delivery).document(date)
-                .get()
-                .addOnSuccessListener { result ->
-
-                }
+        // TODO: 27/02/2021 accept or reject order
     }
 
     private fun getOrders(firestore: FirebaseFirestore, email: String) {
@@ -80,6 +74,7 @@ class RiderHomeActivity : AppCompatActivity() {
                     var location = ""
                     var locationGeoPoint: GeoPoint
                     var distance: Double
+                    var marketPoint: GeoPoint
                     var geocoder: List<Address>? = null
 
                     for (document in result.documents) {
@@ -96,17 +91,28 @@ class RiderHomeActivity : AppCompatActivity() {
 
                         if (geocoder != null) {
                             location = "${geocoder[0].getAddressLine(0)}, " +
-                                    "${geocoder[0].getAddressLine(1)}, " +
+                                    "${geocoder[0].adminArea}, " +
                                     geocoder[0].postalCode
                         }
 
-                        getMarketPosition(firestore)
+                        // get market position
+                        firestore.collection(marketPosFirestore).document(marketDocument)
+                                .get()
+                                .addOnSuccessListener { result2 ->
 
-                        distance = calculateDistanceFromMarket(marketPos, locationGeoPoint)
+                                    marketPoint = result2.getGeoPoint(Keys.fieldPosition) as GeoPoint
 
-                        orders = orders.plus(RiderOrderItem(date, location, distance))
+                                    distance = calculateDistanceFromMarket(marketPoint, locationGeoPoint)
+
+                                    orders = orders.plus(RiderOrderItem(date, location, distance))
+
+                                    updateView()
+
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.w("Firestore", "Error getting documents", exception)
+                                }
                     }
-                    updateView()
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(baseContext,
@@ -131,20 +137,6 @@ class RiderHomeActivity : AppCompatActivity() {
             binding.empty.visibility = View.VISIBLE
             binding.riderOrdersList.visibility = View.INVISIBLE
         }
-    }
-
-    private fun getMarketPosition(firestore: FirebaseFirestore) {
-        firestore.collection(Keys.marketPosFirestore)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        marketPos = document.getGeoPoint(Keys.fieldPosition) as GeoPoint
-                    }
-
-                }
-                .addOnFailureListener { exception ->
-                    Log.w("Firestore", "Error getting documents", exception)
-                }
     }
 
     private fun calculateDistanceFromMarket(market: GeoPoint, clientGeoPoint: GeoPoint): Double {
