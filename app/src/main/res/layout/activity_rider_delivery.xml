@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".RiderDeliveryActivity">
+    tools:context=".rider.RiderDeliveryActivity">
 
     <TextView
         android:id="@+id/dateDelivery"
@@ -65,10 +65,9 @@
         android:layout_height="wrap_content"
         android:text="@string/client"
         app:icon="@drawable/message"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="10dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
+        android:layout_below="@id/deliveryMap"
         tools:ignore="RelativeOverlap" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -77,11 +76,9 @@
         android:layout_height="wrap_content"
         android:text="@string/manager"
         app:icon="@drawable/message"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
         android:layout_below="@id/riderChatClientBtn"
-        android:layout_marginTop="70dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
         tools:ignore="RelativeOverlap" />
 
 </RelativeLayout>

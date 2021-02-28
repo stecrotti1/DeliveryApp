@@ -11,10 +11,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
-import com.android.deliveryapp.RiderDeliveryActivity
 import com.android.deliveryapp.databinding.ActivityRiderHomeBinding
 import com.android.deliveryapp.rider.adapters.RiderOrdersArrayAdapter
 import com.android.deliveryapp.util.Keys
+import com.android.deliveryapp.util.Keys.Companion.ACCEPTED
 import com.android.deliveryapp.util.Keys.Companion.REJECTED
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.delivery
@@ -88,7 +88,8 @@ class RiderHomeActivity : AppCompatActivity() {
             dialog.dismiss()
         }
         acceptBtn.setOnClickListener {
-            // TODO: 28/02/2021
+            uploadOnHistory(ACCEPTED, i, orders, firestore, email)
+
             val intent = Intent(this@RiderHomeActivity, RiderDeliveryActivity::class.java)
             intent.putExtra("date", orders[i].date)
             intent.putExtra("location", orders[i].location)
@@ -97,7 +98,6 @@ class RiderHomeActivity : AppCompatActivity() {
             dialog.dismiss()
         }
         rejectBtn.setOnClickListener {
-            // TODO: 28/02/2021
             uploadOnHistory(REJECTED, i, orders, firestore, email) // delivery rejected
             dialog.dismiss()
         }
@@ -108,14 +108,14 @@ class RiderHomeActivity : AppCompatActivity() {
         i: Int,
         orderList: Array<RiderOrderItem>,
         firestore: FirebaseFirestore,
-        email: String
+        riderEmail: String
     ) {
         val entry = mapOf(
             "location" to orderList[i].location,
             "outcome" to deliveryOutcome
         )
 
-        firestore.collection(riders).document(email)
+        firestore.collection(riders).document(riderEmail)
             .collection(deliveryHistory).document()
             .set(entry)
             .addOnSuccessListener {
@@ -125,17 +125,33 @@ class RiderHomeActivity : AppCompatActivity() {
                 Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
             }
 
-        // remove from rider orders
-        firestore.collection(riders).document(email)
+        // get client email
+        firestore.collection(riders).document(riderEmail)
             .collection(delivery).document(orders[i].date)
-            .delete()
-            .addOnSuccessListener {
-                Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
+            .get()
+            .addOnSuccessListener { result ->
+                val clientEmail = result.getString("clientEmail") as String
+
+                firestore.collection(Keys.orders).get()
+                    .addOnSuccessListener { result ->
+                        for (document in result.documents) {
+                            for (field in document.data as Map<String, String>) {
+                                if (field.key == clientEmail) {
+                                    document.reference.delete() // delete from orders collection
+
+                                    Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
+                                }
+                            }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_FIRESTORE", "Error deleting document", e)
+                    }
             }
-            .addOnFailureListener { e ->
-                Log.w("FIREBASE_FIRESTORE", "Failed to delete document", e)
-            }
+
+
     }
+
 
     private fun getOrders(firestore: FirebaseFirestore, email: String) {
         firestore.collection(riders).document(email)

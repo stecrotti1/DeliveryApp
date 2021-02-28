@@ -106,6 +106,9 @@
 
     <string name="title_activity_delivery_map">Map</string>
 
+    <!-- RIDER CHAT CLIENT ACTIVITY -->
+    <string name="rider_chat_with_client">Chat with Client</string>
+
     <!-- ACTIVITY RIDER DELIVERY -->
     <string name="total_price_delivery">Total: %s</string>
 

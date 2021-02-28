@@ -80,17 +80,17 @@ class RidersListActivity : AppCompatActivity() {
         return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(today)
     }
 
-    private fun sendOrderToRider(firestore: FirebaseFirestore, rider: String, email: String, clientOrderDate: String) {
+    private fun sendOrderToRider(firestore: FirebaseFirestore, rider: String, clientEmail: String, clientOrderDate: String) {
         val today = getDate()
 
         var entry: Map<String, Any?>
 
         // GET CLIENT ADDRESS
-        firestore.collection(clients).document(email)
+        firestore.collection(clients).document(clientEmail)
                 .get()
                 .addOnSuccessListener { result ->
                     // GET PRODUCTS
-                    firestore.collection(clients).document(email)
+                    firestore.collection(clients).document(clientEmail)
                             .collection(Keys.orders).document(clientOrderDate)
                             .get()
                             .addOnSuccessListener { result2 ->
@@ -99,9 +99,8 @@ class RidersListActivity : AppCompatActivity() {
                                 var price = 0.00
                                 var quantity: Long = 0
                                 var title = ""
-                                var paymentType = ""
 
-                                paymentType = result2.getString("payment") as String
+                                val paymentType: String = result2.getString("payment") as String
 
                                 for (field in result2.get("products") as ArrayList<Map<String, Any?>>) {
                                     for (item in field) {
@@ -120,7 +119,8 @@ class RidersListActivity : AppCompatActivity() {
                                         "products" to productList,
                                         "total" to getTotalPrice(productList),
                                         "address" to result.getGeoPoint("address") as GeoPoint,
-                                        "payment" to paymentType
+                                        "payment" to paymentType,
+                                        "clientEmail" to clientEmail
                                 )
 
                                 // send cliend position, total price and products
