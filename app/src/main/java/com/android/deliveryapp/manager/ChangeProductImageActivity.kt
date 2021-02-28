@@ -7,7 +7,6 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -16,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.drawToBitmap
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.R
@@ -42,8 +42,6 @@ class ChangeProductImageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityChangeProductImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        showDialog() // manager choose where to upload image
 
         // show a back arrow button in actionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -176,9 +174,9 @@ class ChangeProductImageActivity : AppCompatActivity() {
         binding.imageCaptured.isDrawingCacheEnabled = true
         binding.imageCaptured.buildDrawingCache()
 
-        val nameRef = storageReference.child("$productImages/$name.jpg")
+        val nameRef = storageReference.child("$name.jpg")
 
-        val bitmap = (binding.imageCaptured.drawable as BitmapDrawable).bitmap
+        val bitmap = binding.imageCaptured.drawToBitmap()
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
 
@@ -186,25 +184,40 @@ class ChangeProductImageActivity : AppCompatActivity() {
 
         val uploadTask = nameRef.putBytes(data)
         uploadTask
-            .addOnSuccessListener {
-                Log.d("FIREBASE_STORAGE", "Image uploaded with success")
+            .addOnCompleteListener { task -> // FIXME: 27/02/2021 IllegalStateException
+                if (task.isComplete && task.isSuccessful) {
 
-                imageUri = nameRef.downloadUrl.result
+                    storageReference.child("$name.jpg").downloadUrl
+                            .addOnSuccessListener { url ->
+                                imageUri = url
 
-                Toast.makeText(
-                        baseContext,
-                        getString(R.string.image_upload_success),
-                        Toast.LENGTH_SHORT
-                ).show()
+                                Log.d("FIREBASE_STORAGE", "Image uploaded with success")
 
-                // then return to home
+                                Toast.makeText(
+                                        baseContext,
+                                        getString(R.string.image_upload_success),
+                                        Toast.LENGTH_SHORT
+                                ).show()
 
-                val intent = Intent(this@ChangeProductImageActivity,
-                        ManagerHomeActivity::class.java)
+                                // then return to home
 
-                intent.putExtra("url", imageUri.toString())
+                                val intent = Intent(this@ChangeProductImageActivity,
+                                        ManagerHomeActivity::class.java)
 
-                startActivity(intent)
+                                intent.putExtra("url", imageUri.toString())
+
+                                startActivity(intent)
+                            }
+                            .addOnFailureListener { e ->
+                                Log.d("FIREBASE_STORAGE",
+                                        "Error getting download url",
+                                        e)
+
+                                Toast.makeText(baseContext,
+                                        getString(R.string.error_image_url),
+                                        Toast.LENGTH_LONG).show()
+                            }
+                }
             }
             .addOnFailureListener { e ->
                 Log.w("FIREBASE_STORAGE", "Failed to upload image", e)

@@ -4,18 +4,22 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.isDigitsOnly
+import androidx.core.view.drawToBitmap
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.R
@@ -41,8 +45,6 @@ class AddProductActivity : AppCompatActivity() {
     private val IMAGE_CAPTURE_CODE = 1001
     private val PERMISSION_CODE = 1000
     private val IMAGE_GALLERY_CODE = 1
-
-    // TODO: 27/02/2021 upload on cloud
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -173,7 +175,11 @@ class AddProductActivity : AppCompatActivity() {
         name = name.replace(",", "") // remove ","
 
         binding.addProductButton.setOnClickListener {
-            uploadImage(storageRef, databaseRef, name)
+            if (isDataValid()) {
+                uploadImage(storageRef, databaseRef, name)
+            } else {
+                printErrorToast()
+            }
         }
     }
 
@@ -184,9 +190,9 @@ class AddProductActivity : AppCompatActivity() {
         binding.imageView.isDrawingCacheEnabled = true
         binding.imageView.buildDrawingCache()
 
-        val nameRef = storageReference.child("${productImages}/$name.jpg")
+        val nameRef = storageReference.child("$name.jpg")
 
-        val bitmap = (binding.imageView.drawable as BitmapDrawable).bitmap
+        val bitmap = binding.imageView.drawToBitmap()
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
 
@@ -194,21 +200,34 @@ class AddProductActivity : AppCompatActivity() {
 
         val uploadTask = nameRef.putBytes(data)
         uploadTask
-                .addOnSuccessListener { task ->
-                    Log.d("FIREBASE_STORAGE", "Image uploaded with success")
+                .addOnCompleteListener { task ->
+                    if (task.isComplete && task.isSuccessful) {
 
-                    val url: Uri = nameRef.downloadUrl.result
+                        Log.d("FIREBASE_STORAGE", "Image uploaded with success")
 
-                    // upload data
-                    uploadData(reference, url)
+                        storageReference.child("$name.jpg").downloadUrl
+                                .addOnSuccessListener { url ->
+                                    // upload data
+                                    uploadData(reference, url)
 
-                    // then return to home
-                    val intent = Intent(this@AddProductActivity,
-                            ManagerHomeActivity::class.java)
+                                    // then return to home
+                                    val intent = Intent(this@AddProductActivity,
+                                            ManagerHomeActivity::class.java)
 
-                    intent.putExtra("url", imageUri.toString())
+                                    intent.putExtra("url", imageUri.toString())
 
-                    startActivity(intent)
+                                    startActivity(intent)
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.d("FIREBASE_STORAGE",
+                                            "Error getting download url",
+                                            e)
+
+                                    Toast.makeText(baseContext,
+                                            getString(R.string.error_image_url),
+                                            Toast.LENGTH_LONG).show()
+                                }
+                    }
                 }
                 .addOnFailureListener { e ->
                     Log.w("FIREBASE_STORAGE", "Failed to upload image", e)
@@ -222,34 +241,30 @@ class AddProductActivity : AppCompatActivity() {
     }
 
     private fun uploadData(reference: DatabaseReference, imageUrl: Uri) {
-        if (isDataValid()) {
-            val entry = mapOf<String, Any?>(
-                    "title" to binding.productName.text.toString(),
-                    "description" to binding.productDescription.text.toString(),
-                    "quantity" to binding.productQty.text.toString().toInt(),
-                    "price" to binding.productPrice.text.toString().toDouble(),
-                    "image" to imageUrl.toString()
-            )
+        val entry = mapOf<String, Any?>(
+                "title" to binding.productName.text.toString().toLowerCase(Locale.ROOT),
+                "description" to binding.productDescription.text.toString(),
+                "quantity" to binding.productQty.text.toString().toInt(),
+                "price" to binding.productPrice.text.toString().toDouble(),
+                "image" to imageUrl.toString()
+        )
 
-            reference.child(entry[title] as String)
-                    .setValue(entry)
-                    .addOnSuccessListener {
-                        Toast.makeText(baseContext,
-                                getString(R.string.data_upload_success),
-                                Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASE_DATABASE", "Error uploading data", e)
+        reference.child(entry["title"] as String)
+                .setValue(entry)
+                .addOnSuccessListener {
+                    Toast.makeText(baseContext,
+                            getString(R.string.data_upload_success),
+                            Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_DATABASE", "Error uploading data", e)
 
-                        Toast.makeText(baseContext,
-                                getString(R.string.data_upload_failure),
-                                Toast.LENGTH_SHORT
-                        ).show()
-                    }
-        } else {
-            printErrorToast()
-        }
+                    Toast.makeText(baseContext,
+                            getString(R.string.data_upload_failure),
+                            Toast.LENGTH_SHORT
+                    ).show()
+                }
     }
 
     private fun isDataValid(): Boolean {
@@ -281,8 +296,16 @@ class AddProductActivity : AppCompatActivity() {
             binding.productPrice.requestFocus()
             return false
         }
-        if (binding.productQty.text.toString().length > 1
-                && binding.productQty.text.toString().startsWith("0")) {
+        if ((binding.productPrice.text.toString().length > 1
+                        && binding.productPrice.text.toString().startsWith("0"))
+                || !binding.productPrice.text.toString().isDigitsOnly()) {
+            binding.productPrice.error = getString(R.string.invalid_quantity)
+            binding.productPrice.requestFocus()
+            return false
+        }
+        if ((binding.productQty.text.toString().length > 1
+                && binding.productQty.text.toString().startsWith("0"))
+                || !binding.productQty.text.toString().isDigitsOnly()) {
             binding.productPrice.error = getString(R.string.invalid_quantity)
             binding.productPrice.requestFocus()
             return false
@@ -305,5 +328,14 @@ class AddProductActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    // hide keyboard when user clicks outside EditText
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(event)
     }
 }

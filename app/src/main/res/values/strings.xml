@@ -137,6 +137,7 @@
     <!-- CHANGE PRODUCT IMAGE ACTIVITY -->
     <string name="image_upload_success">Image uploaded with success</string>
     <string name="image_upload_failure">Failed to upload image</string>
+    <string name="error_image_url">Error getting download url</string>
 
     <!-- ORDER DETAIL ACTIVITY -->
 

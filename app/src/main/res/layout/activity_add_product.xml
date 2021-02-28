@@ -42,12 +42,24 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/productPrice"
-            android:layout_width="230dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:hint="@string/product_price_hint"
-            android:inputType="text"
+            android:inputType="numberDecimal"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/euroSymbol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/euro"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_toEndOf="@id/productPriceInputLayout"
+        android:layout_below="@id/productNameInputLayout"
+        android:layout_marginTop="30dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/productDescriptionInputLayout"
@@ -81,7 +93,7 @@
             android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:hint="@string/product_qty_hint"
-            android:inputType="text"
+            android:inputType="number"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
 
