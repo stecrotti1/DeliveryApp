@@ -209,14 +209,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 ))
 
                 // animate on the new searched position
-                mMap.animateCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                        geocoder!![0].latitude,
-                                        geocoder!![0].longitude
-                                ), 12.0F
-                        )
-                )
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(searchPosition, 12.0F))
             }
         }
 
@@ -290,6 +283,7 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 .setTitle(getString(R.string.too_far_title))
 
         val confirmButton: ExtendedFloatingActionButton = dialogView.findViewById(R.id.confirmButtonDialog)
+        val fixLocationBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.fixLocationBtn)
 
         dialog = dialogBuilder.create()
         dialog.show()
@@ -298,6 +292,9 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             dialog.dismiss()
             finishAffinity()
             exitProcess(-1) // close the application entirely
+        }
+        fixLocationBtn.setOnClickListener {
+            dialog.dismiss()
         }
     }
 

@@ -111,7 +111,7 @@ class ManagerHomeActivity : AppCompatActivity() {
 
         val image: ImageView = dialogView.findViewById(R.id.managerImageDialog)
 
-        image.load(productList[i].imgUrl) {
+        image.load(intent.getStringExtra("url") ?: productList[i].imgUrl) {
             transformations(CircleCropTransformation())
             error(R.drawable.error_image)
             crossfade(true)

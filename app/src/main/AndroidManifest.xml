@@ -3,7 +3,6 @@
     package="com.android.deliveryapp"
     android:versionCode="41"
     android:versionName="v0.4.1-a">
-    <!-- TODO 25/02/2021 Add saveInstance and restoreInstance in every Activity!! -->
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -34,7 +33,15 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".manager.ChangeProductImageActivity"
+        <activity android:name=".RiderDeliveryActivity"
+            android:screenOrientation="unspecified"
+            android:label="@string/rider_delivery"/>
+        <activity
+            android:name=".rider.DeliveryMapActivity"
+            android:label="@string/title_activity_delivery_map"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".manager.ChangeProductImageActivity"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".manager.ManagerOrderDetailActivity"

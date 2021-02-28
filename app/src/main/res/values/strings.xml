@@ -85,14 +85,34 @@
 
     <string name="new_delivery_title">You have a new delivery</string>
     <string name="notification_desc_address">Address: %s</string>
-    <string name="notification_desc_distance">Distance from market: %f</string>
+    <string name="notification_desc_distance">Distance from market: %s</string>
 
     <!-- RIDER HOME ACTIVITY -->
     <string name="location">Location:</string>
     <string name="date_order">Date:</string>
     <string name="distance">Distance:</string>
 
-    <string name="rider_home_label">My deliveries</string>
+    <string name="rider_home_label">Incoming deliveries</string>
+
+    <string name="rider_delivery">My delivery</string>
+
+    <string name="accept_order">Accept</string>
+    <string name="reject_order">Reject</string>
+    <string name="view_map_order">Map</string>
+
+    <string name="client_marker">Client</string>
+
+    <string name="dialog_title_rider">Accept or Reject order</string>
+
+    <string name="title_activity_delivery_map">Map</string>
+
+    <!-- ACTIVITY RIDER DELIVERY -->
+    <string name="total_price_delivery">Total: %s</string>
+
+    <string name="delivery_date">Date: %s</string>
+    <string name="delivery_location">Location: %s</string>
+    <string name="delivery_payment_type">Payment type: %s</string>
+    <string name="delivery_total_payment">Total: %s</string>
 
     <!-- menu -->
     <string name="shopping_cart">Shopping cart</string>
@@ -155,7 +175,7 @@
     <string name="update_cart_error">Failed to update shopping cart</string>
 
     <!-- checkout dialog -->
-    <string name="dialog_title">Your order</string>
+    <string name="checkout_dialog_title">Your order</string>
     <string name="payment_info">Payment will occur exclusively through the rider</string>
     <string name="cash">Cash</string>
     <string name="credit_card">Credit Card</string>
@@ -242,5 +262,6 @@
     <!-- client location is > 10 km from market -->
     <string name="location_distance_error">Unfortunately you\'re too far from service area. You have to be within 10 km from the market</string>
     <string name="too_far_title">You\'re too far :(</string>
+    <string name="fix_my_location">Fix location</string>
 
 </resources>

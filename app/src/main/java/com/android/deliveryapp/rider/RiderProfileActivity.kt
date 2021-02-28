@@ -63,6 +63,14 @@ class RiderProfileActivity : AppCompatActivity() {
                 uploadToCloud(firestore, user, isChecked)
             }
         }
+
+        binding.homepageBtn.setOnClickListener {
+            startActivity(Intent(
+                this@RiderProfileActivity,
+                RiderHomeActivity::class.java
+            ))
+            finish()
+        }
     }
 
     override fun onStart() {
@@ -187,7 +195,7 @@ class RiderProfileActivity : AppCompatActivity() {
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(getString(R.string.new_delivery_title))
                 .setContentText("${getString(R.string.notification_desc_address, location)} " +
-                        getString(R.string.notification_desc_distance, distance))
+                        getString(R.string.notification_desc_distance, String.format("%.2f", distance)))
                 .setAutoCancel(true)
                 .setChannelId(channelID)
                 .setContentIntent(pendingIntent)

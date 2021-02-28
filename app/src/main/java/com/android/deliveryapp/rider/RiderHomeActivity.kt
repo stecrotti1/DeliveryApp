@@ -5,24 +5,25 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
+import com.android.deliveryapp.RiderDeliveryActivity
 import com.android.deliveryapp.databinding.ActivityRiderHomeBinding
 import com.android.deliveryapp.rider.adapters.RiderOrdersArrayAdapter
 import com.android.deliveryapp.util.Keys
+import com.android.deliveryapp.util.Keys.Companion.REJECTED
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.delivery
+import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
 import com.android.deliveryapp.util.Keys.Companion.marketDocument
 import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.RiderOrderItem
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
@@ -55,14 +56,85 @@ class RiderHomeActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        binding.riderOrdersList.setOnItemClickListener { adapterView, view, i, l ->
-
+        binding.riderOrdersList.setOnItemClickListener { _, _, i, _ ->
+            if (auth.currentUser != null) {
+                showOrderDialog(i, auth.currentUser?.email!!)
+            }
         }
     }
 
-    private fun showOrderDialog(i: Int) {
+    private fun showOrderDialog(i: Int, email: String) {
         val dialog: AlertDialog?
-        // TODO: 27/02/2021 accept or reject order
+
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.rider_order_dialog, null)
+
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle(getString(R.string.dialog_title_rider))
+
+        val mapBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.viewMapBtn)
+        val acceptBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.acceptOrderBtn)
+        val rejectBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.rejectOrderBtn)
+
+        dialog = dialogBuilder.create()
+        dialog.show()
+
+        mapBtn.setOnClickListener {
+            val intent = Intent(this@RiderHomeActivity, DeliveryMapActivity::class.java)
+            intent.putExtra("clientLocation", orders[i].location)
+
+            startActivity(intent)
+
+            dialog.dismiss()
+        }
+        acceptBtn.setOnClickListener {
+            // TODO: 28/02/2021
+            val intent = Intent(this@RiderHomeActivity, RiderDeliveryActivity::class.java)
+            intent.putExtra("date", orders[i].date)
+            intent.putExtra("location", orders[i].location)
+            startActivity(intent)
+
+            dialog.dismiss()
+        }
+        rejectBtn.setOnClickListener {
+            // TODO: 28/02/2021
+            uploadOnHistory(REJECTED, i, orders, firestore, email) // delivery rejected
+            dialog.dismiss()
+        }
+    }
+
+    private fun uploadOnHistory(
+        deliveryOutcome: String,
+        i: Int,
+        orderList: Array<RiderOrderItem>,
+        firestore: FirebaseFirestore,
+        email: String
+    ) {
+        val entry = mapOf(
+            "location" to orderList[i].location,
+            "outcome" to deliveryOutcome
+        )
+
+        firestore.collection(riders).document(email)
+            .collection(deliveryHistory).document()
+            .set(entry)
+            .addOnSuccessListener {
+                Log.d("FIREBASE_FIRESTORE", "Data saved with success")
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
+            }
+
+        // remove from rider orders
+        firestore.collection(riders).document(email)
+            .collection(delivery).document(orders[i].date)
+            .delete()
+            .addOnSuccessListener {
+                Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_FIRESTORE", "Failed to delete document", e)
+            }
     }
 
     private fun getOrders(firestore: FirebaseFirestore, email: String) {

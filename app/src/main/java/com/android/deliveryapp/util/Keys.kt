@@ -28,6 +28,12 @@ class Keys {
         const val riders: String = "riders"
 
         const val delivery: String = "delivery"
+        const val deliveryHistory: String = "deliveryHistory"
+
+        const val ACCEPTED: String = "ACCEPTED"
+        const val DELIVERED: String = "DELIVERED"
+        const val DELIVERY_FAILED: String = "DELIVERY_FAILED"
+        const val REJECTED: String = "REJECTED"
 
         const val managerEmail: String = "managerEmail"
 

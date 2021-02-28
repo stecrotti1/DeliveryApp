@@ -62,19 +62,6 @@ class RidersListActivity : AppCompatActivity() {
                 }
             }
         }
-        /*
-        // listen for rider status change
-        firestore.collection(riders)
-                .addSnapshotListener { value, error ->
-                    if (error != null) {
-                        Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
-                        return@addSnapshotListener
-                    } else {
-
-                    }
-                }
-
-         */
     }
 
     private fun getTotalPrice(productList: List<RiderProductItem>): Double {
@@ -112,6 +99,9 @@ class RidersListActivity : AppCompatActivity() {
                                 var price = 0.00
                                 var quantity: Long = 0
                                 var title = ""
+                                var paymentType = ""
+
+                                paymentType = result2.getString("payment") as String
 
                                 for (field in result2.get("products") as ArrayList<Map<String, Any?>>) {
                                     for (item in field) {
@@ -129,7 +119,8 @@ class RidersListActivity : AppCompatActivity() {
                                 entry = mapOf(
                                         "products" to productList,
                                         "total" to getTotalPrice(productList),
-                                        "address" to result.getGeoPoint("address") as GeoPoint
+                                        "address" to result.getGeoPoint("address") as GeoPoint,
+                                        "payment" to paymentType
                                 )
 
                                 // send cliend position, total price and products
@@ -218,7 +209,7 @@ class RidersListActivity : AppCompatActivity() {
             binding.empty.visibility = View.INVISIBLE
 
             binding.ridersList.adapter = RiderListArrayAdapter(this,
-                    R.layout.rider_list_element,
+                    R.layout.manager_rider_list_element,
                     riderList)
         } else {
             binding.empty.visibility = View.VISIBLE
