@@ -1,5 +1,6 @@
 package com.android.deliveryapp.manager
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -50,7 +51,37 @@ class RidersListActivity : AppCompatActivity() {
         super.onStart()
 
         binding.ridersList.setOnItemClickListener { _, _, i, _ ->
-            if (!riderList[i].availability) { // if rider is not available, show an alert dialog
+            showRiderDialog(i)
+        }
+    }
+
+    private fun showRiderDialog(i: Int) {
+        val dialog: AlertDialog?
+
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.driver_unavailable_dialog, null)
+
+        val riderEmail = riderList[i].email
+
+        val dialogBuilder = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setTitle(getString(R.string.rider_list_dialog_title, riderEmail))
+
+        val chatBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.chatWithRiderBtn)
+        val selectRiderBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.selectBtn)
+
+        dialog = dialogBuilder.create()
+        dialog.show()
+
+        chatBtn.setOnClickListener {
+            val intent = Intent(this@RidersListActivity, ManagerChatActivity::class.java)
+            intent.putExtra("riderEmail", riderList[i].email)
+
+            startActivity(intent)
+            dialog.dismiss()
+        }
+        selectRiderBtn.setOnClickListener {
+            if (!riderList[i].availability) {
+                dialog.dismiss()
                 showUnavailabilityDialog()
             } else {
                 val email = intent.getStringExtra("clientEmail")

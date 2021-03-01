@@ -1,5 +1,6 @@
 package com.android.deliveryapp.rider
 
+import android.content.Context
 import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
@@ -21,7 +22,9 @@ import com.android.deliveryapp.util.Keys.Companion.delivery
 import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
 import com.android.deliveryapp.util.Keys.Companion.marketDocument
 import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
+import com.android.deliveryapp.util.Keys.Companion.newDelivery
 import com.android.deliveryapp.util.Keys.Companion.riders
+import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.RiderOrderItem
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
@@ -79,6 +82,9 @@ class RiderHomeActivity : AppCompatActivity() {
         dialog = dialogBuilder.create()
         dialog.show()
 
+        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
         mapBtn.setOnClickListener {
             val intent = Intent(this@RiderHomeActivity, DeliveryMapActivity::class.java)
             intent.putExtra("clientLocation", orders[i].location)
@@ -89,6 +95,9 @@ class RiderHomeActivity : AppCompatActivity() {
         }
         acceptBtn.setOnClickListener {
             uploadOnHistory(ACCEPTED, i, orders, firestore, email)
+
+            editor.putBoolean(newDelivery, true)
+            editor.apply()
 
             val intent = Intent(this@RiderHomeActivity, RiderDeliveryActivity::class.java)
             intent.putExtra("date", orders[i].date)

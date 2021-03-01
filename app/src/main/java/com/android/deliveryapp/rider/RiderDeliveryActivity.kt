@@ -1,14 +1,19 @@
 package com.android.deliveryapp.rider
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRiderDeliveryBinding
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
+import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.delivery
+import com.android.deliveryapp.util.Keys.Companion.newDelivery
 import com.android.deliveryapp.util.Keys.Companion.riders
+import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.Keys.Companion.users
 import com.google.firebase.auth.FirebaseAuth
@@ -38,7 +43,46 @@ class RiderDeliveryActivity : AppCompatActivity() {
         if (user != null) {
             getData(firestore, user.email!!, date!!, location!!)
 
+            val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
 
+            if (sharedPreferences.getBoolean(newDelivery, false)) { // delivery hasn't begun yet
+                binding.deliveryMap.visibility = View.INVISIBLE
+                binding.riderChatManagerBtn.visibility = View.INVISIBLE
+                binding.riderChatClientBtn.visibility = View.INVISIBLE
+
+                binding.startDeliveryBtn.visibility = View.VISIBLE
+            } else {
+                binding.deliveryMap.visibility = View.VISIBLE
+                binding.riderChatManagerBtn.visibility = View.VISIBLE
+                binding.riderChatClientBtn.visibility = View.VISIBLE
+
+                binding.startDeliveryBtn.visibility = View.INVISIBLE
+            }
+
+            binding.startDeliveryBtn.setOnClickListener {
+                editor.putBoolean(newDelivery, false)
+                editor.apply()
+
+                binding.deliveryMap.visibility = View.VISIBLE
+                binding.riderChatManagerBtn.visibility = View.VISIBLE
+                binding.riderChatClientBtn.visibility = View.VISIBLE
+
+                binding.startDeliveryBtn.visibility = View.INVISIBLE
+
+                // finally remove from rider orders
+                firestore.collection(riders).document(auth.currentUser?.email!!)
+                        .collection(delivery).document(date)
+                        .delete()
+                        .addOnSuccessListener {
+                            Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("FIREBASE_FIRESTORE", "Failed to delete document", e)
+                        }
+
+                sendNotificationToClient(user.email!!, clientEmail)
+            }
             binding.deliveryMap.setOnClickListener {
                 val intent = Intent(
                     this@RiderDeliveryActivity,
@@ -71,21 +115,22 @@ class RiderDeliveryActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun sendNotificationToClient(riderEmail: String, clientEmail: String) {
+        val reference = FirebaseFirestore.getInstance().collection(chatCollection)
+                .document("$riderEmail|$clientEmail")
 
-        val date = intent.getStringExtra("date")
+        val automaticMessage = mapOf(
+                "NAME" to "Rider",
+                "TEXT" to getString(R.string.delivery_start_auto_msg)
+        )
 
-        // finally remove from rider orders
-        firestore.collection(riders).document(auth.currentUser?.email!!)
-            .collection(delivery).document(date!!)
-            .delete()
-            .addOnSuccessListener {
-                Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
-            }
-            .addOnFailureListener { e ->
-                Log.w("FIREBASE_FIRESTORE", "Failed to delete document", e)
-            }
+        reference.set(automaticMessage)
+                .addOnSuccessListener {
+                    Log.d("FIRESTORE_CHAT", "Message sent")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("ERROR", e.message.toString())
+                }
     }
 
     private fun getManagerEmail(firestore: FirebaseFirestore) {

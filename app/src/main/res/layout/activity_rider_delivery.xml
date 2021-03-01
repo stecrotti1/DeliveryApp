@@ -50,14 +50,24 @@
         android:layout_below="@id/deliveryTotalPrice" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/startDeliveryBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start_delivery"
+        app:icon="@drawable/notification_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/deliveryPaymentType"
+        android:layout_marginTop="20dp" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/deliveryMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/view_map_order"
         app:icon="@drawable/location"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/deliveryPaymentType"
-        android:layout_marginTop="20dp" />
+        android:layout_below="@id/startDeliveryBtn"
+        android:layout_marginTop="10dp" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/riderChatClientBtn"

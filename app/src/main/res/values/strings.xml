@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">DeliveryApp</string>
 
+    <string name="chat">Chat</string>
+
     <!-- LOGIN ACTIVITY -->
 
     <string name="submit_button">submit</string>
@@ -79,6 +81,9 @@
 
     <string name="image_loading_error">Failed to retrieve products</string>
 
+    <string name="new_message_notification_title">New message from rider</string>
+    <string name="notification_channel_desc">DeliveryApp notifications</string>
+
     <!-- RIDER PROFILE ACTIVITY -->
     <string name="rider_status_save_success">Availability submitted with success</string>
     <string name="rider_status_save_failure">Failed to save availability</string>
@@ -106,8 +111,9 @@
 
     <string name="title_activity_delivery_map">Map</string>
 
-    <!-- RIDER CHAT CLIENT ACTIVITY -->
-    <string name="rider_chat_with_client">Chat with Client</string>
+    <!-- RIDER CHAT ACTIVITY -->
+
+    <string name="delivery_start_auto_msg">*** AUTOMATIC MESSAGE: DELIVERY IN PROGRESS ***</string>
 
     <!-- ACTIVITY RIDER DELIVERY -->
     <string name="total_price_delivery">Total: %s</string>
@@ -116,6 +122,8 @@
     <string name="delivery_location">Location: %s</string>
     <string name="delivery_payment_type">Payment type: %s</string>
     <string name="delivery_total_payment">Total: %s</string>
+
+    <string name="start_delivery">Start delivery</string>
 
     <!-- menu -->
     <string name="shopping_cart">Shopping cart</string>
@@ -130,6 +138,11 @@
     <string name="driver_unavailable">Attention, the driver selected is currently unavailable</string>
 
     <string name="ok">OK</string>
+
+    <string name="rider_list_dialog_title">Rider selected: %s</string>
+
+    <string name="chat_with_rider">Chat with Rider</string>
+    <string name="select_for_delivery">Select Rider for delivery</string>
 
     <string name="order_sent_success">Order sent successfully</string>
     <string name="order_sent_failure">Failed to send order</string>

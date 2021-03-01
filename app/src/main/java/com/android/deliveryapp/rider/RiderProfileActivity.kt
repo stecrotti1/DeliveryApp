@@ -107,7 +107,7 @@ class RiderProfileActivity : AppCompatActivity() {
                                    email: String) {
         firestore.collection(riders).document(email)
                 .collection(delivery)
-                .addSnapshotListener { value, error ->
+                .addSnapshotListener { _, error ->
                     if (error != null) {
                         Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
                         return@addSnapshotListener

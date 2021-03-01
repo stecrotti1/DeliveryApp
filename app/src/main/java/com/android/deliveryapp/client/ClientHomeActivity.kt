@@ -1,5 +1,9 @@
 package com.android.deliveryapp.client
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -17,6 +21,7 @@ import com.android.deliveryapp.R
 import com.android.deliveryapp.client.adapters.ClientArrayAdapter
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
 import com.android.deliveryapp.util.Keys
+import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.Keys.Companion.shoppingCart
@@ -41,6 +46,9 @@ class ClientHomeActivity : AppCompatActivity() {
 
     private var singleProductCount = 0
 
+    private val channelID = "1"
+    private val notificationID = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityClientHomeBinding.inflate(layoutInflater)
@@ -53,20 +61,32 @@ class ClientHomeActivity : AppCompatActivity() {
         val databaseRef = database.getReference(productListFirebase)
         auth = FirebaseAuth.getInstance()
 
-        databaseRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                processItems(snapshot) // create the product list
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-                updateView()
+        val intent = Intent(this@ClientHomeActivity, ClientChatActivity::class.java)
+
+        val pendingIntent = PendingIntent.getActivity(this@ClientHomeActivity, 0, intent, 0)
+
+        val user = auth.currentUser
+
+        if (user != null) {
+            listenForDeliveryMessages(firestore, pendingIntent, notificationManager, user.email!!)
+
+            databaseRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    processItems(snapshot) // create the product list
+
+                    updateView()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
+                }
+            })
+
+            binding.shoppingCartButton.setOnClickListener {
+                startActivity(Intent(this@ClientHomeActivity, ShoppingCartActivity::class.java))
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
-            }
-        })
-
-        binding.shoppingCartButton.setOnClickListener {
-            startActivity(Intent(this@ClientHomeActivity, ShoppingCartActivity::class.java))
         }
     }
 
@@ -310,6 +330,60 @@ class ClientHomeActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun listenForDeliveryMessages(firestore: FirebaseFirestore,
+                                          pendingIntent: PendingIntent,
+                                          notificationManager: NotificationManager,
+                                          email: String) {
+        firestore.collection(chatCollection).get()
+                .addOnSuccessListener { result ->
+                    for (document in result.documents) {
+                        if (document.id.contains(email)) {
+                            document.reference.addSnapshotListener { value, error ->
+                                if (error != null) {
+                                    Log.w("FIREBASE_CHAT", "Listen failed", error)
+                                    return@addSnapshotListener
+                                } else {
+                                    createNotification(pendingIntent, notificationManager)
+                                    createNotificationChannel(channelID,
+                                            getString(R.string.app_name),
+                                            getString(R.string.notification_channel_desc),
+                                            notificationManager)
+                                }
+                            }
+                        }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Error getting documents", e)
+                }
+    }
+
+    private fun createNotification(pendingIntent: PendingIntent,
+                                   notificationManager: NotificationManager) {
+        val notification = Notification.Builder(this@ClientHomeActivity, channelID)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle(getString(R.string.new_message_notification_title))
+                .setAutoCancel(true)
+                .setChannelId(channelID)
+                .setContentIntent(pendingIntent)
+                .build()
+
+        notificationManager.notify(notificationID, notification)
+    }
+
+    private fun createNotificationChannel(id: String,
+                                          name: String,
+                                          description: String,
+                                          notificationManager: NotificationManager) {
+        val priority = NotificationManager.IMPORTANCE_HIGH
+
+        val channel = NotificationChannel(id, name, priority)
+
+        channel.description = description
+
+        notificationManager.createNotificationChannel(channel)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

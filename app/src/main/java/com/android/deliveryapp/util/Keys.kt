@@ -30,6 +30,8 @@ class Keys {
         const val delivery: String = "delivery"
         const val deliveryHistory: String = "deliveryHistory"
 
+        const val newDelivery: String = "newDelivery"
+
         const val ACCEPTED: String = "ACCEPTED"
         const val DELIVERED: String = "DELIVERED"
         const val DELIVERY_FAILED: String = "DELIVERY_FAILED"
