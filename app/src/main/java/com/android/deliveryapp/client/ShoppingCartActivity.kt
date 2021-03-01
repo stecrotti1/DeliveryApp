@@ -274,20 +274,14 @@ class ShoppingCartActivity : AppCompatActivity() {
                     .collection(shoppingCart)
                     .get()
                     .addOnSuccessListener { result ->
-                        var title = ""
-                        var price = 0.00
-                        var qty: Long = 0
-
                         for (document in result.documents) {
-                            for (item in document.data as Map<String, Any?>) {
-                                when (item.key) {
-                                    "title" -> title = item.value as String
-                                    "price" -> price = item.value as Double
-                                    "qty" -> qty = item.value as Long
-                                }
-                            }
                             products = products.plus(
-                                    ProductItem("", title, "", price, qty.toInt())
+                                ProductItem(
+                                    "",
+                                    document.getString("title") as String,
+                                    "",
+                                    document.getDouble("price") as Double,
+                                    document.getLong("qty")!!.toInt())
                             )
                         }
 

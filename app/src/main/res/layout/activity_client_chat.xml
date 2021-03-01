@@ -10,7 +10,9 @@
         android:id="@+id/messageTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:textAlignment="textStart"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
         android:layout_margin="40dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

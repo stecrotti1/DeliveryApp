@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".client.ClientProfileActivity">
 
     <ImageView
@@ -77,5 +78,14 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
         android:layout_below="@id/setLocationBtn" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/chatWithRiderBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rider"
+        app:icon="@drawable/message"
+        android:layout_below="@id/homepageButton"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

@@ -41,9 +41,9 @@ class ManagerOrderActivity : AppCompatActivity() {
         firestore.collection(orders).get()
             .addOnSuccessListener { result ->
                 for (document in result.documents) {
-                    for (data in document.data as Map<String, String>) {
+                    for (data in document.data as Map<*, *>) {
                         // fetch orderEmail with date of the order
-                        emailList = emailList.plus(data.key to data.value)
+                        emailList = emailList.plus(data.key as String to data.value as String)
                     }
                 }
                 getOrder(firestore, emailList)

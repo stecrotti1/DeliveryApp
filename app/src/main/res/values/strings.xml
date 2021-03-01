@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">DeliveryApp</string>
 
-    <string name="chat">Chat</string>
+    <string name="chat" translatable="false">Chat</string>
 
     <!-- LOGIN ACTIVITY -->
 
@@ -14,8 +14,6 @@
     <string name="remember_me">Remember me</string>
 
     <!-- SELECT USER TYPE ACTIVITY -->
-
-    <string name="sign_up_label">Sign Up</string>
 
     <string name="selection_label">Are you a…</string>
 
@@ -54,15 +52,13 @@
     <string name="client_position">You are here</string>
     <string name="client_pos_snippet">Your last known location</string>
 
-    <string name="market_position">Market</string>
+    <string name="market_position" translatable="false">Market</string>
     <string name="market_snippet">Market is here</string>
 
     <string name="save_location">Save</string>
     <string name="search_location">Search</string>
 
     <string name="location_error">Unable to retrieve your current location</string>
-
-    <string name="search">Search your location</string>
 
     <!-- CLIENT HOME ACTIVITY -->
 
@@ -79,13 +75,10 @@
 
     <string name="error_removing_from_cart">Error removing product from cart</string>
 
-    <string name="image_loading_error">Failed to retrieve products</string>
-
     <string name="new_message_notification_title">New message from rider</string>
     <string name="notification_channel_desc">DeliveryApp notifications</string>
 
     <!-- RIDER PROFILE ACTIVITY -->
-    <string name="rider_status_save_success">Availability submitted with success</string>
     <string name="rider_status_save_failure">Failed to save availability</string>
 
     <string name="new_delivery_title">You have a new delivery</string>
@@ -130,14 +123,20 @@
     <string name="orders">Your orders</string>
     <string name="logout">Log out</string>
 
+    <string name="current_delivery">Current delivery</string>
+
+    <!-- RIDER ORDER HISTORY ACTIVITY -->
+    <string name="delivery_history">Delivery History</string>
+    <string name="my_past_deliveries">My past deliveries</string>
+
     <!-- RIDERS LIST ACTIVITY -->
     <string name="your_riders">Your riders</string>
 
     <string name="error_getting_riders">Error getting rider list</string>
 
-    <string name="driver_unavailable">Attention, the driver selected is currently unavailable</string>
+    <string name="driver_unavailable">Attention, the rider selected is currently unavailable</string>
 
-    <string name="ok">OK</string>
+    <string name="ok" translatable="false">OK</string>
 
     <string name="rider_list_dialog_title">Rider selected: %s</string>
 
@@ -188,10 +187,7 @@
 
     <string name="please_select_payment">Please select payment type</string>
 
-    <string name="update_cart_error">Failed to update shopping cart</string>
-
     <!-- checkout dialog -->
-    <string name="checkout_dialog_title">Your order</string>
     <string name="payment_info">Payment will occur exclusively through the rider</string>
     <string name="cash">Cash</string>
     <string name="credit_card">Credit Card</string>
@@ -201,7 +197,6 @@
 
     <!-- CLIENT ORDERS ACTIVITY -->
 
-    <string name="order_history">Order history</string>
     <string name="recent_orders">Your recent orders</string>
 
     <string name="date">Date: </string>
@@ -219,12 +214,7 @@
 
     <!-- MANAGER ORDER ACTIVITY -->
 
-    <string name="new_orders">New orders</string>
-    <string name="no_new_orders">There aren\'t new orders</string>
-
     <string name="select_order">Select an order to give it to your riders</string>
-
-    <string name="order_details">view details</string>
 
     <string name="client_email">Email: </string>
 
@@ -236,15 +226,10 @@
     <string name="failure_data">Failed to get data</string>
 
     <!-- hints -->
-    <string name="fname_hint">First Name</string>
-    <string name="lname_hint">Last Name</string>
     <string name="location_hint">Address</string>
-    <string name="market_location_hint">Market Address</string>
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Confirm Password</string>
-    <string name="manager_verification_code_hint">Manager Verification Code</string>
-    <string name="rider_verification_code_hint">Manager Verification Code</string>
     <string name="search_location_hint">Search for your location</string>
 
     <string name="product_name_hint">Product name</string>
@@ -260,14 +245,6 @@
     <string name="sign_up_failure">Sign Up failed</string>
     <string name="login_failure">Authentication failed</string>
     <string name="title_activity_location">Map</string>
-    <string name="title_activity_login2">LoginActivity2</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="empty_location">Please enter an address</string>
     <string name="save_location_failed">Could not save your location</string>
     <string name="error_user_data">Error fetching user data</string>
 
@@ -276,7 +253,7 @@
     <string name="error_shopping_cart">There was an error adding product to shopping cart</string>
 
     <!-- client location is > 10 km from market -->
-    <string name="location_distance_error">Unfortunately you\'re too far from service area. You have to be within 10 km from the market</string>
+    <string name="location_distance_error">Unfortunately you\'re too far from service area. You have to be within 10 Km from the Market</string>
     <string name="too_far_title">You\'re too far :(</string>
     <string name="fix_my_location">Fix location</string>
 

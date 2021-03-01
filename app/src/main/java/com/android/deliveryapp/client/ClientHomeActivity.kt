@@ -70,8 +70,6 @@ class ClientHomeActivity : AppCompatActivity() {
         val user = auth.currentUser
 
         if (user != null) {
-            listenForDeliveryMessages(firestore, pendingIntent, notificationManager, user.email!!)
-
             databaseRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     processItems(snapshot) // create the product list
@@ -106,6 +104,28 @@ class ClientHomeActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val intent = Intent(
+            this@ClientHomeActivity,
+            ClientChatActivity::class.java
+        )
+
+        val pendingIntent = PendingIntent.getActivity(
+            this@ClientHomeActivity,
+            0,
+            intent,
+            0
+        )
+
+        val user = auth.currentUser
+
+        /************************************* NOTIFICATIONS **************************************/
+
+        if (user != null) {
+            listenForDeliveryMessages(firestore, pendingIntent, notificationManager, user.email!!)
+        }
 
         /***************************** ADD TO CART DIALOG ****************************************/
 
@@ -340,7 +360,7 @@ class ClientHomeActivity : AppCompatActivity() {
                 .addOnSuccessListener { result ->
                     for (document in result.documents) {
                         if (document.id.contains(email)) {
-                            document.reference.addSnapshotListener { value, error ->
+                            document.reference.addSnapshotListener { _, error ->
                                 if (error != null) {
                                     Log.w("FIREBASE_CHAT", "Listen failed", error)
                                     return@addSnapshotListener
@@ -396,15 +416,24 @@ class ClientHomeActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         return when (item.itemId) {
             R.id.clientProfile -> {
-                startActivity(Intent(this@ClientHomeActivity, ClientProfileActivity::class.java))
+                startActivity(Intent(
+                    this@ClientHomeActivity,
+                    ClientProfileActivity::class.java
+                ))
                 true
             }
             R.id.orders -> {
-                startActivity(Intent(this@ClientHomeActivity, ClientOrdersActivity::class.java))
+                startActivity(Intent(
+                    this@ClientHomeActivity,
+                    ClientOrdersActivity::class.java
+                ))
                 true
             }
             R.id.shoppingCart -> {
-                startActivity(Intent(this@ClientHomeActivity, ShoppingCartActivity::class.java))
+                startActivity(Intent(
+                    this@ClientHomeActivity,
+                    ShoppingCartActivity::class.java
+                ))
                 true
             }
             R.id.logout -> {
@@ -415,7 +444,10 @@ class ClientHomeActivity : AppCompatActivity() {
                 editor.clear() // delete all shared preferences
                 editor.apply()
 
-                startActivity(Intent(this@ClientHomeActivity, LoginActivity::class.java))
+                startActivity(Intent(
+                    this@ClientHomeActivity,
+                    LoginActivity::class.java
+                ))
                 finish()
                 true
             }

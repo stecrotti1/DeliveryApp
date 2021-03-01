@@ -29,6 +29,7 @@ import java.util.*
  * Activity used by MANAGER
  */
 class RidersListActivity : AppCompatActivity() {
+    // TODO: 01/03/2021 rename Activity ManagerRidersListActivity 
 
     private lateinit var binding: ActivityRidersListBinding
     private lateinit var firestore: FirebaseFirestore
@@ -58,7 +59,7 @@ class RidersListActivity : AppCompatActivity() {
     private fun showRiderDialog(i: Int) {
         val dialog: AlertDialog?
 
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.driver_unavailable_dialog, null)
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.manager_rider_list_dialog, null)
 
         val riderEmail = riderList[i].email
 
@@ -90,6 +91,7 @@ class RidersListActivity : AppCompatActivity() {
                 if (email != null && clientOrderDate != null) {
 
                     sendOrderToRider(firestore, riderList[i].email, email, clientOrderDate)
+                    dialog.dismiss()
                 }
             }
         }
@@ -147,11 +149,11 @@ class RidersListActivity : AppCompatActivity() {
                                 }
 
                                 entry = mapOf(
-                                        "products" to productList,
-                                        "total" to getTotalPrice(productList),
-                                        "address" to result.getGeoPoint("address") as GeoPoint,
-                                        "payment" to paymentType,
-                                        "clientEmail" to clientEmail
+                                    "products" to productList,
+                                    "total" to getTotalPrice(productList),
+                                    "address" to result.getGeoPoint("address") as GeoPoint,
+                                    "payment" to paymentType,
+                                    "clientEmail" to clientEmail // TODO: 01/03/2021  
                                 )
 
                                 // send cliend position, total price and products
@@ -193,7 +195,7 @@ class RidersListActivity : AppCompatActivity() {
     private fun showUnavailabilityDialog() {
         val dialog: AlertDialog?
 
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.driver_unavailable_dialog, null)
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.rider_unavailable_dialog, null)
 
         val dialogBuilder = AlertDialog.Builder(this)
                 .setView(dialogView)

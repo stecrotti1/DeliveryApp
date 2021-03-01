@@ -93,12 +93,25 @@ class ClientProfileActivity : AppCompatActivity() {
         }
 
         binding.setLocationBtn.setOnClickListener {
-            startActivity(Intent(this@ClientProfileActivity, ClientLocationActivity::class.java))
+            startActivity(Intent(
+                this@ClientProfileActivity,
+                ClientLocationActivity::class.java
+            ))
         }
 
         binding.homepageButton.setOnClickListener {
-            startActivity(Intent(this@ClientProfileActivity, ClientHomeActivity::class.java))
+            startActivity(Intent(
+                this@ClientProfileActivity,
+                ClientHomeActivity::class.java
+            ))
             finish()
+        }
+
+        binding.chatWithRiderBtn.setOnClickListener {
+            startActivity(Intent(
+                this@ClientProfileActivity,
+                ClientChatActivity::class.java
+            ))
         }
     }
 

@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.client.ClientHomeActivity
 import com.android.deliveryapp.databinding.ActivityLoginBinding
 import com.android.deliveryapp.manager.ManagerHomeActivity
-import com.android.deliveryapp.rider.RiderHomeActivity
+import com.android.deliveryapp.rider.RiderProfileActivity
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
@@ -126,7 +126,7 @@ class LoginActivity : AppCompatActivity() {
                             RIDER -> {
                                 startActivity(Intent(
                                     this@LoginActivity,
-                                    RiderHomeActivity::class.java
+                                    RiderProfileActivity::class.java
                                 ))
                                 finishAffinity()
                             }

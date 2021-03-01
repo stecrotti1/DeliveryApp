@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.deliveryapp"
-    android:versionCode="44"
-    android:versionName="v0.4.5-a">
+    android:versionCode="47"
+    android:versionName="v0.4.8-a">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -21,7 +21,6 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.DeliveryApp">
-
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -34,16 +33,24 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".manager.ManagerChatActivity"
+        <activity android:name=".rider.RiderDeliveryHistoryActivity"
+            android:label="@string/delivery_history"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".manager.ManagerChatActivity"
+            android:label="@string/chat"
             android:screenOrientation="unspecified"
-            android:label="@string/chat" />
-        <activity android:name=".client.ClientChatActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".client.ClientChatActivity"
+            android:label="@string/chat"
             android:screenOrientation="unspecified"
-            android:label="@string/chat"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".rider.RiderChatActivity"
             android:label="@string/chat"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".rider.RiderDeliveryActivity"
             android:label="@string/rider_delivery"

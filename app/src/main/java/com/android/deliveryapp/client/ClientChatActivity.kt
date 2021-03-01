@@ -41,6 +41,7 @@ class ClientChatActivity : AppCompatActivity() {
                     for (document in result.documents) {
                         if (document.id.contains(user.email!!)) {
                             reference = document.reference
+                            updateChat(reference)
                             return@addOnSuccessListener
                         }
                     }
@@ -49,10 +50,9 @@ class ClientChatActivity : AppCompatActivity() {
                     Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
                 }
 
-            updateChat(reference)
-
             binding.sendMsgBtn.setOnClickListener {
                 sendMessage(reference)
+                binding.message.text?.clear()
             }
         }
     }

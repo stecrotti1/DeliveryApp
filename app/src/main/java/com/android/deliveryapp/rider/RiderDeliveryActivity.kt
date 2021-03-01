@@ -8,9 +8,11 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRiderDeliveryBinding
+import com.android.deliveryapp.util.Keys.Companion.ACCEPTED
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.delivery
+import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
 import com.android.deliveryapp.util.Keys.Companion.newDelivery
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.Keys.Companion.userInfo
@@ -37,11 +39,28 @@ class RiderDeliveryActivity : AppCompatActivity() {
 
         val user = auth.currentUser
 
-        val date = intent.getStringExtra("date")
-        val location = intent.getStringExtra("location")
-
         if (user != null) {
-            getData(firestore, user.email!!, date!!, location!!)
+            var date = ""
+            var location = ""
+
+            firestore.collection(riders).document(user.email!!)
+                .collection(deliveryHistory)
+                .get()
+                .addOnSuccessListener { result ->
+
+
+                    for (document in result.documents) {
+                        // if it is accepted then it is the current delivery
+                        if (document.getString("outcome") as String == ACCEPTED) {
+                            date = document.getString("date") as String
+                            location = document.getString("location") as String
+                        }
+                    }
+                    getData(firestore, user.email!!, date, location)
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Failed to get data", e)
+                }
 
             val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()

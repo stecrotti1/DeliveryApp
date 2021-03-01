@@ -99,10 +99,10 @@ class RiderHomeActivity : AppCompatActivity() {
             editor.putBoolean(newDelivery, true)
             editor.apply()
 
-            val intent = Intent(this@RiderHomeActivity, RiderDeliveryActivity::class.java)
-            intent.putExtra("date", orders[i].date)
-            intent.putExtra("location", orders[i].location)
-            startActivity(intent)
+            startActivity(Intent(
+                this@RiderHomeActivity,
+                RiderDeliveryActivity::class.java
+            ))
 
             dialog.dismiss()
         }
@@ -119,8 +119,11 @@ class RiderHomeActivity : AppCompatActivity() {
         firestore: FirebaseFirestore,
         riderEmail: String
     ) {
+
         val entry = mapOf(
             "location" to orderList[i].location,
+            "date" to orderList[i].date,
+            "clientEmail" to orderList[i].clientEmail,
             "outcome" to deliveryOutcome
         )
 
@@ -134,33 +137,23 @@ class RiderHomeActivity : AppCompatActivity() {
                 Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
             }
 
-        // get client email
-        firestore.collection(riders).document(riderEmail)
-            .collection(delivery).document(orders[i].date)
-            .get()
-            .addOnSuccessListener { result ->
-                val clientEmail = result.getString("clientEmail") as String
+        // delete from orders collection so manager isn't notified again of the new order
+        firestore.collection(Keys.orders).get()
+            .addOnSuccessListener { result1 ->
+                for (document in result1.documents) {
+                    for (field in document.data as Map<String, String>) {
+                        if (field.key == orderList[i].clientEmail) {
+                            document.reference.delete()
 
-                firestore.collection(Keys.orders).get()
-                    .addOnSuccessListener { result ->
-                        for (document in result.documents) {
-                            for (field in document.data as Map<String, String>) {
-                                if (field.key == clientEmail) {
-                                    document.reference.delete() // delete from orders collection
-
-                                    Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
-                                }
-                            }
+                            Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
                         }
                     }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASE_FIRESTORE", "Error deleting document", e)
-                    }
+                }
             }
-
-
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_FIRESTORE", "Error deleting document", e)
+            }
     }
-
 
     private fun getOrders(firestore: FirebaseFirestore, email: String) {
         firestore.collection(riders).document(email)
@@ -173,10 +166,13 @@ class RiderHomeActivity : AppCompatActivity() {
                     var distance: Double
                     var marketPoint: GeoPoint
                     var geocoder: List<Address>? = null
+                    var clientEmail: String
 
                     for (document in result.documents) {
                         date = document.id
                         locationGeoPoint = document.getGeoPoint(clientAddress) as GeoPoint
+
+                        clientEmail = document.getString("clientEmail") as String
 
                        try {
                            geocoder = Geocoder(this).getFromLocation(locationGeoPoint.latitude,
@@ -201,10 +197,14 @@ class RiderHomeActivity : AppCompatActivity() {
 
                                     distance = calculateDistanceFromMarket(marketPoint, locationGeoPoint)
 
-                                    orders = orders.plus(RiderOrderItem(date, location, distance))
+                                    orders = orders.plus(RiderOrderItem(
+                                        date,
+                                        location,
+                                        distance,
+                                        clientEmail
+                                    ))
 
                                     updateView()
-
                                 }
                                 .addOnFailureListener { exception ->
                                     Log.w("Firestore", "Error getting documents", exception)
@@ -262,11 +262,22 @@ class RiderHomeActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         return when (item.itemId) {
             R.id.riderProfile -> {
-                startActivity(Intent(this@RiderHomeActivity, RiderProfileActivity::class.java))
+                startActivity(Intent(
+                    this@RiderHomeActivity,
+                    RiderProfileActivity::class.java
+                ))
                 true
             }
             R.id.riderDeliveries -> {
-                // TODO: 19/02/2021 history deliveries 
+                startActivity(
+                    Intent(
+                    this@RiderHomeActivity,
+                    RiderDeliveryHistoryActivity::class.java
+                )
+                )
+                true
+            }
+            R.id.currentDelivery -> {
                 true
             }
             R.id.logout -> {

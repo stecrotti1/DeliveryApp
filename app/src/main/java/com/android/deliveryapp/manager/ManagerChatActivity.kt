@@ -46,6 +46,7 @@ class ManagerChatActivity : AppCompatActivity() {
 
             binding.sendMsgBtn.setOnClickListener {
                 sendMessage(firestoreChat)
+                binding.message.text?.clear()
             }
 
         }
