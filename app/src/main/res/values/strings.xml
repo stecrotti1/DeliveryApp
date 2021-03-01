@@ -107,6 +107,7 @@
     <!-- RIDER CHAT ACTIVITY -->
 
     <string name="delivery_start_auto_msg">*** AUTOMATIC MESSAGE: DELIVERY IN PROGRESS ***</string>
+    <string name="no_chat_found">No chats found</string>
 
     <!-- ACTIVITY RIDER DELIVERY -->
     <string name="total_price_delivery">Total: %s</string>
@@ -115,6 +116,9 @@
     <string name="delivery_location">Location: %s</string>
     <string name="delivery_payment_type">Payment type: %s</string>
     <string name="delivery_total_payment">Total: %s</string>
+
+    <string name="delivery_failure">Failure</string>
+    <string name="delivery_success">Success</string>
 
     <string name="start_delivery">Start delivery</string>
 
@@ -225,6 +229,9 @@
 
     <string name="failure_data">Failed to get data</string>
 
+    <!-- MANAGER RIDER WITH ORDERS -->
+    <string name="select_rider">Select a rider in order to chat with</string>
+
     <!-- hints -->
     <string name="location_hint">Address</string>
     <string name="email_hint">Email</string>
@@ -248,6 +255,8 @@
     <string name="save_location_failed">Could not save your location</string>
     <string name="error_user_data">Error fetching user data</string>
 
+    <string name="manager_existence_error">Manager already exists!</string>
+
     <string name="please_add_quantity">Please add some quantity</string>
     <string name="error_product_quantity">Max quantity reached</string>
     <string name="error_shopping_cart">There was an error adding product to shopping cart</string>
@@ -256,5 +265,6 @@
     <string name="location_distance_error">Unfortunately you\'re too far from service area. You have to be within 10 Km from the Market</string>
     <string name="too_far_title">You\'re too far :(</string>
     <string name="fix_my_location">Fix location</string>
+
 
 </resources>

@@ -1,8 +1,11 @@
 package com.android.deliveryapp.rider
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityRiderChatBinding
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
@@ -79,5 +82,14 @@ class RiderChatActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    // hide keyboard when user clicks outside EditText
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(event)
     }
 }

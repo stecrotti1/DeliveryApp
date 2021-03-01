@@ -184,7 +184,7 @@ class ChangeProductImageActivity : AppCompatActivity() {
 
         val uploadTask = nameRef.putBytes(data)
         uploadTask
-            .addOnCompleteListener { task -> // FIXME: 27/02/2021 IllegalStateException
+            .addOnCompleteListener { task ->
                 if (task.isComplete && task.isSuccessful) {
 
                     storageReference.child("$name.jpg").downloadUrl

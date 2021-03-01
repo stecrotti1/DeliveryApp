@@ -11,7 +11,6 @@
         android:layout_height="wrap_content"
         android:gravity="start"
         android:textAlignment="textStart"
-        android:textSize="20sp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_margin="40dp" />
@@ -21,9 +20,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/send"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@id/messageLayout"
+        android:layout_below="@id/messageTextView"
         android:layout_marginEnd="20dp"
+        android:layout_marginStart="10dp"
         android:layout_marginBottom="20dp"
         tools:ignore="ContentDescription,RelativeOverlap" />
 
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/messageTextView"
         android:layout_marginBottom="20dp"
         android:layout_centerHorizontal="true">
 

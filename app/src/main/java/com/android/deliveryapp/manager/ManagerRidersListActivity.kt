@@ -10,11 +10,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
-import com.android.deliveryapp.databinding.ActivityRidersListBinding
+import com.android.deliveryapp.databinding.ActivityManagerRidersListBinding
 import com.android.deliveryapp.manager.adapters.RiderListArrayAdapter
 import com.android.deliveryapp.util.Keys
+import com.android.deliveryapp.util.Keys.Companion.ACCEPTED
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.delivery
+import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
 import com.android.deliveryapp.util.Keys.Companion.riderStatus
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.RiderListItem
@@ -28,16 +30,14 @@ import java.util.*
 /**
  * Activity used by MANAGER
  */
-class RidersListActivity : AppCompatActivity() {
-    // TODO: 01/03/2021 rename Activity ManagerRidersListActivity 
-
-    private lateinit var binding: ActivityRidersListBinding
+class ManagerRidersListActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityManagerRidersListBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var riderList: Array<RiderListItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityRidersListBinding.inflate(layoutInflater)
+        binding = ActivityManagerRidersListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // show a back arrow button in actionBar
@@ -73,13 +73,34 @@ class RidersListActivity : AppCompatActivity() {
         dialog = dialogBuilder.create()
         dialog.show()
 
+        chatBtn.visibility = View.INVISIBLE
+        selectRiderBtn.visibility = View.VISIBLE
+
+        firestore.collection(riders).document(riderEmail)
+            .collection(deliveryHistory)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result.documents) {
+                    if (document.getString("outcome") as String == ACCEPTED) {
+                        chatBtn.visibility = View.VISIBLE
+                        selectRiderBtn.visibility = View.INVISIBLE
+                        return@addOnSuccessListener
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
+            }
+
+
         chatBtn.setOnClickListener {
-            val intent = Intent(this@RidersListActivity, ManagerChatActivity::class.java)
+            val intent = Intent(this@ManagerRidersListActivity, ManagerChatActivity::class.java)
             intent.putExtra("riderEmail", riderList[i].email)
 
             startActivity(intent)
             dialog.dismiss()
         }
+
         selectRiderBtn.setOnClickListener {
             if (!riderList[i].availability) {
                 dialog.dismiss()
@@ -101,7 +122,7 @@ class RidersListActivity : AppCompatActivity() {
         var total = 0.0
         if (productList.isNotEmpty()) {
             for (item in productList) {
-                total += item.price
+                total += (item.price * item.quantity)
             }
         }
         return total
@@ -153,7 +174,7 @@ class RidersListActivity : AppCompatActivity() {
                                     "total" to getTotalPrice(productList),
                                     "address" to result.getGeoPoint("address") as GeoPoint,
                                     "payment" to paymentType,
-                                    "clientEmail" to clientEmail // TODO: 01/03/2021  
+                                    "clientEmail" to clientEmail
                                 )
 
                                 // send cliend position, total price and products

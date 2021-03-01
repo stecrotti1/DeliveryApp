@@ -359,7 +359,8 @@ class ClientHomeActivity : AppCompatActivity() {
         firestore.collection(chatCollection).get()
                 .addOnSuccessListener { result ->
                     for (document in result.documents) {
-                        if (document.id.contains(email)) {
+                        if (document.id.contains(email)
+                            && document.getString("NAME") as String == "Rider") {
                             document.reference.addSnapshotListener { _, error ->
                                 if (error != null) {
                                     Log.w("FIREBASE_CHAT", "Listen failed", error)

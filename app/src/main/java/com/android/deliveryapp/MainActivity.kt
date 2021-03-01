@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.client.ClientHomeActivity
 import com.android.deliveryapp.manager.ManagerHomeActivity
@@ -14,13 +17,16 @@ import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
+import com.android.deliveryapp.util.Keys.Companion.invalidUser
 import com.android.deliveryapp.util.Keys.Companion.isLogged
 import com.android.deliveryapp.util.Keys.Companion.isRegistered
 import com.android.deliveryapp.util.Keys.Companion.pwd
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.Keys.Companion.username
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
+import kotlin.system.exitProcess
 
 /**
  * Splash screen activity
@@ -40,6 +46,10 @@ class MainActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
+
+            if (sharedPreferences.getBoolean(invalidUser, false)) { // if has location > 10 km from market
+                showErrorDialog()
+            }
 
             if (sharedPreferences.getBoolean(isRegistered, false)) {
                 if (sharedPreferences.getBoolean(isLogged, false)) {
@@ -87,13 +97,38 @@ class MainActivity : AppCompatActivity() {
                         }
                 } else {
                     startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                } // TODO: 24/02/2021 put invalid user 
+                }
             } else {
                 editor.putBoolean(hasLocation, false)
                 editor.apply()
                 startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
             }
         }, 1500) // wait 1.5 seconds, then show the activity
+
+    }
+
+    private fun showErrorDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.location_distance_error_dialog, null)
+
+        val dialog: AlertDialog?
+
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle(getString(R.string.too_far_title))
+
+        val confirmButton: ExtendedFloatingActionButton = dialogView.findViewById(R.id.confirmButtonDialog)
+        val fixLocationBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.fixLocationBtn)
+
+        dialog = dialogBuilder.create()
+        dialog.show()
+
+        fixLocationBtn.visibility = View.INVISIBLE // button not needed here
+
+        confirmButton.setOnClickListener {
+            dialog.dismiss()
+            finishAffinity()
+            exitProcess(-1) // close the application entirely
+        }
 
     }
 }

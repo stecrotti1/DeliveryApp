@@ -1,9 +1,14 @@
 package com.android.deliveryapp.client
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientChatBinding
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.google.firebase.auth.FirebaseAuth
@@ -48,6 +53,12 @@ class ClientChatActivity : AppCompatActivity() {
                 }
                 .addOnFailureListener { e ->
                     Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.no_chat_found),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    finish()
                 }
 
             binding.sendMsgBtn.setOnClickListener {
@@ -96,5 +107,14 @@ class ClientChatActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    // hide keyboard when user clicks outside EditText
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(event)
     }
 }

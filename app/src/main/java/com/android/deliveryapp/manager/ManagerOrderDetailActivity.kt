@@ -45,7 +45,7 @@ class ManagerOrderDetailActivity : AppCompatActivity() {
 
         binding.selectRidersBtn.setOnClickListener {
             val intent = Intent(this@ManagerOrderDetailActivity,
-                    RidersListActivity::class.java)
+                    ManagerRidersListActivity::class.java)
             intent.putExtra("clientEmail", email)
             intent.putExtra("orderDate", date)
 

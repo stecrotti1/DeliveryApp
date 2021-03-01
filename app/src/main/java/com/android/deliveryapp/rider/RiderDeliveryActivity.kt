@@ -70,12 +70,16 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 binding.riderChatManagerBtn.visibility = View.INVISIBLE
                 binding.riderChatClientBtn.visibility = View.INVISIBLE
 
+                binding.endDeliverySuccessBtn.visibility = View.VISIBLE
+                binding.endDeliveryFailureBtn.visibility = View.VISIBLE
                 binding.startDeliveryBtn.visibility = View.VISIBLE
             } else {
                 binding.deliveryMap.visibility = View.VISIBLE
                 binding.riderChatManagerBtn.visibility = View.VISIBLE
                 binding.riderChatClientBtn.visibility = View.VISIBLE
 
+                binding.endDeliverySuccessBtn.visibility = View.INVISIBLE
+                binding.endDeliveryFailureBtn.visibility = View.INVISIBLE
                 binding.startDeliveryBtn.visibility = View.INVISIBLE
             }
 
@@ -87,6 +91,8 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 binding.riderChatManagerBtn.visibility = View.VISIBLE
                 binding.riderChatClientBtn.visibility = View.VISIBLE
 
+                binding.endDeliverySuccessBtn.visibility = View.INVISIBLE
+                binding.endDeliveryFailureBtn.visibility = View.INVISIBLE
                 binding.startDeliveryBtn.visibility = View.INVISIBLE
 
                 // finally remove from rider orders

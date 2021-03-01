@@ -136,4 +136,9 @@
     <string name="location_distance_error">Sfortunatamente sei troppo lontano dall\'area di servizio. Devi essere minimo 10 Km distante dal Market</string>
     <string name="too_far_title">Sei troppo lontano :(</string>
     <string name="fix_my_location">Correggi posizione</string>
+    <string name="select_rider">Seleziona un rider per chattare</string>
+    <string name="manager_existence_error">Il Gestore è già esistente!</string>
+    <string name="no_chat_found">Nessuna chat trovata</string>
+    <string name="delivery_failure">Consegna fallita</string>
+    <string name="delivery_success">Ordine evaso</string>
 </resources>

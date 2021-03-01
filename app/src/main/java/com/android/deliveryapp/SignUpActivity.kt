@@ -93,13 +93,54 @@ class SignUpActivity : AppCompatActivity() {
                     editor.putBoolean(isRegistered, true) // user flagged as registered
                     editor.apply()
 
-                    saveUserInfo(sharedPreferences.getString(userType, null), firestore, email.text.toString())
-
                     when (sharedPreferences.getString(userType, null)) {
-                        CLIENT -> startActivity(Intent(this@SignUpActivity, ClientProfileActivity::class.java))
-                        RIDER -> startActivity(Intent(this@SignUpActivity, RiderProfileActivity::class.java))
-                        MANAGER -> startActivity(Intent(this@SignUpActivity, ManagerHomeActivity::class.java))
-
+                        CLIENT -> {
+                            saveUserInfo(
+                                sharedPreferences.getString(userType, null),
+                                firestore,
+                                email.text.toString()
+                            )
+                            startActivity(Intent(
+                                this@SignUpActivity,
+                                ClientProfileActivity::class.java
+                            ))
+                        }
+                        RIDER -> {
+                            saveUserInfo(
+                                sharedPreferences.getString(userType, null),
+                                firestore,
+                                email.text.toString()
+                            )
+                            startActivity(Intent(
+                                this@SignUpActivity,
+                                RiderProfileActivity::class.java
+                            ))
+                        }
+                        MANAGER -> {
+                            firestore.collection(users).get()
+                                .addOnSuccessListener { result ->
+                                    for (document in result.documents) {
+                                        if (document.getString(userType) as String == MANAGER) { // if manager already exists
+                                            Toast.makeText(
+                                                baseContext,
+                                                getString(R.string.manager_existence_error),
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            return@addOnSuccessListener
+                                        } else {
+                                            saveUserInfo(
+                                                sharedPreferences.getString(userType, null),
+                                                firestore,
+                                                email.text.toString()
+                                            )
+                                            startActivity(Intent(
+                                                this@SignUpActivity,
+                                                ManagerHomeActivity::class.java
+                                            ))
+                                        }
+                                    }
+                                }
+                        }
                     }
                     finish()
 

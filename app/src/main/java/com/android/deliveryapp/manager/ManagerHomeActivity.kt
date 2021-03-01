@@ -137,7 +137,7 @@ class ManagerHomeActivity : AppCompatActivity() {
             this@ManagerHomeActivity,
             ChangeProductImageActivity::class.java
         )
-        intent.putExtra("name", productName.text.toString()) // TODO: 27/02/2021 to check
+        intent.putExtra("name", productName.text.toString())
         
         image.setOnClickListener { // manager wants to modify product image
             startActivity(intent)
@@ -303,7 +303,7 @@ class ManagerHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.ridersList -> {
-                startActivity(Intent(this@ManagerHomeActivity, RidersListActivity::class.java))
+                startActivity(Intent(this@ManagerHomeActivity, ManagerRidersListActivity::class.java))
                 true
             }
             R.id.orders -> {

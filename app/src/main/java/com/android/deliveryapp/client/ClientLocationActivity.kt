@@ -49,7 +49,6 @@ import kotlin.system.exitProcess
  * Client set his home location
  */
 class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
-    // TODO: 25/02/2021 empty search error and too far client can correct position
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityClientLocationBinding
     private lateinit var database: FirebaseFirestore
