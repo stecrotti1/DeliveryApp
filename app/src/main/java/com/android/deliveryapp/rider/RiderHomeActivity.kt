@@ -128,7 +128,7 @@ class RiderHomeActivity : AppCompatActivity() {
         )
 
         firestore.collection(riders).document(riderEmail)
-            .collection(deliveryHistory).document()
+            .collection(deliveryHistory).document(orderList[i].date)
             .set(entry)
             .addOnSuccessListener {
                 Log.d("FIREBASE_FIRESTORE", "Data saved with success")
@@ -137,22 +137,24 @@ class RiderHomeActivity : AppCompatActivity() {
                 Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
             }
 
-        // delete from orders collection so manager isn't notified again of the new order
-        firestore.collection(Keys.orders).get()
-            .addOnSuccessListener { result1 ->
-                for (document in result1.documents) {
-                    for (field in document.data as Map<String, String>) {
-                        if (field.key == orderList[i].clientEmail) {
-                            document.reference.delete()
+        if (deliveryOutcome == ACCEPTED) { // only if it is accepted
+            // delete from orders collection so manager isn't notified again of the new order
+            firestore.collection(Keys.orders).get()
+                    .addOnSuccessListener { result1 ->
+                        for (document in result1.documents) {
+                            for (field in document.data as Map<String, String>) {
+                                if (field.key == orderList[i].clientEmail) {
+                                    document.reference.delete()
 
-                            Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
+                                    Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
+                                }
+                            }
                         }
                     }
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.w("FIREBASE_FIRESTORE", "Error deleting document", e)
-            }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_FIRESTORE", "Error deleting document", e)
+                    }
+        }
     }
 
     private fun getOrders(firestore: FirebaseFirestore, email: String) {

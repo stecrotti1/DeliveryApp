@@ -5,10 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRiderDeliveryBinding
 import com.android.deliveryapp.util.Keys.Companion.ACCEPTED
+import com.android.deliveryapp.util.Keys.Companion.DELIVERED
+import com.android.deliveryapp.util.Keys.Companion.DELIVERY_FAILED
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.delivery
@@ -27,7 +30,6 @@ class RiderDeliveryActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var clientEmail: String
-    private lateinit var managerEmail: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,12 +134,47 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 )
                 intent.putExtra("riderEmail", user.email)
 
-                getManagerEmail(firestore)
-                intent.putExtra("recipientEmail", managerEmail)
+                firestore.collection(users)
+                        .get()
+                        .addOnSuccessListener { result ->
+                            for (document in result.documents) {
+                                if (document.getString(userType) as String == MANAGER) {
+                                    val managerEmail = document.getString(userType) as String
+                                    intent.putExtra("recipientEmail", managerEmail)
+                                }
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("ERROR", "Error getting manager email", e)
+                        }
 
                 startActivity(intent)
             }
+            binding.endDeliverySuccessBtn.setOnClickListener {
+                uploadOnHistory(firestore, date, user.email!!, DELIVERED)
+            }
+            binding.endDeliveryFailureBtn.setOnClickListener {
+                uploadOnHistory(firestore, date, user.email!!, DELIVERY_FAILED)
+            }
         }
+    }
+
+    private fun uploadOnHistory(firestore: FirebaseFirestore, date: String, riderEmail: String, outcome: String) {
+        firestore.collection(riders).document(riderEmail)
+                .collection(deliveryHistory).document(date)
+                .update("outcome", outcome)
+                .addOnSuccessListener {
+                    Log.d("FIREBASE_FIRESTORE", "Data updated with success")
+                    Toast.makeText(baseContext,
+                            getString(R.string.data_update_success),
+                            Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)
+                    Toast.makeText(baseContext,
+                            getString(R.string.error_updating_database),
+                            Toast.LENGTH_LONG).show()
+                }
     }
 
     private fun sendNotificationToClient(riderEmail: String, clientEmail: String) {
@@ -156,21 +193,6 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Log.e("ERROR", e.message.toString())
                 }
-    }
-
-    private fun getManagerEmail(firestore: FirebaseFirestore) {
-        firestore.collection(users)
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result.documents) {
-                    if (document.getString(userType) as String == MANAGER) {
-                        managerEmail = document.getString(userType) as String
-                    }
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.w("ERROR", "Error getting manager email", e)
-            }
     }
 
     private fun getData(firestore: FirebaseFirestore, email: String, date: String, location: String) {

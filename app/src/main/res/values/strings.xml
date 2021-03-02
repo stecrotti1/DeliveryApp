@@ -142,13 +142,19 @@
 
     <string name="ok" translatable="false">OK</string>
 
-    <string name="rider_list_dialog_title">Rider selected: %s</string>
+    <string name="rider_selected_title">Rider selected: %s</string>
 
     <string name="chat_with_rider">Chat with Rider</string>
     <string name="select_for_delivery">Select Rider for delivery</string>
 
     <string name="order_sent_success">Order sent successfully</string>
     <string name="order_sent_failure">Failed to send order</string>
+
+    <string name="rider_info_msg">Rider has %s the order</string>
+    <string name="rider_accept">accepted</string>
+    <string name="rider_reject">rejected</string>
+
+    <string name="rider_has_responded">Rider has responded to your order</string>
 
     <!-- ADD PRODUCT ACTIVITY -->
 

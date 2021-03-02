@@ -24,7 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.io.IOException
 
 class ClientProfileActivity : AppCompatActivity() {
-
+    // TODO: 01/03/2021 home btn and extended btn location 
     private lateinit var binding: ActivityClientProfileBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences

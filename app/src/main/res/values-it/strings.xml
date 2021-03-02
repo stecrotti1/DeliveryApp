@@ -66,7 +66,7 @@
     <string name="your_riders">I tuoi riders</string>
     <string name="error_getting_riders">Errore scaricamento lista rider</string>
     <string name="driver_unavailable">Attenzione, il rider selezionato non è al momento disponibile</string>
-    <string name="rider_list_dialog_title">Rider selezionato: %s</string>
+    <string name="rider_selected_title">Rider selezionato: %s</string>
     <string name="chat_with_rider">Chatta con il Rider</string>
     <string name="select_for_delivery">Seleziona Rider per la consegna</string>
     <string name="order_sent_success">Ordine inviato con successo</string>
@@ -141,4 +141,8 @@
     <string name="no_chat_found">Nessuna chat trovata</string>
     <string name="delivery_failure">Consegna fallita</string>
     <string name="delivery_success">Ordine evaso</string>
+    <string name="rider_info_msg">Il rider ha %s l\'ordine</string>
+    <string name="rider_accept">accettato</string>
+    <string name="rider_reject">rifiutato</string>
+    <string name="rider_has_responded">Il Rider ha risposto al tuo ordine</string>
 </resources>

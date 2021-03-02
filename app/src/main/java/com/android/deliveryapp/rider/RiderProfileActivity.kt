@@ -33,6 +33,7 @@ import java.io.IOException
 import kotlin.math.*
 
 class RiderProfileActivity : AppCompatActivity() {
+    // TODO: 01/03/2021 home btn 
     private lateinit var binding: ActivityRiderProfileBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -97,7 +98,11 @@ class RiderProfileActivity : AppCompatActivity() {
         firestore.collection(riders).document(email)
                 .get()
                 .addOnSuccessListener { result ->
-                    binding.riderStatus.isChecked = result.getBoolean(riderStatus) as Boolean
+                    if (result.getBoolean(riderStatus) == null) {
+                        binding.riderStatus.isChecked = false
+                    } else {
+                        binding.riderStatus.isChecked = result.getBoolean(riderStatus) as Boolean
+                    }
                 }
     }
 

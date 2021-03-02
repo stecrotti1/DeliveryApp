@@ -15,7 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ManagerProfileActivity : AppCompatActivity() {
-
+    // TODO: 01/03/2021 homepage button 
     private lateinit var binding: ActivityManagerProfileBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseFirestore

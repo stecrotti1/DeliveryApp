@@ -12,19 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerRidersListBinding
 import com.android.deliveryapp.manager.adapters.RiderListArrayAdapter
-import com.android.deliveryapp.util.Keys
-import com.android.deliveryapp.util.Keys.Companion.ACCEPTED
-import com.android.deliveryapp.util.Keys.Companion.clients
-import com.android.deliveryapp.util.Keys.Companion.delivery
-import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
 import com.android.deliveryapp.util.Keys.Companion.riderStatus
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.RiderListItem
-import com.android.deliveryapp.util.RiderProductItem
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
-import java.text.DateFormat
 import java.util.*
 
 /**
@@ -52,165 +44,25 @@ class ManagerRidersListActivity : AppCompatActivity() {
         super.onStart()
 
         binding.ridersList.setOnItemClickListener { _, _, i, _ ->
-            showRiderDialog(i)
-        }
-    }
-
-    private fun showRiderDialog(i: Int) {
-        val dialog: AlertDialog?
-
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.manager_rider_list_dialog, null)
-
-        val riderEmail = riderList[i].email
-
-        val dialogBuilder = AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setTitle(getString(R.string.rider_list_dialog_title, riderEmail))
-
-        val chatBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.chatWithRiderBtn)
-        val selectRiderBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.selectBtn)
-
-        dialog = dialogBuilder.create()
-        dialog.show()
-
-        chatBtn.visibility = View.INVISIBLE
-        selectRiderBtn.visibility = View.VISIBLE
-
-        firestore.collection(riders).document(riderEmail)
-            .collection(deliveryHistory)
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result.documents) {
-                    if (document.getString("outcome") as String == ACCEPTED) {
-                        chatBtn.visibility = View.VISIBLE
-                        selectRiderBtn.visibility = View.INVISIBLE
-                        return@addOnSuccessListener
-                    }
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
-            }
-
-
-        chatBtn.setOnClickListener {
-            val intent = Intent(this@ManagerRidersListActivity, ManagerChatActivity::class.java)
-            intent.putExtra("riderEmail", riderList[i].email)
-
-            startActivity(intent)
-            dialog.dismiss()
-        }
-
-        selectRiderBtn.setOnClickListener {
-            if (!riderList[i].availability) {
-                dialog.dismiss()
+            if (!riderList[i].availability) { // if rider isn't available
                 showUnavailabilityDialog()
             } else {
-                val email = intent.getStringExtra("clientEmail")
+                val clientEmail = intent.getStringExtra("clientEmail")
                 val clientOrderDate = intent.getStringExtra("orderDate")
 
-                if (email != null && clientOrderDate != null) {
+                if (clientEmail != null && clientOrderDate != null) {
+                    val intent = Intent(
+                        this@ManagerRidersListActivity,
+                        ManagerRiderActivity::class.java
+                    )
+                    intent.putExtra("riderEmail", riderList[i].email)
+                    intent.putExtra("clientEmail", clientEmail)
+                    intent.putExtra("orderDate", clientOrderDate)
 
-                    sendOrderToRider(firestore, riderList[i].email, email, clientOrderDate)
-                    dialog.dismiss()
+                    startActivity(intent)
                 }
             }
         }
-    }
-
-    private fun getTotalPrice(productList: List<RiderProductItem>): Double {
-        var total = 0.0
-        if (productList.isNotEmpty()) {
-            for (item in productList) {
-                total += (item.price * item.quantity)
-            }
-        }
-        return total
-    }
-
-    private fun getDate(): String {
-        val today: Date = Calendar.getInstance().time
-
-        return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(today)
-    }
-
-    private fun sendOrderToRider(firestore: FirebaseFirestore, rider: String, clientEmail: String, clientOrderDate: String) {
-        val today = getDate()
-
-        var entry: Map<String, Any?>
-
-        // GET CLIENT ADDRESS
-        firestore.collection(clients).document(clientEmail)
-                .get()
-                .addOnSuccessListener { result ->
-                    // GET PRODUCTS
-                    firestore.collection(clients).document(clientEmail)
-                            .collection(Keys.orders).document(clientOrderDate)
-                            .get()
-                            .addOnSuccessListener { result2 ->
-                                var productList: List<RiderProductItem> = emptyList()
-
-                                var price = 0.00
-                                var quantity: Long = 0
-                                var title = ""
-
-                                val paymentType: String = result2.getString("payment") as String
-
-                                for (field in result2.get("products") as ArrayList<Map<String, Any?>>) {
-                                    for (item in field) {
-                                        when(item.key) {
-                                            "price" -> price = item.value as Double
-                                            "quantity" -> quantity = item.value as Long
-                                            "title" -> title = item.value as String
-                                        }
-                                    }
-                                    productList = productList.plus(RiderProductItem(title,
-                                            quantity.toInt(),
-                                            price))
-                                }
-
-                                entry = mapOf(
-                                    "products" to productList,
-                                    "total" to getTotalPrice(productList),
-                                    "address" to result.getGeoPoint("address") as GeoPoint,
-                                    "payment" to paymentType,
-                                    "clientEmail" to clientEmail
-                                )
-
-                                // send cliend position, total price and products
-                                firestore.collection(riders).document(rider)
-                                        .collection(delivery).document(today)
-                                        .set(entry)
-                                        .addOnSuccessListener {
-                                            Toast.makeText(baseContext,
-                                                    getString(R.string.order_sent_success),
-                                                    Toast.LENGTH_SHORT).show()
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Toast.makeText(baseContext,
-                                                    getString(R.string.order_sent_failure),
-                                                    Toast.LENGTH_SHORT).show()
-
-                                            Log.w("FIREBASE_FIRESTORE",
-                                                    "Error sending order",
-                                                    e)
-                                        }
-
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
-                                Toast.makeText(baseContext,
-                                        getString(R.string.failure_data),
-                                        Toast.LENGTH_LONG).show()
-                            }
-                }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASE_FIRESTORE", "Error getting client address", e)
-
-                    Toast.makeText(baseContext,
-                            getString(R.string.error_user_data),
-                            Toast.LENGTH_LONG).show()
-                }
     }
 
     private fun showUnavailabilityDialog() {

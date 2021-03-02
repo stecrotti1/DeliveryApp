@@ -166,8 +166,12 @@ class ShoppingCartActivity : AppCompatActivity() {
                 "products" to products.toList()
         )
 
-        val orderEntry = mapOf(
-            user.email!! to today
+        val orderEntryManager = mapOf(
+                "total" to total,
+                "payment" to paymentType,
+                "date" to today,
+                "products" to products.toList(),
+                "clientEmail" to user.email!!
         )
 
         firestore.collection(clients).document(user.email!!)
@@ -175,8 +179,8 @@ class ShoppingCartActivity : AppCompatActivity() {
                 .set(entry)
                 .addOnSuccessListener {
                             // set user order in firestore so manager can see them
-                            firestore.collection(orders).document()
-                                .set(orderEntry)
+                            firestore.collection(orders).document(today)
+                                .set(orderEntryManager)
                                 .addOnSuccessListener {
                                     for (item in products) {
                                         updateProductQuantity(reference, item.title, item.quantity)
