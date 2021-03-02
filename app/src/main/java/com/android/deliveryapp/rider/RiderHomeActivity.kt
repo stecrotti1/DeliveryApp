@@ -66,7 +66,7 @@ class RiderHomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun showOrderDialog(i: Int, email: String) {
+    private fun showOrderDialog(i: Int, riderEmail: String) {
         val dialog: AlertDialog?
 
         val dialogView = LayoutInflater.from(this).inflate(R.layout.rider_order_dialog, null)
@@ -93,8 +93,9 @@ class RiderHomeActivity : AppCompatActivity() {
 
             dialog.dismiss()
         }
+
         acceptBtn.setOnClickListener {
-            uploadOnHistory(ACCEPTED, i, orders, firestore, email)
+            uploadOnHistory(ACCEPTED, i, orders, firestore, riderEmail)
 
             editor.putBoolean(newDelivery, true)
             editor.apply()
@@ -106,8 +107,31 @@ class RiderHomeActivity : AppCompatActivity() {
 
             dialog.dismiss()
         }
+
         rejectBtn.setOnClickListener {
-            uploadOnHistory(REJECTED, i, orders, firestore, email) // delivery rejected
+            // remove from rider order collection
+            firestore.collection(riders).document(riderEmail)
+                    .collection(delivery).document(orders[i].date)
+                    .delete()
+                    .addOnSuccessListener {
+                        Log.d("FIREBASE_FIRESTORE", "Document removed with success")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_FIRESTORE", "Document removed with success", e)
+                    }
+
+            val temp = orders
+            val date = orders[i].date
+            orders = emptyArray()
+
+            for (item in temp) {
+                if (date != item.date) {
+                    orders = orders.plus(item)
+                }
+            }
+            updateView()
+
+            uploadOnHistory(REJECTED, i, orders, firestore, riderEmail) // delivery rejected
             dialog.dismiss()
         }
     }

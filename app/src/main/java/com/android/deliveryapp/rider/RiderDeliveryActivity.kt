@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RiderDeliveryActivity : AppCompatActivity() {
-
+    // TODO: 02/03/2021 remove chat with client when delivery has finished 
     private lateinit var binding: ActivityRiderDeliveryBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
