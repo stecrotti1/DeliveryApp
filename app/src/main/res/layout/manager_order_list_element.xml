@@ -95,6 +95,27 @@
             android:layout_marginStart="10dp"
             android:layout_below="@id/total"
             android:textAppearance="?android:textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/outcomeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/outcome"
+            android:textColor="@color/black"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/paymentLabel"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/outcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:layout_toEndOf="@id/paymentLabel"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_below="@id/payment"
+            android:textAppearance="?android:textAppearanceMedium" />
         
     </RelativeLayout>
 </LinearLayout>

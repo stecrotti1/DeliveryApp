@@ -8,6 +8,12 @@ class Keys {
         const val RIDER: String = "RIDER"
         const val MANAGER: String = "MANAGER"
 
+        // manager preferences
+        const val managerPref = "managerPref"
+        const val clientEmail = "clientEmail"
+        const val riderEmail = "riderEmail"
+        const val orderDate = "orderDate"
+
         // preferences
         const val userInfo: String = "userInfo"
         const val userType: String = "userType"
@@ -32,6 +38,7 @@ class Keys {
 
         const val newDelivery: String = "newDelivery"
 
+        const val YET_TO_RESPOND: String = "YET_TO_RESPOND"
         const val ACCEPTED: String = "ACCEPTED"
         const val DELIVERED: String = "DELIVERED"
         const val DELIVERY_FAILED: String = "DELIVERY_FAILED"

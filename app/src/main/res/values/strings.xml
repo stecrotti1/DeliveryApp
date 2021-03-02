@@ -154,7 +154,13 @@
     <string name="rider_accept">accepted</string>
     <string name="rider_reject">rejected</string>
 
-    <string name="rider_has_responded">Rider has responded to your order</string>
+    <string name="rider_has_responded">Rider has updated order outcome</string>
+
+    <string name="select_another_rider">Select another rider</string>
+
+    <string name="yet_to_respond">Rider has yet to respond</string>
+
+    <string name="outcome">Outcome: </string>
 
     <!-- ADD PRODUCT ACTIVITY -->
 
@@ -231,7 +237,7 @@
     <string name="new_order_notification_msg">You have a new order</string>
     <string name="new_order_description">A new order has been sent to your market</string>
 
-    <string name="incoming_orders">Incoming orders</string>
+    <string name="incoming_orders">Orders</string>
 
     <string name="failure_data">Failed to get data</string>
 

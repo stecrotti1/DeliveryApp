@@ -110,7 +110,7 @@
     <string name="client_email">Email:</string>
     <string name="new_order_notification_msg">Hai un nuovo ordine</string>
     <string name="new_order_description">Un nuovo ordine è stato inviato al tuo market</string>
-    <string name="incoming_orders">Ordini in arrivo</string>
+    <string name="incoming_orders">Ordini</string>
     <string name="failure_data">Errore nel ricevere dati</string>
     <string name="location_hint">Indirizzo</string>
     <string name="email_hint">Email</string>
@@ -144,5 +144,8 @@
     <string name="rider_info_msg">Il rider ha %s l\'ordine</string>
     <string name="rider_accept">accettato</string>
     <string name="rider_reject">rifiutato</string>
-    <string name="rider_has_responded">Il Rider ha risposto al tuo ordine</string>
+    <string name="rider_has_responded">Il Rider ha aggiornato lo stato dell\'ordine</string>
+    <string name="yet_to_respond">In attesa di risposta dal Rider</string>
+    <string name="outcome">Esito:</string>
+    <string name="select_another_rider">Seleziona un altro rider</string>
 </resources>

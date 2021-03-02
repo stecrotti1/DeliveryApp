@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.client.adapters.ShoppingCartArrayAdapter
 import com.android.deliveryapp.databinding.ActivityShoppingCartBinding
+import com.android.deliveryapp.util.Keys.Companion.YET_TO_RESPOND
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.orders
@@ -171,7 +172,8 @@ class ShoppingCartActivity : AppCompatActivity() {
                 "payment" to paymentType,
                 "date" to today,
                 "products" to products.toList(),
-                "clientEmail" to user.email!!
+                "clientEmail" to user.email!!,
+                "outcome" to YET_TO_RESPOND
         )
 
         firestore.collection(clients).document(user.email!!)

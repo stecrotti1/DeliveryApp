@@ -7,6 +7,7 @@
     tools:context=".manager.ManagerRiderActivity">
 
     <TextView
+        android:id="@+id/riderSelected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rider_selected_title"
@@ -43,7 +44,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="60dp"
         android:text="@string/rider_info_msg"
         android:textColor="@color/black"
         android:textStyle="bold"
@@ -51,5 +51,14 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:textSize="20sp" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/selectAnotherRiderBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_another_rider"
+        android:layout_below="@id/riderInfo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
 
 </RelativeLayout>

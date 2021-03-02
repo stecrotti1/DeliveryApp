@@ -15,7 +15,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ManagerProfileActivity : AppCompatActivity() {
-    // TODO: 01/03/2021 homepage button 
     private lateinit var binding: ActivityManagerProfileBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseFirestore
@@ -37,6 +36,16 @@ class ManagerProfileActivity : AppCompatActivity() {
             binding.managerEmail.setText(user.email) // show orderEmail at the user
             binding.managerEmail.keyListener = null // not editable by user, but still visible
 
+        }
+
+        binding.homepageButton.setOnClickListener {
+            startActivity(
+                Intent(
+                this@ManagerProfileActivity,
+                ManagerHomeActivity::class.java
+            )
+            )
+            finish()
         }
     }
 

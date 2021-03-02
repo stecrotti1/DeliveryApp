@@ -33,7 +33,6 @@ import java.io.IOException
 import kotlin.math.*
 
 class RiderProfileActivity : AppCompatActivity() {
-    // TODO: 01/03/2021 home btn 
     private lateinit var binding: ActivityRiderProfileBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore

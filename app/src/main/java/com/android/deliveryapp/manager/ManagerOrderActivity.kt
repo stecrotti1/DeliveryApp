@@ -1,5 +1,6 @@
 package com.android.deliveryapp.manager
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,9 @@ import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerOrderBinding
 import com.android.deliveryapp.manager.adapters.ManagerOrdersArrayAdapter
 import com.android.deliveryapp.manager.adapters.OrderDetailAdapter
+import com.android.deliveryapp.util.Keys.Companion.clientEmail
+import com.android.deliveryapp.util.Keys.Companion.managerPref
+import com.android.deliveryapp.util.Keys.Companion.orderDate
 import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.ManagerOrderItem
 import com.android.deliveryapp.util.ProductItem
@@ -26,6 +30,9 @@ class ManagerOrderActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var orderList: Array<ManagerOrderItem>
     private lateinit var products: Array<ProductItem>
+
+    private val channelID = "1"
+    private val notificationID = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +73,7 @@ class ManagerOrderActivity : AppCompatActivity() {
 
         products = emptyArray()
 
+        // get product list to show in dialog
         firestore.collection(orders).document(orderList[i].date)
             .get()
             .addOnSuccessListener { result ->
@@ -106,12 +114,19 @@ class ManagerOrderActivity : AppCompatActivity() {
                 ).show()
             }
 
-        riderBtn.setOnClickListener {
-            val intent = Intent(this@ManagerOrderActivity, ManagerRidersListActivity::class.java)
-            intent.putExtra("clientEmail", orderList[i].email)
-            intent.putExtra("orderDate", orderList[i].date)
+        riderBtn.setOnClickListener { // send order to rider
+            val sharedPreferences = getSharedPreferences(managerPref, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
 
-            startActivity(intent)
+            editor.putString(clientEmail, orderList[i].email)
+            editor.putString(orderDate, orderList[i].date)
+
+            editor.apply()
+
+            startActivity(Intent(
+                this@ManagerOrderActivity,
+                ManagerRidersListActivity::class.java
+            ))
         }
     }
 
@@ -124,7 +139,8 @@ class ManagerOrderActivity : AppCompatActivity() {
                                 document.getString("clientEmail") as String,
                                 document.getString("date") as String,
                                 document.getDouble("total") as Double,
-                                document.getString("payment") as String
+                                document.getString("payment") as String,
+                                document.getString("outcome") as String
                         ))
                     }
                     updateView()

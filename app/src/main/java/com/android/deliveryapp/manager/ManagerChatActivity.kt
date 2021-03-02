@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityManagerChatBinding
 import com.android.deliveryapp.rider.RiderChatActivity
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
+import com.android.deliveryapp.util.Keys.Companion.managerPref
+import com.android.deliveryapp.util.Keys.Companion.riderEmail
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -38,7 +40,9 @@ class ManagerChatActivity : AppCompatActivity() {
 
         if (user != null) {
 
-            val riderEmail = intent.getStringExtra("riderEmail")
+            val sharedPreferences = getSharedPreferences(managerPref, Context.MODE_PRIVATE)
+
+            val riderEmail = sharedPreferences.getString(riderEmail, "")
 
             val firestoreChat by lazy {
                 FirebaseFirestore.getInstance().collection(chatCollection)

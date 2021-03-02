@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".manager.ManagerProfileActivity">
 
     <ImageView
@@ -42,5 +43,15 @@
             android:focusable="false"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/homepageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/home"
+        app:icon="@drawable/home"
+        android:layout_below="@id/emailLayout"
+        android:layout_margin="10dp"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

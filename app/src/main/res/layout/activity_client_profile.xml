@@ -62,19 +62,22 @@
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/setLocationBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/is_location_correct"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        app:icon="@drawable/location"
         android:layout_below="@id/locationLayout" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/homepageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/home"
+        android:text="@string/homepage"
+        app:icon="@drawable/home"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
         android:layout_below="@id/setLocationBtn" />

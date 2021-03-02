@@ -131,30 +131,19 @@ class RiderHomeActivity : AppCompatActivity() {
             .collection(deliveryHistory).document(orderList[i].date)
             .set(entry)
             .addOnSuccessListener {
-                Log.d("FIREBASE_FIRESTORE", "Data saved with success")
+                // update also orders for manager
+                firestore.collection(Keys.orders).document(orderList[i].date)
+                    .update("outcome", deliveryOutcome)
+                    .addOnSuccessListener {
+                        Log.d("FIREBASE_FIRESTORE", "Data saved with success")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
+                    }
             }
             .addOnFailureListener { e ->
                 Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
             }
-
-        if (deliveryOutcome == ACCEPTED) { // only if it is accepted
-            // delete from orders collection so manager isn't notified again of the new order
-            firestore.collection(Keys.orders).get()
-                    .addOnSuccessListener { result1 ->
-                        for (document in result1.documents) {
-                            for (field in document.data as Map<String, String>) {
-                                if (field.key == orderList[i].clientEmail) {
-                                    document.reference.delete()
-
-                                    Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
-                                }
-                            }
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASE_FIRESTORE", "Error deleting document", e)
-                    }
-        }
     }
 
     private fun getOrders(firestore: FirebaseFirestore, email: String) {
@@ -279,12 +268,12 @@ class RiderHomeActivity : AppCompatActivity() {
                 )
                 true
             }
-            R.id.currentDelivery -> {
-                true
-            }
             R.id.logout -> {
                 auth.signOut()
-                startActivity(Intent(this@RiderHomeActivity, LoginActivity::class.java))
+                startActivity(Intent(
+                    this@RiderHomeActivity,
+                    LoginActivity::class.java
+                ))
                 finish()
                 true
             }

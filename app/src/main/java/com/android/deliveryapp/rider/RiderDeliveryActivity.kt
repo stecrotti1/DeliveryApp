@@ -17,6 +17,7 @@ import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.delivery
 import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
 import com.android.deliveryapp.util.Keys.Companion.newDelivery
+import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
@@ -97,17 +98,6 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 binding.endDeliveryFailureBtn.visibility = View.INVISIBLE
                 binding.startDeliveryBtn.visibility = View.INVISIBLE
 
-                // finally remove from rider orders
-                firestore.collection(riders).document(auth.currentUser?.email!!)
-                        .collection(delivery).document(date)
-                        .delete()
-                        .addOnSuccessListener {
-                            Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w("FIREBASE_FIRESTORE", "Failed to delete document", e)
-                        }
-
                 sendNotificationToClient(user.email!!, clientEmail)
             }
             binding.deliveryMap.setOnClickListener {
@@ -151,23 +141,36 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             binding.endDeliverySuccessBtn.setOnClickListener {
-                uploadOnHistory(firestore, date, user.email!!, DELIVERED)
+                uploadData(firestore, date, user.email!!, DELIVERED)
             }
             binding.endDeliveryFailureBtn.setOnClickListener {
-                uploadOnHistory(firestore, date, user.email!!, DELIVERY_FAILED)
+                uploadData(firestore, date, user.email!!, DELIVERY_FAILED)
             }
         }
     }
 
-    private fun uploadOnHistory(firestore: FirebaseFirestore, date: String, riderEmail: String, outcome: String) {
+    private fun uploadData(firestore: FirebaseFirestore, date: String, riderEmail: String, outcome: String) {
         firestore.collection(riders).document(riderEmail)
                 .collection(deliveryHistory).document(date)
                 .update("outcome", outcome)
                 .addOnSuccessListener {
-                    Log.d("FIREBASE_FIRESTORE", "Data updated with success")
-                    Toast.makeText(baseContext,
-                            getString(R.string.data_update_success),
-                            Toast.LENGTH_SHORT).show()
+                    // update also in orders
+                    firestore.collection(orders).document(date)
+                        .update("outcome", outcome)
+                        .addOnSuccessListener {
+                            Log.d("FIREBASE_FIRESTORE", "Data updated with success")
+
+                            Toast.makeText(baseContext,
+                                getString(R.string.data_update_success),
+                                Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)
+
+                            Toast.makeText(baseContext,
+                                getString(R.string.error_updating_database),
+                                Toast.LENGTH_LONG).show()
+                        }
                 }
                 .addOnFailureListener { e ->
                     Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)

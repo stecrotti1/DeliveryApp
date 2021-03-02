@@ -16,6 +16,7 @@ import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
 import com.android.deliveryapp.manager.adapters.ManagerArrayAdapter
+import com.android.deliveryapp.util.Keys.Companion.YET_TO_RESPOND
 import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.Keys.Companion.userInfo
@@ -254,18 +255,25 @@ class ManagerHomeActivity : AppCompatActivity() {
                 Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
                 return@addSnapshotListener
             } else {
-                if (value!!.documents.size > 0) {
-                    createNotification(pendingIntent, notificationManager)
-                    createNotificationChannel(channelID,
-                            getString(R.string.app_name),
-                            getString(R.string.new_order_notification_msg),
-                            notificationManager)
+                if (value != null) {
+                    for (document in value.documents) {
+                        if (document.getString("outcome") as String == YET_TO_RESPOND) { // if there is a new order
+                            createNotification(pendingIntent, notificationManager)
+                            createNotificationChannel(channelID,
+                                getString(R.string.app_name),
+                                getString(R.string.new_order_notification_msg),
+                                notificationManager)
+                        }
+                    }
                 }
             }
         }
     }
 
-    private fun createNotification(pendingIntent: PendingIntent, notificationManager: NotificationManager) {
+    private fun createNotification(
+        pendingIntent: PendingIntent,
+        notificationManager: NotificationManager
+    ) {
         val notification = Notification.Builder(this@ManagerHomeActivity, channelID)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(getString(R.string.new_order_notification_msg))
@@ -278,7 +286,12 @@ class ManagerHomeActivity : AppCompatActivity() {
         notificationManager.notify(notificationID, notification)
     }
 
-    private fun createNotificationChannel(id : String, name: String, description: String, notificationManager: NotificationManager) {
+    private fun createNotificationChannel(
+        id: String,
+        name: String,
+        description: String,
+        notificationManager: NotificationManager
+    ) {
         val priority = NotificationManager.IMPORTANCE_HIGH
 
         val channel = NotificationChannel(id, name, priority)
@@ -299,15 +312,24 @@ class ManagerHomeActivity : AppCompatActivity() {
         deleteSharedPreferences(userType)
         return when (item.itemId) {
             R.id.managerProfile -> {
-                startActivity(Intent(this@ManagerHomeActivity, ManagerProfileActivity::class.java))
+                startActivity(Intent(
+                    this@ManagerHomeActivity,
+                    ManagerProfileActivity::class.java
+                ))
                 true
             }
             R.id.ridersList -> {
-                startActivity(Intent(this@ManagerHomeActivity, ManagerRidersListActivity::class.java))
+                startActivity(Intent(
+                    this@ManagerHomeActivity,
+                    ManagerRidersListActivity::class.java
+                ))
                 true
             }
             R.id.orders -> {
-                startActivity(Intent(this@ManagerHomeActivity, ManagerOrderActivity::class.java))
+                startActivity(Intent(
+                    this@ManagerHomeActivity,
+                    ManagerOrderActivity::class.java
+                ))
                 true
             }
             R.id.logout -> {
@@ -317,7 +339,10 @@ class ManagerHomeActivity : AppCompatActivity() {
                 editor.clear() // delete all shared preferences
                 editor.apply()
 
-                startActivity(Intent(this@ManagerHomeActivity, LoginActivity::class.java))
+                startActivity(Intent(
+                    this@ManagerHomeActivity,
+                    LoginActivity::class.java
+                ))
                 finish()
                 true
             }

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".rider.RiderProfileActivity">
 
     <ImageView
@@ -51,13 +52,14 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/emailLayout" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/homepageBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/home"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/riderStatus"
+        app:icon="@drawable/home"
         android:layout_marginTop="10dp" />
 
 </RelativeLayout>

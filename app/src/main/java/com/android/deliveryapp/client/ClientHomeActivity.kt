@@ -61,12 +61,6 @@ class ClientHomeActivity : AppCompatActivity() {
         val databaseRef = database.getReference(productListFirebase)
         auth = FirebaseAuth.getInstance()
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        val intent = Intent(this@ClientHomeActivity, ClientChatActivity::class.java)
-
-        val pendingIntent = PendingIntent.getActivity(this@ClientHomeActivity, 0, intent, 0)
-
         val user = auth.currentUser
 
         if (user != null) {
@@ -359,18 +353,22 @@ class ClientHomeActivity : AppCompatActivity() {
         firestore.collection(chatCollection).get()
                 .addOnSuccessListener { result ->
                     for (document in result.documents) {
-                        if (document.id.contains(email)
-                            && document.getString("NAME") as String == "Rider") {
-                            document.reference.addSnapshotListener { _, error ->
+                        if (document.id.contains(email)) {
+                            document.reference.addSnapshotListener { value, error ->
                                 if (error != null) {
                                     Log.w("FIREBASE_CHAT", "Listen failed", error)
                                     return@addSnapshotListener
                                 } else {
-                                    createNotification(pendingIntent, notificationManager)
-                                    createNotificationChannel(channelID,
+                                    if (value != null // if message sent is from rider notify
+                                        && value.getString("NAME") as String == "Rider") {
+                                        createNotification(pendingIntent, notificationManager)
+                                        createNotificationChannel(
+                                            channelID,
                                             getString(R.string.app_name),
                                             getString(R.string.notification_channel_desc),
-                                            notificationManager)
+                                            notificationManager
+                                        )
+                                    }
                                 }
                             }
                         }

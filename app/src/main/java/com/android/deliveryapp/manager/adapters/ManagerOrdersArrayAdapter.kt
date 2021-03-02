@@ -19,6 +19,7 @@ class ManagerOrdersArrayAdapter(
         var date: TextView? = null
         var total: TextView? = null
         var payment: TextView? = null
+        var outcome: TextView? = null
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -32,6 +33,7 @@ class ManagerOrdersArrayAdapter(
             viewHolder.date = view.findViewById(R.id.date)
             viewHolder.total = view.findViewById(R.id.total)
             viewHolder.payment = view.findViewById(R.id.payment)
+            viewHolder.outcome = view.findViewById(R.id.outcome)
             view.tag = viewHolder
         } else {
             view = convertView
@@ -42,6 +44,8 @@ class ManagerOrdersArrayAdapter(
         holder.date?.text = array[position].date
         holder.total?.text = String.format("%.2f €", array[position].total)
         holder.payment?.text = array[position].payment
+        holder.outcome?.text = array[position].outcome
+
 
         return view
     }
