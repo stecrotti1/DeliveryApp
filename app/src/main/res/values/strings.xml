@@ -63,7 +63,6 @@
     <!-- CLIENT HOME ACTIVITY -->
 
     <string name="welcome">Welcome</string>
-    <string name="home">HomePage</string>
     <string name="products">Products</string>
 
     <string name="error_location_not_provided">You must provide an address in order to buy products!</string>

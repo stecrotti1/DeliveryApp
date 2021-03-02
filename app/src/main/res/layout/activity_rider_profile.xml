@@ -56,7 +56,7 @@
         android:id="@+id/homepageBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/home"
+        android:text="@string/homepage"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/riderStatus"
         app:icon="@drawable/home"

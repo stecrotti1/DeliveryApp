@@ -66,44 +66,7 @@ class ManagerRiderActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { result ->
                 for (document in result.documents) {
-                    when (document.getString("outcome") as String) {
-                        ACCEPTED -> {
-                            binding.chatWithRiderBtn.visibility = View.VISIBLE
-                            binding.selectBtn.visibility = View.INVISIBLE
-
-                            binding.riderInfo.text = getString(R.string.rider_info_msg,
-                                getString(R.string.rider_accept))
-                            binding.riderInfo.visibility = View.VISIBLE
-                            binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
-                        }
-                        REJECTED -> {
-                            binding.chatWithRiderBtn.visibility = View.INVISIBLE
-                            binding.selectBtn.visibility = View.INVISIBLE
-
-                            binding.riderInfo.text = getString(R.string.rider_info_msg,
-                                getString(R.string.rider_reject))
-                            binding.riderInfo.visibility = View.VISIBLE
-                            binding.selectAnotherRiderBtn.visibility = View.VISIBLE
-                        }
-                        DELIVERED -> {
-                            binding.chatWithRiderBtn.visibility = View.VISIBLE
-                            binding.selectBtn.visibility = View.INVISIBLE
-
-                            binding.riderInfo.text = getString(R.string.rider_info_msg,
-                                getString(R.string.delivery_success))
-                            binding.riderInfo.visibility = View.VISIBLE
-                            binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
-                        }
-                        DELIVERY_FAILED -> {
-                            binding.chatWithRiderBtn.visibility = View.VISIBLE
-                            binding.selectBtn.visibility = View.INVISIBLE
-
-                            binding.riderInfo.text = getString(R.string.rider_info_msg,
-                                getString(R.string.delivery_failure))
-                            binding.riderInfo.visibility = View.VISIBLE
-                            binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
-                        }
-                    }
+                    updateView(document.getString("outcome") as String)
                 }
             }
             .addOnFailureListener { e ->
@@ -122,20 +85,67 @@ class ManagerRiderActivity : AppCompatActivity() {
             }
         }
 
+        binding.selectAnotherRiderBtn.setOnClickListener {
+            startActivity(Intent(
+                this@ManagerRiderActivity,
+                ManagerRidersListActivity::class.java
+            ))
+            finish()
+        }
+
+    }
+
+    private fun updateView(outcome: String) {
+        when (outcome) {
+            ACCEPTED -> {
+                binding.chatWithRiderBtn.visibility = View.VISIBLE
+                binding.selectBtn.visibility = View.INVISIBLE
+
+                binding.riderInfo.text = getString(
+                    R.string.rider_info_msg,
+                    getString(R.string.rider_accept)
+                )
+                binding.riderInfo.visibility = View.VISIBLE
+                binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
+            }
+            REJECTED -> {
+                binding.chatWithRiderBtn.visibility = View.INVISIBLE
+                binding.selectBtn.visibility = View.INVISIBLE
+
+                binding.riderInfo.text = getString(
+                    R.string.rider_info_msg,
+                    getString(R.string.rider_reject)
+                )
+                binding.riderInfo.visibility = View.VISIBLE
+                binding.selectAnotherRiderBtn.visibility = View.VISIBLE
+            }
+            DELIVERED -> {
+                binding.chatWithRiderBtn.visibility = View.VISIBLE
+                binding.selectBtn.visibility = View.INVISIBLE
+
+                binding.riderInfo.text = getString(
+                    R.string.rider_info_msg,
+                    getString(R.string.delivery_success)
+                )
+                binding.riderInfo.visibility = View.VISIBLE
+                binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
+            }
+            DELIVERY_FAILED -> {
+                binding.chatWithRiderBtn.visibility = View.VISIBLE
+                binding.selectBtn.visibility = View.INVISIBLE
+
+                binding.riderInfo.text = getString(
+                    R.string.rider_info_msg,
+                    getString(R.string.delivery_failure)
+                )
+                binding.riderInfo.visibility = View.VISIBLE
+                binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
+            }
+        }
     }
 
     override fun onStart() {
         super.onStart()
-
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // reload this activity
-        val refresh = Intent(this@ManagerRiderActivity, ManagerRiderActivity::class.java)
-
-        val pendingIntent = PendingIntent.getActivity(this@ManagerRiderActivity,
-            0,
-            refresh,
-            0)
 
         val sharedPreferences = getSharedPreferences(managerPref, Context.MODE_PRIVATE)
         // listen for rider response
@@ -143,22 +153,14 @@ class ManagerRiderActivity : AppCompatActivity() {
 
         if (orderDate != null) {
             firestore.collection(orders).document(orderDate)
-                .addSnapshotListener { _, error ->
+                .addSnapshotListener { value, error ->
                     if (error != null) {
                         Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
                         return@addSnapshotListener
-                    } else { // FIXME: 02/03/2021 always send notification
-                        // notification
-                        createNotification(
-                            pendingIntent,
-                            notificationManager,
-                        )
-                        createNotificationChannel(
-                            channelID,
-                            getString(R.string.app_name),
-                            getString(R.string.notification_channel_desc),
-                            notificationManager
-                        )
+                    } else {
+                        if (value != null) {
+                            updateView(value.getString("outcome") as String)
+                        }
                     }
                 }
         }

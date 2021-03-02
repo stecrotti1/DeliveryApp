@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.deliveryapp"
-    android:versionCode="47"
-    android:versionName="v0.4.8-a">
+    android:versionCode="50"
+    android:versionName="v0.4.9-a">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -21,7 +21,6 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.DeliveryApp">
-        <activity android:name=".manager.ManagerRiderActivity"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -34,6 +33,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity android:name=".manager.ManagerRiderActivity"
+            android:label="@string/current_delivery"
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".rider.RiderDeliveryHistoryActivity"
             android:label="@string/delivery_history"
@@ -86,16 +88,16 @@
             android:screenOrientation="unspecified" />
         <activity
             android:name=".manager.ManagerHomeActivity"
-            android:label="@string/home"
+            android:label="@string/homepage"
             android:screenOrientation="unspecified"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".rider.RiderHomeActivity"
-            android:label="@string/home"
+            android:label="@string/homepage"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".client.ClientHomeActivity"
-            android:label="@string/home"
+            android:label="@string/homepage"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".LoginActivity"

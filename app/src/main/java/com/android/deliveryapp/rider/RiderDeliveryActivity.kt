@@ -1,6 +1,5 @@
 package com.android.deliveryapp.rider
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,13 +12,12 @@ import com.android.deliveryapp.util.Keys.Companion.ACCEPTED
 import com.android.deliveryapp.util.Keys.Companion.DELIVERED
 import com.android.deliveryapp.util.Keys.Companion.DELIVERY_FAILED
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
+import com.android.deliveryapp.util.Keys.Companion.REJECTED
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.delivery
 import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
-import com.android.deliveryapp.util.Keys.Companion.newDelivery
 import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.Keys.Companion.riders
-import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.Keys.Companion.users
 import com.google.firebase.auth.FirebaseAuth
@@ -50,14 +48,11 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 .collection(deliveryHistory)
                 .get()
                 .addOnSuccessListener { result ->
-
-
                     for (document in result.documents) {
-                        // if it is accepted then it is the current delivery
-                        if (document.getString("outcome") as String == ACCEPTED) {
-                            date = document.getString("date") as String
-                            location = document.getString("location") as String
-                        }
+                        // update view with outcome
+                        date = document.getString("date") as String
+                        location = document.getString("location") as String
+                        updateView(document.getString("outcome") as String)
                     }
                     getData(firestore, user.email!!, date, location)
                 }
@@ -65,37 +60,13 @@ class RiderDeliveryActivity : AppCompatActivity() {
                     Log.w("FIREBASE_FIRESTORE", "Failed to get data", e)
                 }
 
-            val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
-            val editor = sharedPreferences.edit()
-
-            if (sharedPreferences.getBoolean(newDelivery, false)) { // delivery hasn't begun yet
-                binding.deliveryMap.visibility = View.INVISIBLE
-                binding.riderChatManagerBtn.visibility = View.INVISIBLE
-                binding.riderChatClientBtn.visibility = View.INVISIBLE
+            binding.startDeliveryBtn.setOnClickListener {
+                binding.deliveryMap.visibility = View.VISIBLE
+                binding.riderChatManagerBtn.visibility = View.VISIBLE
+                binding.riderChatClientBtn.visibility = View.VISIBLE
 
                 binding.endDeliverySuccessBtn.visibility = View.VISIBLE
                 binding.endDeliveryFailureBtn.visibility = View.VISIBLE
-                binding.startDeliveryBtn.visibility = View.VISIBLE
-            } else {
-                binding.deliveryMap.visibility = View.VISIBLE
-                binding.riderChatManagerBtn.visibility = View.VISIBLE
-                binding.riderChatClientBtn.visibility = View.VISIBLE
-
-                binding.endDeliverySuccessBtn.visibility = View.INVISIBLE
-                binding.endDeliveryFailureBtn.visibility = View.INVISIBLE
-                binding.startDeliveryBtn.visibility = View.INVISIBLE
-            }
-
-            binding.startDeliveryBtn.setOnClickListener {
-                editor.putBoolean(newDelivery, false)
-                editor.apply()
-
-                binding.deliveryMap.visibility = View.VISIBLE
-                binding.riderChatManagerBtn.visibility = View.VISIBLE
-                binding.riderChatClientBtn.visibility = View.VISIBLE
-
-                binding.endDeliverySuccessBtn.visibility = View.INVISIBLE
-                binding.endDeliveryFailureBtn.visibility = View.INVISIBLE
                 binding.startDeliveryBtn.visibility = View.INVISIBLE
 
                 sendNotificationToClient(user.email!!, clientEmail)
@@ -141,10 +112,51 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             binding.endDeliverySuccessBtn.setOnClickListener {
+                updateView(DELIVERED)
+
                 uploadData(firestore, date, user.email!!, DELIVERED)
             }
             binding.endDeliveryFailureBtn.setOnClickListener {
+                updateView(DELIVERY_FAILED)
+
                 uploadData(firestore, date, user.email!!, DELIVERY_FAILED)
+            }
+        }
+    }
+
+    private fun updateView(outcome: String) {
+        when (outcome) {
+            ACCEPTED -> {
+                binding.riderChatManagerBtn.visibility = View.VISIBLE
+                binding.startDeliveryBtn.visibility = View.VISIBLE
+                binding.deliveryMap.visibility = View.VISIBLE
+                binding.riderChatClientBtn.visibility = View.INVISIBLE
+                binding.endDeliverySuccessBtn.visibility = View.INVISIBLE
+                binding.endDeliveryFailureBtn.visibility = View.INVISIBLE
+            }
+            REJECTED -> {
+                binding.riderChatManagerBtn.visibility = View.INVISIBLE
+                binding.startDeliveryBtn.visibility = View.INVISIBLE
+                binding.deliveryMap.visibility = View.VISIBLE
+                binding.riderChatClientBtn.visibility = View.INVISIBLE
+                binding.endDeliverySuccessBtn.visibility = View.INVISIBLE
+                binding.endDeliveryFailureBtn.visibility = View.INVISIBLE
+            }
+            DELIVERED -> {
+                binding.riderChatManagerBtn.visibility = View.VISIBLE
+                binding.startDeliveryBtn.visibility = View.INVISIBLE
+                binding.deliveryMap.visibility = View.INVISIBLE
+                binding.riderChatClientBtn.visibility = View.INVISIBLE
+                binding.endDeliverySuccessBtn.visibility = View.INVISIBLE
+                binding.endDeliveryFailureBtn.visibility = View.INVISIBLE
+            }
+            DELIVERY_FAILED -> {
+                binding.riderChatManagerBtn.visibility = View.VISIBLE
+                binding.startDeliveryBtn.visibility = View.INVISIBLE
+                binding.deliveryMap.visibility = View.VISIBLE
+                binding.riderChatClientBtn.visibility = View.VISIBLE
+                binding.endDeliverySuccessBtn.visibility = View.INVISIBLE
+                binding.endDeliveryFailureBtn.visibility = View.INVISIBLE
             }
         }
     }
@@ -160,9 +172,33 @@ class RiderDeliveryActivity : AppCompatActivity() {
                         .addOnSuccessListener {
                             Log.d("FIREBASE_FIRESTORE", "Data updated with success")
 
-                            Toast.makeText(baseContext,
-                                getString(R.string.data_update_success),
-                                Toast.LENGTH_SHORT).show()
+                            // delivery is finished in both outcomes
+                            if (outcome == DELIVERED || outcome == DELIVERY_FAILED) {
+                                // cancel order in collection "orders"
+                                firestore.collection(orders).document(date)
+                                    .delete()
+                                    .addOnSuccessListener {
+                                        Log.d(
+                                            "FIREBASE_FIRESTORE",
+                                            "Document deleted with success"
+                                        )
+
+                                        Toast.makeText(baseContext,
+                                            getString(R.string.data_update_success),
+                                            Toast.LENGTH_SHORT).show()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w(
+                                            "FIREBASE_FIRESTORE",
+                                            "Failed to update data",
+                                            e
+                                        )
+
+                                        Toast.makeText(baseContext,
+                                            getString(R.string.error_updating_database),
+                                            Toast.LENGTH_LONG).show()
+                                    }
+                            }
                         }
                         .addOnFailureListener { e ->
                             Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)
