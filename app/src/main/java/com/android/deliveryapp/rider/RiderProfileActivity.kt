@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
@@ -25,6 +26,7 @@ import com.android.deliveryapp.util.Keys.Companion.marketDocument
 import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
 import com.android.deliveryapp.util.Keys.Companion.riderStatus
 import com.android.deliveryapp.util.Keys.Companion.riders
+import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -53,14 +55,19 @@ class RiderProfileActivity : AppCompatActivity() {
 
         val user = auth.currentUser
 
+        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
         if (user != null) {
             binding.riderEmail.setText(user.email) // show orderEmail at the user
             binding.riderEmail.keyListener = null // not editable by user, but still visible
 
-            getAvailability(firestore, user.email!!)
+            getAvailability(firestore, user.email!!, sharedPreferences, editor)
 
             binding.riderStatus.setOnCheckedChangeListener { _, isChecked ->
                 uploadToCloud(firestore, user, isChecked)
+                editor.putBoolean(riderStatus, isChecked)
+                editor.apply()
             }
         }
 
@@ -93,14 +100,22 @@ class RiderProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun getAvailability (firestore: FirebaseFirestore, email: String) {
+    private fun getAvailability(
+        firestore: FirebaseFirestore,
+        email: String,
+        sharedPreferences: SharedPreferences,
+        editor: SharedPreferences.Editor
+    ) {
         firestore.collection(riders).document(email)
                 .get()
                 .addOnSuccessListener { result ->
+                    // if cannot get from server, get it from preferences
                     if (result.getBoolean(riderStatus) == null) {
-                        binding.riderStatus.isChecked = false
+                        binding.riderStatus.isChecked = sharedPreferences.getBoolean(riderStatus, false)
                     } else {
                         binding.riderStatus.isChecked = result.getBoolean(riderStatus) as Boolean
+                        editor.putBoolean(riderStatus, binding.riderStatus.isChecked)
+                        editor.apply()
                     }
                 }
     }

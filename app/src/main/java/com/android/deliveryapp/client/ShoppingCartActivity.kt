@@ -25,6 +25,7 @@ import com.android.deliveryapp.util.Keys.Companion.shoppingCart
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.ProductItem
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -62,6 +63,28 @@ class ShoppingCartActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        binding.shoppingListView.setOnItemClickListener { _, _, i, _ -> // remove from cart dialog
+            val dialog: AlertDialog?
+
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.remove_from_cart_dialog,
+                    null)
+
+            val dialogBuilder = AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.remove_from_shopping_cart_title, products[i].title))
+                    .setView(dialogView)
+
+            val removeBtn: FloatingActionButton = dialogView.findViewById(R.id.removeFromCartBtn)
+
+            dialog = dialogBuilder.create()
+            dialog.show()
+
+            removeBtn.setOnClickListener {
+                removeFromShoppingCart(auth, firestore, products[i].title)
+                dialog.dismiss()
+                updateView(products)
+            }
+        }
 
         /*************************+***** PLACE ORDER DIALOG ***************************************/
 
@@ -114,6 +137,7 @@ class ShoppingCartActivity : AppCompatActivity() {
 
                         startActivity(Intent(this@ShoppingCartActivity,
                                 ClientOrdersActivity::class.java))
+                        finish()
                     } else {
                         Toast.makeText(
                             baseContext,
@@ -148,6 +172,57 @@ class ShoppingCartActivity : AppCompatActivity() {
                     startActivity(Intent(this@ShoppingCartActivity, ClientProfileActivity::class.java))
                 }
             }
+        }
+    }
+
+    /**
+     * Remove the document from the sub-collection "shoppingCart"
+     * @param auth firebase auth instance
+     * @param firestore firestore instance
+     * @param title product title to be removed
+     */
+    private fun removeFromShoppingCart(
+            auth: FirebaseAuth,
+            firestore: FirebaseFirestore,
+            title: String
+    ) {
+        val user = auth.currentUser
+
+        val temp = products
+        products = emptyArray()
+
+        for (item in temp) {
+            if (item.title != title) {
+                products = products.plus(item)
+            }
+        }
+
+        if (user != null) {
+            firestore.collection(clients).document(user.email!!)
+                    .collection(shoppingCart).document(title)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        if (result.exists()) { // if it exists then remove it, otherwise, do nothing
+                            result.reference.delete()
+                            Log.d("FIREBASE_FIRESTORE", "Product removed with success")
+                            Toast.makeText(baseContext,
+                                    getString(R.string.product_removed_from_cart_success),
+                                    Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .addOnFailureListener {
+                        Log.w("FIREBASE_FIRESTORE", "Error removing product from cart")
+                        Toast.makeText(baseContext,
+                                getString(R.string.error_removing_from_cart),
+                                Toast.LENGTH_LONG).show()
+                    }
+        } else {
+            auth.currentUser?.reload()
+            Toast.makeText(
+                    baseContext,
+                    getString(R.string.error_user_data),
+                    Toast.LENGTH_LONG
+            ).show()
         }
     }
 

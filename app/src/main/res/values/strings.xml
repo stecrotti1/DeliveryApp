@@ -69,6 +69,8 @@
     <string name="confirm">Confirm</string>
     <string name="error">Warning!</string>
 
+    <string name="remove_from_shopping_cart_title">Remove %s from shopping cart</string>
+
     <string name="add_cart_success">Product added to shopping cart successfully</string>
     <string name="product_removed_from_cart_success">Product removed from cart with success</string>
 
