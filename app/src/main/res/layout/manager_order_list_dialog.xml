@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/selectRidersBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/notification_icon"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        tools:ignore="ContentDescription,RelativeOverlap" />
+
+    <ListView
+        android:id="@+id/orderProductList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        android:dividerHeight="7sp"
+        android:scrollbarSize="1dp" />
+
+</RelativeLayout>

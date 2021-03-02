@@ -10,34 +10,31 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.client.ClientHomeActivity
 import com.android.deliveryapp.databinding.ActivityLoginBinding
-import com.android.deliveryapp.home.ClientHomeActivity
-import com.android.deliveryapp.home.ManagerHomeActivity
-import com.android.deliveryapp.home.RiderHomeActivity
+import com.android.deliveryapp.manager.ManagerHomeActivity
+import com.android.deliveryapp.rider.RiderProfileActivity
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
-import com.android.deliveryapp.util.Keys.Companion.clients
+import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.isLogged
 import com.android.deliveryapp.util.Keys.Companion.isRegistered
-import com.android.deliveryapp.util.Keys.Companion.manager
 import com.android.deliveryapp.util.Keys.Companion.pwd
-import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.Keys.Companion.username
+import com.android.deliveryapp.util.Keys.Companion.users
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var database: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
 
     private val TAG = "EmailPassword"
 
@@ -47,16 +44,19 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        database = FirebaseFirestore.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
 
         binding.submitButton.setOnClickListener {
             loginUser(binding.loginEmail, binding.loginPassword)
-            finish()
         }
 
         binding.signUpLabel.setOnClickListener {
+            editor.clear() // delete all preferences
+            editor.apply()
+
             startActivity(Intent(this@LoginActivity, SelectUserTypeActivity::class.java))
         }
     }
@@ -86,27 +86,13 @@ class LoginActivity : AppCompatActivity() {
 
                 if (binding.rememberUser.isChecked) { // if user wants to be remembered next time
                     editor.putBoolean(isLogged, true) // user must be logged instantly next time
-                    editor.putString(username, binding.loginEmail.text.toString()) // save email
+                    editor.putString(username, binding.loginEmail.text.toString()) // save orderEmail
                     editor.putString(pwd, binding.loginPassword.text.toString()) // save password
                 } else {
                     editor.putBoolean(isLogged, false)
                 }
-                editor.apply()
-                // FIXME: 20/02/2021
-                when (sharedPreferences.getString(userType, null)) {
-                    CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))
-                    RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
-                    MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
-                    else -> { // user hasn't registered preferences, need to get userType on cloud
-                        GlobalScope.launch { // coroutine
-                            when (getUserType(database, editor)) {
-                                CLIENT -> startActivity(Intent(this@LoginActivity, ClientHomeActivity::class.java))
-                                RIDER -> startActivity(Intent(this@LoginActivity, RiderHomeActivity::class.java))
-                                MANAGER -> startActivity(Intent(this@LoginActivity, ManagerHomeActivity::class.java))
-                            }
-                        }
-                    }
-                }
+
+                getUserType(firestore, editor, email.text.toString())
             }
             else {
                 Log.w(TAG, "signInWithEmail:failure", task.exception)
@@ -115,54 +101,59 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun getUserType(database: FirebaseFirestore, editor: SharedPreferences.Editor): String? {
-        val collections = arrayOf(clients, manager, riders)
+    private fun getUserType(firestore: FirebaseFirestore, editor: SharedPreferences.Editor, email: String) {
+        var user = String()
 
-        for (collection in collections) {
-            fetchUser(database, collection, editor)
-        }
-
-        return sharedPreferences.getString(userType, null)
-    }
-
-    private fun fetchUser(database: FirebaseFirestore, collection: String, editor: SharedPreferences.Editor) {
-        database.collection(collection)
+        firestore.collection(users)
             .get()
             .addOnSuccessListener { result ->
-                for (document in result) {
-                    if (document.id == binding.loginEmail.text.toString()) {
-                        when (collection) {
-                            clients -> {
-                                editor.putString(userType, CLIENT)
-                                editor.putBoolean(isRegistered, true)
-                                break
+                for (document in result.documents) {
+                    if (document.id == email) {
+                        user = document.getString(userType) as String
+
+                        editor.putBoolean(isRegistered, true)
+                        editor.apply()
+
+                        when (user) {
+                            CLIENT -> {
+                                editor.putBoolean(hasLocation, true)
+                                startActivity(Intent(
+                                    this@LoginActivity,
+                                    ClientHomeActivity::class.java
+                                ))
+                                finishAffinity()
                             }
-                            manager -> {
-                                editor.putString(userType, MANAGER)
-                                editor.putBoolean(isRegistered, true)
-                                break
+                            RIDER -> {
+                                startActivity(Intent(
+                                    this@LoginActivity,
+                                    RiderProfileActivity::class.java
+                                ))
+                                finishAffinity()
                             }
-                            riders -> {
-                                editor.putString(userType, RIDER)
-                                editor.putBoolean(isRegistered, true)
-                                break
+                            MANAGER -> {
+                                startActivity(Intent(
+                                    this@LoginActivity,
+                                    ManagerHomeActivity::class.java
+                                ))
+                                finishAffinity()
                             }
+                            else -> startActivity(Intent(
+                                this@LoginActivity,
+                                SelectUserTypeActivity::class.java
+                            ))
                         }
                     }
                 }
-                editor.commit() // force instant commit
+                editor.putString(userType, user)
+                editor.apply()
             }
             .addOnFailureListener { e ->
-                Log.w(TAG, "signInWithEmail:failure", e)
-                Toast.makeText(
-                    baseContext,
-                    getString(R.string.login_failure),
-                    Toast.LENGTH_SHORT
-                ).show()
+                Log.w("FIRESTORE", "Failed to get data", e)
+                Toast.makeText(baseContext,
+                    getString(R.string.error_user_data),
+                    Toast.LENGTH_LONG).show()
             }
-        return
     }
-
 
     // hide keyboard when user clicks outside EditText
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {

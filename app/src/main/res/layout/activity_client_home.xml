@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".home.ClientHomeActivity">
+    tools:context=".client.ClientHomeActivity">
 
     <TextView
         android:id="@+id/welcomeLabel"
@@ -27,7 +27,14 @@
         android:layout_below="@+id/welcomeLabel"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp" />
-<!--
+
+    <TextView
+        android:id="@+id/emptyListClient"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/empty"
+        android:layout_centerInParent="true" />
+
     <ListView
         android:id="@+id/productListView"
         android:layout_width="wrap_content"
@@ -35,12 +42,16 @@
         android:layout_centerInParent="true"
         android:layout_below="@+id/productLabel"
         android:layout_margin="20dp"
-        android:scrollbarSize="2dp"/>
-        -->
-    <ImageView
-        android:id="@+id/imageViewTest"
+        android:scrollbarSize="1dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/shoppingCartButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:src="@drawable/cart"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="20dp"
+        tools:ignore="ContentDescription" />
 
 </RelativeLayout>

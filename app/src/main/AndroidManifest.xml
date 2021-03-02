@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.deliveryapp"
-    android:versionCode="4"
-    android:versionName="v0.0.4-a">
+    android:versionCode="50"
+    android:versionName="v0.4.9-a">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -31,45 +33,107 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity android:name=".manager.ManagerRiderActivity"
+            android:label="@string/current_delivery"
+            android:screenOrientation="unspecified" />
         <activity
-            android:name=".home.ManagerHomeActivity"
-            android:label="@string/home"
-            android:screenOrientation="sensor" />
+            android:name=".rider.RiderDeliveryHistoryActivity"
+            android:label="@string/delivery_history"
+            android:screenOrientation="unspecified" />
         <activity
-            android:name=".home.RiderHomeActivity"
-            android:label="@string/home"
-            android:screenOrientation="sensor" />
+            android:name=".manager.ManagerChatActivity"
+            android:label="@string/chat"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".home.ClientHomeActivity"
-            android:label="@string/home"
-            android:screenOrientation="sensor" />
+            android:name=".client.ClientChatActivity"
+            android:label="@string/chat"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".rider.RiderChatActivity"
+            android:label="@string/chat"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".rider.RiderDeliveryActivity"
+            android:label="@string/rider_delivery"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".rider.DeliveryMapActivity"
+            android:label="@string/title_activity_delivery_map"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".manager.ChangeProductImageActivity"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".manager.ManagerOrderActivity"
+            android:label="@string/orders" />
+        <activity
+            android:name=".client.ClientOrdersActivity"
+            android:label="@string/orders"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".client.ShoppingCartActivity"
+            android:label="@string/shopping_cart"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".manager.AddProductActivity"
+            android:label="@string/add_product_activity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".manager.ManagerRidersListActivity"
+            android:label="@string/your_riders"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".manager.ManagerHomeActivity"
+            android:label="@string/homepage"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".rider.RiderHomeActivity"
+            android:label="@string/homepage"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".client.ClientHomeActivity"
+            android:label="@string/homepage"
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/login"
-            android:screenOrientation="sensor"
-            android:windowSoftInputMode="adjustResize" />
+            android:noHistory="true"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".ClientLocationActivity"
+            android:name=".client.ClientLocationActivity"
             android:label="@string/title_activity_location"
-            android:screenOrientation="sensor" />
+            android:screenOrientation="portrait" />
         <activity
-            android:name=".profile.ClientProfileActivity"
-            android:screenOrientation="sensor" />
-        <activity android:name=".profile.RiderProfileActivity"
-            android:screenOrientation="sensor" />
-        <activity android:name=".profile.ManagerProfileActivity"
-            android:screenOrientation="sensor" />
+            android:name=".client.ClientProfileActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".rider.RiderProfileActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name=".manager.ManagerProfileActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".SelectUserTypeActivity"
-            android:screenOrientation="sensor" />
+            android:label="@string/app_name"
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".SignUpActivity"
-            android:screenOrientation="sensor"
-            android:windowSoftInputMode="adjustResize" />
+            android:label="@string/app_name"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

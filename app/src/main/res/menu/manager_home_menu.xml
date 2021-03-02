@@ -10,6 +10,10 @@
         android:title="@string/riders_list" />
 
     <item
+        android:id="@+id/orders"
+        android:title="@string/incoming_orders" />
+
+    <item
         android:id="@+id/logout"
         android:title="@string/logout" />
 

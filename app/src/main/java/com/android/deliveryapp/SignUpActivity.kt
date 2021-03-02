@@ -9,16 +9,17 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.deliveryapp.client.ClientProfileActivity
 import com.android.deliveryapp.databinding.ActivitySignUpBinding
-import com.android.deliveryapp.profile.ClientProfileActivity
-import com.android.deliveryapp.profile.ManagerProfileActivity
-import com.android.deliveryapp.profile.RiderProfileActivity
+import com.android.deliveryapp.manager.ManagerHomeActivity
+import com.android.deliveryapp.rider.RiderProfileActivity
 import com.android.deliveryapp.util.Keys.Companion.CLIENT
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.RIDER
 import com.android.deliveryapp.util.Keys.Companion.isRegistered
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
+import com.android.deliveryapp.util.Keys.Companion.users
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -27,7 +28,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignUpBinding
     private lateinit var auth: FirebaseAuth
-    private lateinit var database: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
 
     private val TAG = "EmailPassword"
 
@@ -37,7 +38,7 @@ class SignUpActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        database = FirebaseFirestore.getInstance() // saves user data in cloud
+        firestore = FirebaseFirestore.getInstance() // saves user data in cloud
 
         binding.nextButton.setOnClickListener {
             signUpUser(binding.email, binding.password, binding.confirmPassword)
@@ -93,9 +94,53 @@ class SignUpActivity : AppCompatActivity() {
                     editor.apply()
 
                     when (sharedPreferences.getString(userType, null)) {
-                        CLIENT -> startActivity(Intent(this@SignUpActivity, ClientProfileActivity::class.java))
-                        RIDER -> startActivity(Intent(this@SignUpActivity, RiderProfileActivity::class.java))
-                        MANAGER -> startActivity(Intent(this@SignUpActivity, ManagerProfileActivity::class.java))
+                        CLIENT -> {
+                            saveUserInfo(
+                                sharedPreferences.getString(userType, null),
+                                firestore,
+                                email.text.toString()
+                            )
+                            startActivity(Intent(
+                                this@SignUpActivity,
+                                ClientProfileActivity::class.java
+                            ))
+                        }
+                        RIDER -> {
+                            saveUserInfo(
+                                sharedPreferences.getString(userType, null),
+                                firestore,
+                                email.text.toString()
+                            )
+                            startActivity(Intent(
+                                this@SignUpActivity,
+                                RiderProfileActivity::class.java
+                            ))
+                        }
+                        MANAGER -> {
+                            firestore.collection(users).get()
+                                .addOnSuccessListener { result ->
+                                    for (document in result.documents) {
+                                        if (document.getString(userType) as String == MANAGER) { // if manager already exists
+                                            Toast.makeText(
+                                                baseContext,
+                                                getString(R.string.manager_existence_error),
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            return@addOnSuccessListener
+                                        } else {
+                                            saveUserInfo(
+                                                sharedPreferences.getString(userType, null),
+                                                firestore,
+                                                email.text.toString()
+                                            )
+                                            startActivity(Intent(
+                                                this@SignUpActivity,
+                                                ManagerHomeActivity::class.java
+                                            ))
+                                        }
+                                    }
+                                }
+                        }
                     }
                     finish()
 
@@ -105,6 +150,22 @@ class SignUpActivity : AppCompatActivity() {
                 }
             }
         return
+    }
+
+    private fun saveUserInfo(userType: String?, firestore: FirebaseFirestore, email: String) {
+
+        val entry = hashMapOf(
+            "userType" to userType
+        )
+
+        firestore.collection(users).document(email)
+            .set(entry)
+            .addOnSuccessListener {
+                Log.d("FIRESTORE", "Document added with success")
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIRESTORE", "Failed to add document", e)
+            }
     }
 
     // hide keyboard when user clicks outside EditText
@@ -119,7 +180,7 @@ class SignUpActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putString("email", binding.email.text.toString())
+        outState.putString("orderEmail", binding.email.text.toString())
         outState.putString("pwd", binding.password.text.toString())
         outState.putString("confirmPwd", binding.confirmPassword.text.toString())
     }
@@ -127,7 +188,7 @@ class SignUpActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
-        binding.email.setText(savedInstanceState.getString("email"))
+        binding.email.setText(savedInstanceState.getString("orderEmail"))
         binding.password.setText(savedInstanceState.getString("pwd"))
         binding.confirmPassword.setText(savedInstanceState.getString("confirmPwd"))
     }
