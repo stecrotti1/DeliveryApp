@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientProfileBinding
+import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.hasLocation
@@ -27,7 +28,7 @@ class ClientProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityClientProfileBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var database: FirebaseFirestore
+    private lateinit var firestore: FirebaseFirestore
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +37,7 @@ class ClientProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        database = FirebaseFirestore.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         supportActionBar?.title = getString(R.string.client)
 
@@ -56,7 +57,7 @@ class ClientProfileActivity : AppCompatActivity() {
             binding.chatWithRiderBtn.visibility = View.VISIBLE
 
             if (user != null) {
-                database.collection(clients).document(user.email!!) // fetch user address from cloud
+                firestore.collection(clients).document(user.email!!) // fetch user address from cloud
                         .get()
                         .addOnSuccessListener { result ->
                             val clientGeoPoint = result.getGeoPoint(clientAddress)
@@ -109,10 +110,29 @@ class ClientProfileActivity : AppCompatActivity() {
         }
 
         binding.chatWithRiderBtn.setOnClickListener {
-            startActivity(Intent(
-                this@ClientProfileActivity,
-                ClientChatActivity::class.java
-            ))
+            // look if there are chats
+            firestore.collection(chatCollection)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result.documents) {
+                            if (document.id.contains(user?.email!!)) {
+                                startActivity(Intent(
+                                        this@ClientProfileActivity,
+                                        ClientChatActivity::class.java
+                                ))
+                            }
+                            Toast.makeText(baseContext,
+                                    getString(R.string.no_chat_found),
+                                    Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_CHAT", "Error getting chats", e)
+
+                        Toast.makeText(baseContext,
+                                getString(R.string.no_chat_found),
+                                Toast.LENGTH_SHORT).show()
+                    }
         }
     }
 

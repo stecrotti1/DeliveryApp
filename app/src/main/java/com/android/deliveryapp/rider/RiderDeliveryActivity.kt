@@ -105,6 +105,8 @@ class RiderDeliveryActivity : AppCompatActivity() {
 
                 uploadData(firestore, date, user.email!!, DELIVERED)
 
+                removeChat(firestore, user.email!!, clientEmail)
+
                 startActivity(Intent(this@RiderDeliveryActivity,
                         RiderDeliveryHistoryActivity::class.java))
 
@@ -113,6 +115,8 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 updateView(DELIVERY_FAILED)
 
                 uploadData(firestore, date, user.email!!, DELIVERY_FAILED)
+
+                removeChat(firestore, user.email!!, clientEmail)
 
                 startActivity(Intent(this@RiderDeliveryActivity,
                         RiderDeliveryHistoryActivity::class.java))
