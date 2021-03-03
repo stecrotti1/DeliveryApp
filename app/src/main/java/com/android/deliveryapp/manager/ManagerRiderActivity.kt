@@ -14,6 +14,7 @@ import com.android.deliveryapp.util.Keys.Companion.ACCEPTED
 import com.android.deliveryapp.util.Keys.Companion.DELIVERED
 import com.android.deliveryapp.util.Keys.Companion.DELIVERY_FAILED
 import com.android.deliveryapp.util.Keys.Companion.REJECTED
+import com.android.deliveryapp.util.Keys.Companion.START
 import com.android.deliveryapp.util.Keys.Companion.YET_TO_RESPOND
 import com.android.deliveryapp.util.Keys.Companion.clientEmail
 import com.android.deliveryapp.util.Keys.Companion.clients
@@ -29,7 +30,7 @@ import com.google.firebase.firestore.GeoPoint
 import java.util.*
 
 class ManagerRiderActivity : AppCompatActivity() {
-
+    // TODO: 03/03/2021 chat notification
     private lateinit var binding: ActivityManagerRiderBinding
     private lateinit var firestore: FirebaseFirestore
 
@@ -52,7 +53,7 @@ class ManagerRiderActivity : AppCompatActivity() {
         binding.riderSelected.text = getString(R.string.rider_selected_title, riderEmail)
 
         binding.chatWithRiderBtn.visibility = View.INVISIBLE
-        binding.selectBtn.visibility = View.VISIBLE
+        binding.selectBtn.visibility = View.INVISIBLE
         binding.riderInfo.visibility = View.INVISIBLE
         binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
 
@@ -99,7 +100,7 @@ class ManagerRiderActivity : AppCompatActivity() {
 
     private fun updateView(outcome: String) {
         when (outcome) {
-            ACCEPTED -> {
+            ACCEPTED, START -> {
                 binding.chatWithRiderBtn.visibility = View.VISIBLE
                 binding.selectBtn.visibility = View.INVISIBLE
 

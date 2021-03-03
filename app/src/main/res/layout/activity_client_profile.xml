@@ -69,6 +69,7 @@
         android:text="@string/is_location_correct"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
+        android:focusable="false"
         app:icon="@drawable/location"
         android:layout_below="@id/locationLayout" />
 

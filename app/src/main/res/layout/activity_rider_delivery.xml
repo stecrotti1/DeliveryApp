@@ -49,6 +49,17 @@
         android:textSize="15sp"
         android:layout_below="@id/deliveryTotalPrice" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/shareLocationBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/share_location"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        tools:ignore="ContentDescription,RelativeOverlap" />
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/startDeliveryBtn"
         android:layout_width="wrap_content"

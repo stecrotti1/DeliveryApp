@@ -33,6 +33,8 @@ class Keys {
         const val manager: String = "manager"
         const val riders: String = "riders"
 
+        const val riderGeopoint = "riderGeopoint"
+
         const val delivery: String = "delivery"
         const val deliveryHistory: String = "deliveryHistory"
 
@@ -40,6 +42,7 @@ class Keys {
 
         const val YET_TO_RESPOND: String = "YET_TO_RESPOND"
         const val ACCEPTED: String = "ACCEPTED"
+        const val START: String = "START"
         const val DELIVERED: String = "DELIVERED"
         const val DELIVERY_FAILED: String = "DELIVERY_FAILED"
         const val REJECTED: String = "REJECTED"

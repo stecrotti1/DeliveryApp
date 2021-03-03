@@ -229,6 +229,12 @@
     <string name="error_updating_database">Error updating database</string>
     <string name="euro" translatable="false">€</string>
 
+    <string name="riders_map" translatable="false">Riders</string>
+
+    <string name="riders_map_title">Riders Map</string>
+    
+    <string name="rider_is_delivering">Delivering</string>
+
     <string name="empty">Empty</string>
 
     <!-- MANAGER ORDER ACTIVITY -->
@@ -280,6 +286,8 @@
     <string name="location_distance_error">Unfortunately you\'re too far from service area. You have to be within 10 Km from the Market</string>
     <string name="too_far_title">You\'re too far :(</string>
     <string name="fix_my_location">Fix location</string>
+    <string name="location_update_success">Location updated with success</string>
+    <string name="location_update_failure">Failed to update location</string>
 
 
 </resources>

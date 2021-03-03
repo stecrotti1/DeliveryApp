@@ -18,7 +18,6 @@ import com.android.deliveryapp.databinding.ActivityClientProfileBinding
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.clients
-import com.android.deliveryapp.util.Keys.Companion.hasLocation
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -48,50 +47,44 @@ class ClientProfileActivity : AppCompatActivity() {
         if (user != null) {
             binding.userEmail.setText(user.email) // show orderEmail at the user
             binding.userEmail.keyListener = null // not editable by user, but still visible
+            binding.location.keyListener = null
         }
 
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
-        // if user has already set the location
-        if (sharedPreferences.getBoolean(hasLocation, false)) {
-            binding.setLocationBtn.visibility = View.INVISIBLE
-            binding.chatWithRiderBtn.visibility = View.VISIBLE
+        binding.chatWithRiderBtn.visibility = View.VISIBLE
 
-            if (user != null) {
-                firestore.collection(clients).document(user.email!!) // fetch user address from cloud
-                        .get()
-                        .addOnSuccessListener { result ->
-                            val clientGeoPoint = result.getGeoPoint(clientAddress)
+        if (user != null) {
+            firestore.collection(clients).document(user.email!!) // fetch user address from cloud
+                    .get()
+                    .addOnSuccessListener { result ->
+                        val clientGeoPoint = result.getGeoPoint(clientAddress)
 
-                            if (clientGeoPoint != null) {
-                                try {
-                                    geocoder = Geocoder(this).getFromLocation(clientGeoPoint.latitude,
-                                            clientGeoPoint.longitude,
-                                            1)
-                                } catch (e: IOException) {
-                                    Log.w("Geocoder", e.message.toString())
-                                }
+                        if (clientGeoPoint != null) {
+                            try {
+                                geocoder = Geocoder(this).getFromLocation(clientGeoPoint.latitude,
+                                        clientGeoPoint.longitude,
+                                        1)
+                            } catch (e: IOException) {
+                                Log.w("Geocoder", e.message.toString())
+                            }
 
-                                if (geocoder != null) {
-                                    binding.location.setText("${geocoder!![0].getAddressLine(0)}, " +
-                                            "${geocoder!![0].adminArea}, " +
-                                            geocoder!![0].postalCode)
-                                }
+                            if (geocoder != null) {
+                                binding.location.setText("${geocoder!![0].getAddressLine(0)}, " +
+                                        "${geocoder!![0].adminArea}, " +
+                                        geocoder!![0].postalCode)
                             }
                         }
-                        .addOnFailureListener {
-                            Toast.makeText(baseContext, getString(R.string.error_user_data), Toast.LENGTH_LONG).show()
-                        }
-            } else {
-                auth.currentUser?.reload()
-                Toast.makeText(
-                        baseContext,
-                        getString(R.string.error_user_data),
-                        Toast.LENGTH_LONG
-                ).show()
-            }
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(baseContext, getString(R.string.error_user_data), Toast.LENGTH_LONG).show()
+                    }
         } else {
-            binding.setLocationBtn.visibility = View.VISIBLE
-            binding.chatWithRiderBtn.visibility = View.INVISIBLE
+            auth.currentUser?.reload()
+            Toast.makeText(
+                    baseContext,
+                    getString(R.string.error_user_data),
+                    Toast.LENGTH_LONG
+            ).show()
         }
 
         binding.setLocationBtn.setOnClickListener {
@@ -121,9 +114,6 @@ class ClientProfileActivity : AppCompatActivity() {
                                         ClientChatActivity::class.java
                                 ))
                             }
-                            Toast.makeText(baseContext,
-                                    getString(R.string.no_chat_found),
-                                    Toast.LENGTH_SHORT).show()
                         }
                     }
                     .addOnFailureListener { e ->

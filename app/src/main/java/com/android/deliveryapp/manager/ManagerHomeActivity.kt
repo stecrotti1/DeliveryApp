@@ -59,6 +59,15 @@ class ManagerHomeActivity : AppCompatActivity() {
             ))
             
         }
+        
+        binding.ridersMapBtn.setOnClickListener {
+            startActivity(
+                Intent(
+                this@ManagerHomeActivity,
+                RidersMapActivity::class.java
+            )
+            )
+        }
     }
 
     private fun fetchDatabase(reference: DatabaseReference) {

@@ -87,6 +87,21 @@ class RiderProfileActivity : AppCompatActivity() {
             ))
             finish()
         }
+
+        binding.currentDeliveryBtn.setOnClickListener {
+            if (sharedPreferences.getBoolean(newDelivery, false)) {
+                startActivity(Intent(
+                    this@RiderProfileActivity,
+                    RiderDeliveryActivity::class.java
+                ))
+            } else {
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.no_current_delivery),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     override fun onStart() {
