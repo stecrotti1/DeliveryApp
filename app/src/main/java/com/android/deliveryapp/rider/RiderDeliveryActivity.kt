@@ -26,6 +26,7 @@ import com.android.deliveryapp.util.Keys.Companion.delivery
 import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
 import com.android.deliveryapp.util.Keys.Companion.newDelivery
 import com.android.deliveryapp.util.Keys.Companion.orders
+import com.android.deliveryapp.util.Keys.Companion.riderStatus
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.google.android.gms.location.*
@@ -92,7 +93,7 @@ class RiderDeliveryActivity : AppCompatActivity() {
             }
 
             /**************************** SHARE LOCATION ******************************/
-
+            // FIXME: 03/03/2021 not sharing
             binding.shareLocationBtn.setOnClickListener {
                 val permission = ContextCompat.checkSelfPermission(
                     this,
@@ -189,8 +190,12 @@ class RiderDeliveryActivity : AppCompatActivity() {
     }
 
     private fun updateLocation(firestore: FirebaseFirestore, location: Location, email: String) {
+        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+
+
         val entry = mapOf(
-            "riderPosition" to GeoPoint(location.latitude, location.longitude)
+            "riderPosition" to GeoPoint(location.latitude, location.longitude),
+            riderStatus to sharedPreferences.getBoolean(riderStatus, false)
         )
 
         firestore.collection(riders).document(email)
@@ -298,32 +303,37 @@ class RiderDeliveryActivity : AppCompatActivity() {
                         .update("outcome", outcome)
                         .addOnSuccessListener {
                             Log.d("FIREBASE_FIRESTORE", "Data updated with success")
-
-                            // delete entry in rider.email/delivery
-                            firestore.collection(riders).document(riderEmail)
+                            if (outcome != START && outcome != ACCEPTED) {
+                                // delete entry in rider.email/delivery
+                                firestore.collection(riders).document(riderEmail)
                                     .collection(delivery).document(date)
-                                .delete()
-                                .addOnSuccessListener {
-                                    Log.d(
-                                        "FIREBASE_FIRESTORE",
-                                        "Document deleted with success"
-                                    )
+                                    .delete()
+                                    .addOnSuccessListener {
+                                        Log.d(
+                                            "FIREBASE_FIRESTORE",
+                                            "Document deleted with success"
+                                        )
 
-                                    Toast.makeText(baseContext,
-                                        getString(R.string.data_update_success),
-                                        Toast.LENGTH_SHORT).show()
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.w(
-                                        "FIREBASE_FIRESTORE",
-                                        "Failed to update data",
-                                        e
-                                    )
+                                        Toast.makeText(
+                                            baseContext,
+                                            getString(R.string.data_update_success),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w(
+                                            "FIREBASE_FIRESTORE",
+                                            "Failed to update data",
+                                            e
+                                        )
 
-                                    Toast.makeText(baseContext,
-                                        getString(R.string.error_updating_database),
-                                        Toast.LENGTH_LONG).show()
-                                }
+                                        Toast.makeText(
+                                            baseContext,
+                                            getString(R.string.error_updating_database),
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                            }
                         }
                         .addOnFailureListener { e ->
                             Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)

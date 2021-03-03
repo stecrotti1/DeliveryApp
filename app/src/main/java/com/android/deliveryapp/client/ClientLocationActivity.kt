@@ -3,6 +3,7 @@ package com.android.deliveryapp.client
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -265,14 +266,12 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
             } else {
-                editor.putBoolean(invalidUser, true)
-                editor.apply()
-                showErrorDialog()
+                showErrorDialog(editor)
             }
         }
     }
 
-    private fun showErrorDialog() {
+    private fun showErrorDialog(editor: SharedPreferences.Editor) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.location_distance_error_dialog, null)
 
         val dialog: AlertDialog?
@@ -288,11 +287,15 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         dialog.show()
 
         confirmButton.setOnClickListener {
+            editor.putBoolean(invalidUser, true)
+            editor.apply()
             dialog.dismiss()
             finishAffinity()
             exitProcess(-1) // close the application entirely
         }
         fixLocationBtn.setOnClickListener {
+            editor.putBoolean(invalidUser, false)
+            editor.apply()
             dialog.dismiss()
         }
     }

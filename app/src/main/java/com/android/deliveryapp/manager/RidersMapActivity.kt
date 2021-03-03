@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import com.android.deliveryapp.R
 import com.android.deliveryapp.util.Keys.Companion.riderGeopoint
 import com.android.deliveryapp.util.Keys.Companion.riders
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -91,6 +92,12 @@ class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                                     .position(LatLng(geoPoint.latitude, geoPoint.longitude))
                                     .snippet(getString(R.string.rider_is_delivering))
                             )
+
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(
+                                geoPoint.latitude,
+                                geoPoint.longitude
+                            ), 10.0F))
+
                         }
                     }
                 }

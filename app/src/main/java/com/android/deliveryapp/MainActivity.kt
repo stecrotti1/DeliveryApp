@@ -49,59 +49,64 @@ class MainActivity : AppCompatActivity() {
 
             if (sharedPreferences.getBoolean(invalidUser, false)) { // if has location > 10 km from market
                 showErrorDialog()
-            }
+            } else {
+                if (sharedPreferences.getBoolean(isRegistered, false)) {
+                    if (sharedPreferences.getBoolean(isLogged, false)) {
+                        val email = sharedPreferences.getString(username, null)
+                        val password = sharedPreferences.getString(pwd, null)
 
-            if (sharedPreferences.getBoolean(isRegistered, false)) {
-                if (sharedPreferences.getBoolean(isLogged, false)) {
-                    val email = sharedPreferences.getString(username, null)
-                    val password = sharedPreferences.getString(pwd, null)
+                        // if client is already registered, so has already a location
+                        editor.putBoolean(hasLocation, true)
+                        editor.apply()
 
-                    // if client is already registered, so has already a location
-                    editor.putBoolean(hasLocation, true)
-                    editor.apply()
-
-                    auth.signInWithEmailAndPassword(email ?: "error", password ?: "error")
-                        .addOnCompleteListener(this) { task ->
-                            if (task.isSuccessful) {
-                                Log.d("FIREBASE_AUTH", "User logged successfully")
-                                when (sharedPreferences.getString(userType, null)) {
-                                    CLIENT -> startActivity(
-                                        Intent(
-                                            this@MainActivity,
-                                            ClientHomeActivity::class.java
+                        auth.signInWithEmailAndPassword(email ?: "error", password ?: "error")
+                            .addOnCompleteListener(this) { task ->
+                                if (task.isSuccessful) {
+                                    Log.d("FIREBASE_AUTH", "User logged successfully")
+                                    when (sharedPreferences.getString(userType, null)) {
+                                        CLIENT -> startActivity(
+                                            Intent(
+                                                this@MainActivity,
+                                                ClientHomeActivity::class.java
+                                            )
                                         )
-                                    )
-                                    RIDER -> startActivity(
-                                        Intent(
-                                            this@MainActivity,
-                                            RiderProfileActivity::class.java
+                                        RIDER -> startActivity(
+                                            Intent(
+                                                this@MainActivity,
+                                                RiderProfileActivity::class.java
+                                            )
                                         )
-                                    )
-                                    MANAGER -> startActivity(
-                                        Intent(
-                                            this@MainActivity,
-                                            ManagerHomeActivity::class.java
+                                        MANAGER -> startActivity(
+                                            Intent(
+                                                this@MainActivity,
+                                                ManagerHomeActivity::class.java
+                                            )
                                         )
-                                    )
-                                    else -> startActivity(
+                                        else -> startActivity(
+                                            Intent(
+                                                this@MainActivity,
+                                                SelectUserTypeActivity::class.java
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    Log.w("FIREBASE_AUTH", "Failed to log user", task.exception)
+                                    startActivity(
                                         Intent(
                                             this@MainActivity,
-                                            SelectUserTypeActivity::class.java
+                                            LoginActivity::class.java
                                         )
                                     )
                                 }
-                            } else {
-                                Log.w("FIREBASE_AUTH", "Failed to log user", task.exception)
-                                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
                             }
-                        }
+                    } else {
+                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                    }
                 } else {
-                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                    editor.putBoolean(hasLocation, false)
+                    editor.apply()
+                    startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
                 }
-            } else {
-                editor.putBoolean(hasLocation, false)
-                editor.apply()
-                startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
             }
         }, 1500) // wait 1.5 seconds, then show the activity
 
