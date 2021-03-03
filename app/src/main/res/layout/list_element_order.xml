@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:minHeight="?android:listPreferredItemHeight"
     android:orientation="horizontal"
-    android:padding="2dp"
-    android:minHeight="?android:listPreferredItemHeight">
+    android:padding="2dp">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -18,60 +18,60 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
             android:text="@string/date"
-            android:textColor="@color/black"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/orderDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
-            android:layout_toEndOf="@id/orderDateLabel"
             android:layout_marginStart="10dp"
-            android:textColor="@color/black"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_toEndOf="@id/orderDateLabel"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/orderTotalPriceLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/total"
-            android:textColor="@color/black"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/orderDate"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_marginTop="10dp"
+            android:text="@string/total"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/orderTotalPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/orderTotalPriceLabel"
-            android:textColor="@color/black"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
             android:layout_below="@id/orderDate"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toEndOf="@id/orderTotalPriceLabel"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/paymentTypeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/payment"
-            android:textColor="@color/black"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/orderTotalPrice"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_marginTop="10dp"
+            android:text="@string/payment"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/paymentType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_toEndOf="@id/paymentTypeLabel"
+            android:layout_below="@id/orderTotalPrice"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_below="@id/orderTotalPrice"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_toEndOf="@id/paymentTypeLabel"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
     </RelativeLayout>
 </LinearLayout>

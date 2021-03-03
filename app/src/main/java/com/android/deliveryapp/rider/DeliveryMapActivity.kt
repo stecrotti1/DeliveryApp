@@ -88,9 +88,11 @@ class DeliveryMapActivity : AppCompatActivity(), OnMapReadyCallback {
         if (geocoder != null) {
             clientPoint = LatLng(geocoder[0].latitude, geocoder[0].longitude)
 
-            mMap.addMarker(MarkerOptions()
-                .position(clientPoint)
-                .title(getString(R.string.client_marker)))
+            mMap.addMarker(
+                MarkerOptions()
+                    .position(clientPoint)
+                    .title(getString(R.string.client_marker))
+            )
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPoint, 12.0F))
         }

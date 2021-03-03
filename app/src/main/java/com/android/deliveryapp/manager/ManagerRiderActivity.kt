@@ -84,15 +84,17 @@ class ManagerRiderActivity : AppCompatActivity() {
 
         binding.selectBtn.setOnClickListener {
             if (clientEmail != null && orderDate != null) {
-                sendOrderToRider(firestore, riderEmail!!, clientEmail, orderDate)
+                sendOrderToRider(firestore, riderEmail, clientEmail, orderDate)
             }
         }
 
         binding.selectAnotherRiderBtn.setOnClickListener {
-            startActivity(Intent(
-                this@ManagerRiderActivity,
-                ManagerRidersListActivity::class.java
-            ))
+            startActivity(
+                Intent(
+                    this@ManagerRiderActivity,
+                    ManagerRidersListActivity::class.java
+                )
+            )
             finish()
         }
 
@@ -196,16 +198,18 @@ class ManagerRiderActivity : AppCompatActivity() {
 
                         for (field in result1.get("products") as ArrayList<*>) {
                             for (item in field as Map<*, *>) {
-                                when(item.key) {
+                                when (item.key) {
                                     "price" -> price = item.value as Double
                                     "quantity" -> quantity = item.value as Long
                                     "title" -> title = item.value as String
                                 }
                             }
                             productList = productList.plus(
-                                RiderProductItem(title,
-                                quantity.toInt(),
-                                price)
+                                RiderProductItem(
+                                    title,
+                                    quantity.toInt(),
+                                    price
+                                )
                             )
                         }
 
@@ -223,34 +227,44 @@ class ManagerRiderActivity : AppCompatActivity() {
                             .collection(delivery).document(clientOrderDate)
                             .set(entry)
                             .addOnSuccessListener {
-                                Toast.makeText(baseContext,
+                                Toast.makeText(
+                                    baseContext,
                                     getString(R.string.order_sent_success),
-                                    Toast.LENGTH_SHORT).show()
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                             .addOnFailureListener { e ->
-                                Toast.makeText(baseContext,
+                                Toast.makeText(
+                                    baseContext,
                                     getString(R.string.order_sent_failure),
-                                    Toast.LENGTH_SHORT).show()
+                                    Toast.LENGTH_SHORT
+                                ).show()
 
-                                Log.w("FIREBASE_FIRESTORE",
+                                Log.w(
+                                    "FIREBASE_FIRESTORE",
                                     "Error sending order",
-                                    e)
+                                    e
+                                )
                             }
 
                     }
                     .addOnFailureListener { e ->
                         Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
-                        Toast.makeText(baseContext,
+                        Toast.makeText(
+                            baseContext,
                             getString(R.string.failure_data),
-                            Toast.LENGTH_LONG).show()
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
             }
             .addOnFailureListener { e ->
                 Log.w("FIREBASE_FIRESTORE", "Error getting client address", e)
 
-                Toast.makeText(baseContext,
+                Toast.makeText(
+                    baseContext,
                     getString(R.string.error_user_data),
-                    Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG
+                ).show()
             }
     }
 
@@ -263,6 +277,7 @@ class ManagerRiderActivity : AppCompatActivity() {
         }
         return total
     }
+
     // when the back button is pressed in actionbar, finish this activity
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

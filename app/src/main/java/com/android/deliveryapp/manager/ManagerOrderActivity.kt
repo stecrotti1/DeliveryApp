@@ -31,9 +31,6 @@ class ManagerOrderActivity : AppCompatActivity() {
     private lateinit var orderList: Array<ManagerOrderItem>
     private lateinit var products: Array<ProductItem>
 
-    private val channelID = "1"
-    private val notificationID = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityManagerOrderBinding.inflate(layoutInflater)
@@ -83,7 +80,7 @@ class ManagerOrderActivity : AppCompatActivity() {
 
                 for (item in result.get("products") as ArrayList<*>) {
                     for (field in item as Map<*, *>) {
-                        when(field.key as String) {
+                        when (field.key as String) {
                             "title" -> title = field.value as String
                             "price" -> price = field.value as Double
                             "quantity" -> quantity = field.value as Long
@@ -96,7 +93,8 @@ class ManagerOrderActivity : AppCompatActivity() {
                             "",
                             price,
                             quantity.toInt()
-                        ))
+                        )
+                    )
                 }
                 productListView.adapter = OrderDetailAdapter(
                     this,
@@ -123,10 +121,12 @@ class ManagerOrderActivity : AppCompatActivity() {
 
             editor.apply()
 
-            startActivity(Intent(
-                this@ManagerOrderActivity,
-                ManagerRidersListActivity::class.java
-            ))
+            startActivity(
+                Intent(
+                    this@ManagerOrderActivity,
+                    ManagerRidersListActivity::class.java
+                )
+            )
         }
     }
 

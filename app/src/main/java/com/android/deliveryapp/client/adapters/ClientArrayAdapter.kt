@@ -22,11 +22,11 @@ class ClientArrayAdapter(
     private val array: Array<ProductItem>
 ) : ArrayAdapter<ProductItem>(activity, layout, array) {
 
-        internal class ViewHolder {
-            var image: ImageView? = null
-            var title: TextView? = null
-            var price: TextView? = null
-        }
+    internal class ViewHolder {
+        var image: ImageView? = null
+        var title: TextView? = null
+        var price: TextView? = null
+    }
 
     @ExperimentalCoilApi
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -56,7 +56,7 @@ class ClientArrayAdapter(
             build()
         }
         holder.title?.text = array[position].title
-        holder.price?.text = String.format( "%.2f€", array[position].price)
+        holder.price?.text = String.format("%.2f€", array[position].price)
 
         return view
     }

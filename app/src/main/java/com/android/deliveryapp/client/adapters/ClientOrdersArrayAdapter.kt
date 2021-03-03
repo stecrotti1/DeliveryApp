@@ -37,7 +37,7 @@ class ClientOrdersArrayAdapter(
 
         val holder = view?.tag as ViewHolder
         holder.date?.text = array[position].date
-        holder.totalPrice?.text = String.format( "%.2f €", array[position].totalPrice)
+        holder.totalPrice?.text = String.format("%.2f €", array[position].totalPrice)
         holder.paymentType?.text = array[position].paymentType
 
         return view

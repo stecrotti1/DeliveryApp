@@ -19,32 +19,32 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="90dp"
-        android:hint="@string/search_location_hint"
-        android:inputType="textPostalAddress"
         android:backgroundTint="@color/white"
+        android:hint="@string/search_location_hint"
         android:imeOptions="actionDone"
+        android:inputType="textPostalAddress"
         tools:ignore="Autofill" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/searchLocationBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/search"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="100dp"
         android:layout_marginBottom="20dp"
+        android:src="@drawable/search"
         tools:ignore="ContentDescription,RelativeOverlap" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/saveLocationBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/save"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="100dp"
         android:layout_marginBottom="20dp"
+        android:src="@drawable/save"
         tools:ignore="ContentDescription" />
 
 </RelativeLayout>

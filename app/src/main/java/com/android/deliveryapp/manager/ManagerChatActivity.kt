@@ -23,8 +23,6 @@ class ManagerChatActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     companion object {
-        const val NAME = "NAME"
-        const val TEXT = "TEXT"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

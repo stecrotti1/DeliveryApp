@@ -124,14 +124,14 @@ class AddProductActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         //called when user presses ALLOW or DENY from Permission Request Popup
-        when(requestCode){
+        when (requestCode) {
             PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED){
+                    PackageManager.PERMISSION_GRANTED
+                ) {
                     //permission from popup was granted
                     showDialog()
-                }
-                else{
+                } else {
                     //permission from popup was denied
                     Toast.makeText(
                         this,
@@ -153,7 +153,7 @@ class AddProductActivity : AppCompatActivity() {
                     crossfade(true)
                 }
             }
-            if (requestCode == IMAGE_GALLERY_CODE){
+            if (requestCode == IMAGE_GALLERY_CODE) {
                 binding.imageView.load(data?.data) {
                     transformations(CircleCropTransformation())
                     crossfade(true)
@@ -304,7 +304,7 @@ class AddProductActivity : AppCompatActivity() {
             return false
         }
         if ((binding.productQty.text.toString().length > 1
-                && binding.productQty.text.toString().startsWith("0"))
+                    && binding.productQty.text.toString().startsWith("0"))
                 || !binding.productQty.text.toString().isDigitsOnly()) {
             binding.productPrice.error = getString(R.string.invalid_quantity)
             binding.productPrice.requestFocus()

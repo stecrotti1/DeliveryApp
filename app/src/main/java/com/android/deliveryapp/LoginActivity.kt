@@ -81,24 +81,33 @@ class LoginActivity : AppCompatActivity() {
 
         auth.signInWithEmailAndPassword(email.text.toString(), password.text.toString())
             .addOnCompleteListener(this) { task ->
-            if (task.isSuccessful) {
-                val editor = sharedPreferences.edit()
+                if (task.isSuccessful) {
+                    val editor = sharedPreferences.edit()
 
-                if (binding.rememberUser.isChecked) { // if user wants to be remembered next time
-                    editor.putBoolean(isLogged, true) // user must be logged instantly next time
-                    editor.putString(username, binding.loginEmail.text.toString()) // save orderEmail
-                    editor.putString(pwd, binding.loginPassword.text.toString()) // save password
+                    if (binding.rememberUser.isChecked) { // if user wants to be remembered next time
+                        editor.putBoolean(isLogged, true) // user must be logged instantly next time
+                        editor.putString(
+                            username,
+                            binding.loginEmail.text.toString()
+                        ) // save orderEmail
+                        editor.putString(
+                            pwd,
+                            binding.loginPassword.text.toString()
+                        ) // save password
+                    } else {
+                        editor.putBoolean(isLogged, false)
+                    }
+
+                    getUserType(firestore, editor, email.text.toString())
                 } else {
-                    editor.putBoolean(isLogged, false)
+                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.login_failure),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-
-                getUserType(firestore, editor, email.text.toString())
             }
-            else {
-                Log.w(TAG, "signInWithEmail:failure", task.exception)
-                Toast.makeText(baseContext, getString(R.string.login_failure), Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     private fun getUserType(firestore: FirebaseFirestore, editor: SharedPreferences.Editor, email: String) {
@@ -117,30 +126,38 @@ class LoginActivity : AppCompatActivity() {
                         when (user) {
                             CLIENT -> {
                                 editor.putBoolean(hasLocation, true)
-                                startActivity(Intent(
-                                    this@LoginActivity,
-                                    ClientHomeActivity::class.java
-                                ))
+                                startActivity(
+                                    Intent(
+                                        this@LoginActivity,
+                                        ClientHomeActivity::class.java
+                                    )
+                                )
                                 finishAffinity()
                             }
                             RIDER -> {
-                                startActivity(Intent(
-                                    this@LoginActivity,
-                                    RiderProfileActivity::class.java
-                                ))
+                                startActivity(
+                                    Intent(
+                                        this@LoginActivity,
+                                        RiderProfileActivity::class.java
+                                    )
+                                )
                                 finishAffinity()
                             }
                             MANAGER -> {
-                                startActivity(Intent(
-                                    this@LoginActivity,
-                                    ManagerHomeActivity::class.java
-                                ))
+                                startActivity(
+                                    Intent(
+                                        this@LoginActivity,
+                                        ManagerHomeActivity::class.java
+                                    )
+                                )
                                 finishAffinity()
                             }
-                            else -> startActivity(Intent(
-                                this@LoginActivity,
-                                SelectUserTypeActivity::class.java
-                            ))
+                            else -> startActivity(
+                                Intent(
+                                    this@LoginActivity,
+                                    SelectUserTypeActivity::class.java
+                                )
+                            )
                         }
                     }
                 }
@@ -149,9 +166,11 @@ class LoginActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.w("FIRESTORE", "Failed to get data", e)
-                Toast.makeText(baseContext,
+                Toast.makeText(
+                    baseContext,
                     getString(R.string.error_user_data),
-                    Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG
+                ).show()
             }
     }
 

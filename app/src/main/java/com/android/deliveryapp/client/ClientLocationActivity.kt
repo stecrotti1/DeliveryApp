@@ -323,12 +323,14 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
      * @param clientPosition the LatLng user position
      */
     private fun showUserLocation(markers: Array<Marker>, googleMap: GoogleMap, clientPosition: LatLng) {
-        markers.plus(googleMap.addMarker( // add marker to the array
-            MarkerOptions()
-                .position(clientPosition)
-                .title(getString(R.string.client_position))
-                .snippet(getString(R.string.client_pos_snippet))
-        ))
+        markers.plus(
+            googleMap.addMarker( // add marker to the array
+                MarkerOptions()
+                    .position(clientPosition)
+                    .title(getString(R.string.client_position))
+                    .snippet(getString(R.string.client_pos_snippet))
+            )
+        )
 
         // animate on current position
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
@@ -340,10 +342,13 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         when (requestCode) {
             LOCATION_REQUEST_CODE -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Unable to show location - permission required",
-                        Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this, "Unable to show location - permission required",
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
-                    val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+                    val mapFragment =
+                        supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
                     mapFragment.getMapAsync(this)
                 }
             }

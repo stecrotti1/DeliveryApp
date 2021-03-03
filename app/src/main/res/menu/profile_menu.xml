@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/homePage"
-        android:title="@string/homepage"  />
+        android:title="@string/homepage" />
 
     <item
         android:id="@+id/logout"

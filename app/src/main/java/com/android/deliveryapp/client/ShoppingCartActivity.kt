@@ -122,8 +122,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                 paymentRadioGroup.setOnCheckedChangeListener { _, i ->
                     if (creditCardRadioButton.isChecked && creditCardRadioButton.id == i) {
                         paymentType = getString(R.string.credit_card)
-                    }
-                    else if (cashRadioButton.isChecked && cashRadioButton.id == i) {
+                    } else if (cashRadioButton.isChecked && cashRadioButton.id == i) {
                         paymentType = getString(R.string.cash)
                     }
                 }
@@ -147,7 +146,7 @@ class ShoppingCartActivity : AppCompatActivity() {
                     }
                 }
 
-            /*************************************************************************************/
+                /*************************************************************************************/
 
             } else {
 
@@ -255,33 +254,37 @@ class ShoppingCartActivity : AppCompatActivity() {
                 .collection(orders).document(today)
                 .set(entry)
                 .addOnSuccessListener {
-                            // set user order in firestore so manager can see them
-                            firestore.collection(orders).document(today)
-                                .set(orderEntryManager)
-                                .addOnSuccessListener {
-                                    for (item in products) {
-                                        updateProductQuantity(reference, item.title, item.quantity)
-                                    }
+                    // set user order in firestore so manager can see them
+                    firestore.collection(orders).document(today)
+                        .set(orderEntryManager)
+                        .addOnSuccessListener {
+                            for (item in products) {
+                                updateProductQuantity(reference, item.title, item.quantity)
+                            }
 
-                                    // empty the shopping cart
-                                    emptyShoppingCart(firestore, user.email!!)
-                                    products = emptyArray()
+                            // empty the shopping cart
+                            emptyShoppingCart(firestore, user.email!!)
+                            products = emptyArray()
 
-                                    // update view
-                                    updateView(products)
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
-                                    Toast.makeText(baseContext,
-                                        getString(R.string.order_failure),
-                                        Toast.LENGTH_LONG).show()
-                                }
+                            // update view
+                            updateView(products)
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
+                            Toast.makeText(
+                                baseContext,
+                                getString(R.string.order_failure),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                 }
                 .addOnFailureListener { e ->
                     Log.w("FIREBASE_FIRESTORE", "Failed to upload data", e)
-                    Toast.makeText(baseContext,
+                    Toast.makeText(
+                        baseContext,
                         getString(R.string.order_failure),
-                        Toast.LENGTH_LONG).show()
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
     }
 
@@ -297,20 +300,28 @@ class ShoppingCartActivity : AppCompatActivity() {
                 reference.child(productTitle).child("quantity")
                     .setValue((oldQuantity - quantity))
                     .addOnSuccessListener {
-                        Log.d("FIREBASE_DATABASE",
-                            "Data uploaded with success")
-                        Toast.makeText(baseContext,
+                        Log.d(
+                            "FIREBASE_DATABASE",
+                            "Data uploaded with success"
+                        )
+                        Toast.makeText(
+                            baseContext,
                             getString(R.string.order_success),
-                            Toast.LENGTH_LONG).show()
+                            Toast.LENGTH_LONG
+                        ).show()
 
                     }
                     .addOnFailureListener { e ->
-                        Log.w("FIREBASE_DATABASE",
+                        Log.w(
+                            "FIREBASE_DATABASE",
                             "Failed to upload data",
-                            e)
-                        Toast.makeText(baseContext,
+                            e
+                        )
+                        Toast.makeText(
+                            baseContext,
                             getString(R.string.order_failure),
-                            Toast.LENGTH_LONG).show()
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
             }
     }
@@ -362,7 +373,8 @@ class ShoppingCartActivity : AppCompatActivity() {
                                     document.getString("title") as String,
                                     "",
                                     document.getDouble("price") as Double,
-                                    document.getLong("qty")!!.toInt())
+                                    document.getLong("qty")!!.toInt()
+                                )
                             )
                         }
 

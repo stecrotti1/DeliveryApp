@@ -93,10 +93,14 @@ class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                                     .snippet(getString(R.string.rider_is_delivering))
                             )
 
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(
-                                geoPoint.latitude,
-                                geoPoint.longitude
-                            ), 10.0F))
+                            mMap.animateCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(
+                                        geoPoint.latitude,
+                                        geoPoint.longitude
+                                    ), 10.0F
+                                )
+                            )
 
                         }
                     }

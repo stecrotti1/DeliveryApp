@@ -78,7 +78,7 @@ class RiderChatActivity : AppCompatActivity() {
     private fun updateChat(reference: DocumentReference) {
         reference.addSnapshotListener { value, error ->
             when {
-            error != null -> Log.e("ERROR", error.message.toString())
+                error != null -> Log.e("ERROR", error.message.toString())
                 value != null && value.exists() -> {
                     with(value) {
                         binding.messageTextView.append("${data?.get(NAME)}:${data?.get(TEXT)}\n")

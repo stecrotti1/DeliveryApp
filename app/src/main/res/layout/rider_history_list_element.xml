@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
@@ -13,8 +13,8 @@
             android:id="@+id/dateLabelHistory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/date_order"
             android:layout_marginStart="10dp"
+            android:text="@string/date_order"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/black" />
 
@@ -31,45 +31,45 @@
             android:id="@+id/locationLabelHistory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/location"
-            android:textColor="@color/black"
             android:layout_below="@id/dateHistory"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:text="@string/location"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/locationHistory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:layout_below="@id/dateHistory"
             android:layout_marginStart="20dp"
-            android:layout_toEndOf="@id/locationLabelHistory"
             android:layout_marginTop="10dp"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_toEndOf="@id/locationLabelHistory"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/outcomeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/distance"
-            android:textColor="@color/black"
             android:layout_below="@+id/locationLabelHistory"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:text="@string/distance"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/outcomeHistory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:layout_below="@+id/locationHistory"
             android:layout_marginStart="20dp"
-            android:layout_toEndOf="@id/outcomeLabel"
             android:layout_marginTop="10dp"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_toEndOf="@id/outcomeLabel"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
     </RelativeLayout>
 </LinearLayout>

@@ -54,7 +54,7 @@ class SignUpActivity : AppCompatActivity() {
         email: TextInputEditText,
         password: TextInputEditText,
         confirmPwd: TextInputEditText
-    ){
+    ) {
         if (email.text.isNullOrEmpty()) {
             email.error = getString(R.string.empty_email)
             email.requestFocus()
@@ -100,10 +100,12 @@ class SignUpActivity : AppCompatActivity() {
                                 firestore,
                                 email.text.toString()
                             )
-                            startActivity(Intent(
-                                this@SignUpActivity,
-                                ClientProfileActivity::class.java
-                            ))
+                            startActivity(
+                                Intent(
+                                    this@SignUpActivity,
+                                    ClientProfileActivity::class.java
+                                )
+                            )
                         }
                         RIDER -> {
                             saveUserInfo(
@@ -111,10 +113,12 @@ class SignUpActivity : AppCompatActivity() {
                                 firestore,
                                 email.text.toString()
                             )
-                            startActivity(Intent(
-                                this@SignUpActivity,
-                                RiderProfileActivity::class.java
-                            ))
+                            startActivity(
+                                Intent(
+                                    this@SignUpActivity,
+                                    RiderProfileActivity::class.java
+                                )
+                            )
                         }
                         MANAGER -> {
                             firestore.collection(users).get()
@@ -133,10 +137,12 @@ class SignUpActivity : AppCompatActivity() {
                                                 firestore,
                                                 email.text.toString()
                                             )
-                                            startActivity(Intent(
-                                                this@SignUpActivity,
-                                                ManagerHomeActivity::class.java
-                                            ))
+                                            startActivity(
+                                                Intent(
+                                                    this@SignUpActivity,
+                                                    ManagerHomeActivity::class.java
+                                                )
+                                            )
                                         }
                                     }
                                 }
@@ -146,7 +152,11 @@ class SignUpActivity : AppCompatActivity() {
 
                 } else {
                     Log.w(TAG, "createUserWithEmail: FAILURE", task.exception)
-                    Toast.makeText(baseContext, getString(R.string.sign_up_failure), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.sign_up_failure),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         return

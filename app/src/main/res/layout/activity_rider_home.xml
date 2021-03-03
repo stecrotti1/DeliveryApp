@@ -9,28 +9,28 @@
         android:id="@+id/homeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/rider_home_label"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:textColor="@color/blue"
-        android:textStyle="bold"
-        android:textSize="30sp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"/>
+        android:text="@string/rider_home_label"
+        android:textColor="@color/blue"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/empty"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:text="@string/empty" />
 
     <ListView
         android:id="@+id/riderOrdersList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:layout_below="@id/homeLabel"
+        android:layout_centerInParent="true"
         android:layout_margin="20dp"
         android:scrollbarSize="1dp" />
 

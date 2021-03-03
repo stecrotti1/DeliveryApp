@@ -109,11 +109,11 @@ class RiderDeliveryActivity : AppCompatActivity() {
                     fusedLocation = LocationServices.getFusedLocationProviderClient(baseContext)
 
                     fusedLocation.lastLocation
-                           .addOnSuccessListener { location: Location? ->
-                               if (location != null) {
-                                   updateLocation(firestore, location, user.email!!)
-                               }
-                           }
+                        .addOnSuccessListener { location: Location? ->
+                            if (location != null) {
+                                updateLocation(firestore, location, user.email!!)
+                            }
+                        }
                 }
             }
 
@@ -338,9 +338,11 @@ class RiderDeliveryActivity : AppCompatActivity() {
                         .addOnFailureListener { e ->
                             Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)
 
-                            Toast.makeText(baseContext,
+                            Toast.makeText(
+                                baseContext,
                                 getString(R.string.error_updating_database),
-                                Toast.LENGTH_LONG).show()
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                 }
                 .addOnFailureListener { e ->

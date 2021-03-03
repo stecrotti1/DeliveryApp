@@ -89,9 +89,13 @@ class ClientChatActivity : AppCompatActivity() {
                 error != null -> Log.e("ERROR", error.message.toString())
                 value != null && value.exists() -> {
                     with(value) {
-                        binding.messageTextView.append("${data?.get(NAME)}:${data?.get(
-                            TEXT
-                        )}\n")
+                        binding.messageTextView.append(
+                            "${data?.get(NAME)}:${
+                                data?.get(
+                                    TEXT
+                                )
+                            }\n"
+                        )
                     }
                 }
             }

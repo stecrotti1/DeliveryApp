@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:minHeight="?android:listPreferredItemHeight"
     android:orientation="horizontal"
-    android:padding="2dp"
-    android:minHeight="?android:listPreferredItemHeight">
+    android:padding="2dp">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -18,104 +18,104 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical|start"
             android:text="@string/client_email"
-            android:textColor="@color/black"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/orderEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|start"
-            android:layout_toEndOf="@id/emailLabel"
             android:layout_marginStart="10dp"
-            android:textColor="@color/black"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_toEndOf="@id/emailLabel"
+            android:gravity="center_vertical|start"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/dateLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|start"
-            android:layout_marginTop="10dp"
-            android:text="@string/date"
-            android:textColor="@color/black"
             android:layout_below="@id/emailLabel"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical|start"
+            android:text="@string/date"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|start"
-            android:layout_toEndOf="@id/dateLabel"
+            android:layout_below="@id/orderEmail"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:textColor="@color/black"
-            android:layout_below="@id/orderEmail"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_toEndOf="@id/dateLabel"
+            android:gravity="center_vertical|start"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/totalLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/total"
-            android:textColor="@color/black"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/date"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_marginTop="10dp"
+            android:text="@string/total"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:layout_below="@id/date"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_toEndOf="@id/totalLabel"
-            android:layout_marginStart="10dp"
-            android:layout_below="@id/date"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/paymentLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/payment"
-            android:textColor="@color/black"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/totalLabel"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_marginTop="10dp"
+            android:text="@string/payment"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/payment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_toEndOf="@id/paymentLabel"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
             android:layout_below="@id/total"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toEndOf="@id/paymentLabel"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/outcomeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/outcome"
-            android:textColor="@color/black"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/paymentLabel"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_marginTop="10dp"
+            android:text="@string/outcome"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/outcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_toEndOf="@id/paymentLabel"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
             android:layout_below="@id/payment"
-            android:textAppearance="?android:textAppearanceMedium" />
-        
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toEndOf="@id/paymentLabel"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/black" />
+
     </RelativeLayout>
 </LinearLayout>

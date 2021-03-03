@@ -9,22 +9,22 @@
         android:id="@+id/imageProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/profile"
         android:layout_above="@id/loginTitle"
-        android:layout_margin="20dp"
         android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        android:src="@drawable/profile"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/loginTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@id/radioGroup"
+        android:layout_centerHorizontal="true"
         android:text="@string/selection_label"
         android:textColor="@color/blue"
         android:textSize="40sp"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@id/radioGroup" />
+        android:textStyle="bold" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
@@ -37,23 +37,23 @@
             android:id="@+id/client"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/client"
+            android:layout_margin="10dp"
             android:checked="true"
-            android:layout_margin="10dp" />
+            android:text="@string/client" />
 
         <RadioButton
             android:id="@+id/rider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/rider"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:text="@string/rider" />
 
         <RadioButton
             android:id="@+id/manager"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/manager"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:text="@string/manager" />
 
     </RadioGroup>
 
@@ -61,18 +61,18 @@
         android:id="@+id/hasAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/has_account"
-        android:layout_centerHorizontal="true"
         android:layout_below="@id/radioGroup"
-        android:clickable="true" />
+        android:layout_centerHorizontal="true"
+        android:clickable="true"
+        android:text="@string/has_account" />
 
     <Button
         android:id="@+id/confirmButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/confirm_button"
+        android:layout_below="@id/hasAccount"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
-        android:layout_below="@id/hasAccount" />
+        android:text="@string/confirm_button" />
 
 </RelativeLayout>

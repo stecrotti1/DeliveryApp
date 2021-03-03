@@ -55,9 +55,6 @@
     <string name="market_position" translatable="false">Market</string>
     <string name="market_snippet">Market is here</string>
 
-    <string name="save_location">Save</string>
-    <string name="search_location">Search</string>
-
     <string name="location_error">Unable to retrieve your current location</string>
 
     <!-- CLIENT HOME ACTIVITY -->
@@ -157,11 +154,7 @@
     <string name="rider_accept">accepted</string>
     <string name="rider_reject">rejected</string>
 
-    <string name="rider_has_responded">Rider has updated order outcome</string>
-
     <string name="select_another_rider">Select another rider</string>
-
-    <string name="yet_to_respond">Rider has yet to respond</string>
 
     <string name="outcome">Outcome: </string>
 
@@ -195,7 +188,6 @@
 
     <!-- ORDER DETAIL ACTIVITY -->
 
-    <string name="order_detail">Order detail</string>
     <string name="order_info">Order of %s</string>
 
     <!-- SHOPPING CART ACTIVITY -->
@@ -232,7 +224,7 @@
     <string name="riders_map" translatable="false">Riders</string>
 
     <string name="riders_map_title">Riders Map</string>
-    
+
     <string name="rider_is_delivering">Delivering</string>
 
     <string name="empty">Empty</string>
@@ -251,7 +243,6 @@
     <string name="failure_data">Failed to get data</string>
 
     <!-- MANAGER RIDER WITH ORDERS -->
-    <string name="select_rider">Select a rider in order to chat with</string>
 
     <!-- hints -->
     <string name="location_hint">Address</string>

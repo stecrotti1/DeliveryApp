@@ -107,10 +107,12 @@ class RiderHomeActivity : AppCompatActivity() {
             editor.putBoolean(newDelivery, true)
             editor.apply()
 
-            startActivity(Intent(
-                this@RiderHomeActivity,
-                RiderDeliveryActivity::class.java
-            ))
+            startActivity(
+                Intent(
+                    this@RiderHomeActivity,
+                    RiderDeliveryActivity::class.java
+                )
+            )
 
             dialog.dismiss()
         }
@@ -157,14 +159,14 @@ class RiderHomeActivity : AppCompatActivity() {
                     .addOnSuccessListener {
                         // update rider.email/delivery
                         firestore.collection(riders).document(riderEmail)
-                                .collection(delivery).document(orderList[i].date)
-                                .update("outcome", deliveryOutcome)
-                                .addOnSuccessListener {
-                                    Log.d("FIREBASE_FIRESTORE", "Data saved with success")
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
-                                }
+                            .collection(delivery).document(orderList[i].date)
+                            .update("outcome", deliveryOutcome)
+                            .addOnSuccessListener {
+                                Log.d("FIREBASE_FIRESTORE", "Data saved with success")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
+                            }
                     }
                     .addOnFailureListener { e ->
                         Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
@@ -194,13 +196,15 @@ class RiderHomeActivity : AppCompatActivity() {
 
                         clientEmail = document.getString("clientEmail") as String
 
-                       try {
-                           geocoder = Geocoder(this).getFromLocation(locationGeoPoint.latitude,
-                                   locationGeoPoint.longitude,
-                                   1)
-                       } catch (e: IOException) {
-                           Log.w("Geocoder", e.message.toString())
-                       }
+                        try {
+                            geocoder = Geocoder(this).getFromLocation(
+                                locationGeoPoint.latitude,
+                                locationGeoPoint.longitude,
+                                1
+                            )
+                        } catch (e: IOException) {
+                            Log.w("Geocoder", e.message.toString())
+                        }
 
                         if (geocoder != null) {
                             location = "${geocoder[0].getAddressLine(0)}, " +
@@ -210,19 +214,21 @@ class RiderHomeActivity : AppCompatActivity() {
 
                         // get market position
                         firestore.collection(marketPosFirestore).document(marketDocument)
-                                .get()
+                            .get()
                                 .addOnSuccessListener { result2 ->
 
                                     marketPoint = result2.getGeoPoint(Keys.fieldPosition) as GeoPoint
 
                                     distance = calculateDistanceFromMarket(marketPoint, locationGeoPoint)
 
-                                    orders = orders.plus(RiderOrderItem(
-                                        date,
-                                        location,
-                                        distance,
-                                        clientEmail
-                                    ))
+                                    orders = orders.plus(
+                                        RiderOrderItem(
+                                            date,
+                                            location,
+                                            distance,
+                                            clientEmail
+                                        )
+                                    )
 
                                     updateView()
                                 }
@@ -289,10 +295,12 @@ class RiderHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.riderProfile -> {
-                startActivity(Intent(
-                    this@RiderHomeActivity,
-                    RiderProfileActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@RiderHomeActivity,
+                        RiderProfileActivity::class.java
+                    )
+                )
                 true
             }
             R.id.currentDelivery -> {
@@ -310,18 +318,20 @@ class RiderHomeActivity : AppCompatActivity() {
             R.id.riderDeliveries -> { // history
                 startActivity(
                     Intent(
-                    this@RiderHomeActivity,
-                    RiderDeliveryHistoryActivity::class.java
-                )
+                        this@RiderHomeActivity,
+                        RiderDeliveryHistoryActivity::class.java
+                    )
                 )
                 true
             }
             R.id.logout -> {
                 auth.signOut()
-                startActivity(Intent(
-                    this@RiderHomeActivity,
-                    LoginActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@RiderHomeActivity,
+                        LoginActivity::class.java
+                    )
+                )
                 finishAffinity()
                 true
             }

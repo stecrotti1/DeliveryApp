@@ -25,7 +25,7 @@ class RiderListArrayAdapter(
         val view: View?
 
         if (convertView == null) {
-            view = activity. layoutInflater.inflate(R.layout.manager_rider_list_element, null)
+            view = activity.layoutInflater.inflate(R.layout.manager_rider_list_element, null)
 
             val viewHolder = ViewHolder()
             viewHolder.email = view.findViewById(R.id.riderEmail)

@@ -50,11 +50,13 @@ class ClientOrdersActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result.documents) {
-                        orderList = orderList.plus(ClientOrderItem(
-                            document.getString("date") as String,
-                            document.getDouble("total") as Double,
-                            document.getString("payment") as String
-                        ))
+                        orderList = orderList.plus(
+                            ClientOrderItem(
+                                document.getString("date") as String,
+                                document.getDouble("total") as Double,
+                                document.getString("payment") as String
+                            )
+                        )
                     }
 
                     orderList.reverse() // order by the last order

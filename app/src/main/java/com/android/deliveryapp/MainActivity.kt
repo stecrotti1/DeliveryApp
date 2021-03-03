@@ -47,7 +47,11 @@ class MainActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
 
-            if (sharedPreferences.getBoolean(invalidUser, false)) { // if has location > 10 km from market
+            if (sharedPreferences.getBoolean(
+                    invalidUser,
+                    false
+                )
+            ) { // if has location > 10 km from market
                 showErrorDialog()
             } else {
                 if (sharedPreferences.getBoolean(isRegistered, false)) {

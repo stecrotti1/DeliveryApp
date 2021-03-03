@@ -9,27 +9,27 @@
         android:id="@+id/yourRidersLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
         android:text="@string/your_riders"
         android:textColor="@color/blue"
-        android:textStyle="bold"
         android:textSize="40sp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/empty"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:text="@string/empty" />
 
     <ListView
         android:id="@+id/ridersList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/yourRidersLabel"
         android:layout_centerInParent="true"
         android:layout_margin="30dp"
-        android:scrollbarSize="1dp"
-        android:layout_below="@id/yourRidersLabel" />
+        android:scrollbarSize="1dp" />
 
 </RelativeLayout>

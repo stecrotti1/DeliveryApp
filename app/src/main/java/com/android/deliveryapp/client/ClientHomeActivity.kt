@@ -140,7 +140,7 @@ class ClientHomeActivity : AppCompatActivity() {
             }
 
             val dialogProductPrice: TextView = dialogView.findViewById(R.id.productPriceDialog)
-            dialogProductPrice.text = String.format( "%.2f €", productList[i].price)
+            dialogProductPrice.text = String.format("%.2f €", productList[i].price)
 
             val productDesc: TextView = dialogView.findViewById(R.id.descriptionDialog)
             productDesc.text = productList[i].description
@@ -167,8 +167,7 @@ class ClientHomeActivity : AppCompatActivity() {
             removeQty.setOnClickListener {
                 if (singleProductCount == 0) {
                     dialog.dismiss()
-                }
-                else {
+                } else {
                     productQty.setText((--singleProductCount).toString())
                 }
             }
@@ -177,12 +176,11 @@ class ClientHomeActivity : AppCompatActivity() {
                 // product desired by the user == quantity available
                 if (singleProductCount == productList[i].quantity) {
                     Toast.makeText(
-                            baseContext,
-                            getString(R.string.error_product_quantity),
-                            Toast.LENGTH_SHORT
+                        baseContext,
+                        getString(R.string.error_product_quantity),
+                        Toast.LENGTH_SHORT
                     ).show()
-                }
-                else {
+                } else {
                     productQty.setText((++singleProductCount).toString())
                 }
             }
@@ -303,7 +301,6 @@ class ClientHomeActivity : AppCompatActivity() {
     }
 
 
-
     private fun listenForDeliveryMessages(firestore: FirebaseFirestore,
                                           pendingIntent: PendingIntent,
                                           notificationManager: NotificationManager,
@@ -374,24 +371,30 @@ class ClientHomeActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         return when (item.itemId) {
             R.id.clientProfile -> {
-                startActivity(Intent(
-                    this@ClientHomeActivity,
-                    ClientProfileActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@ClientHomeActivity,
+                        ClientProfileActivity::class.java
+                    )
+                )
                 true
             }
             R.id.orders -> {
-                startActivity(Intent(
-                    this@ClientHomeActivity,
-                    ClientOrdersActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@ClientHomeActivity,
+                        ClientOrdersActivity::class.java
+                    )
+                )
                 true
             }
             R.id.shoppingCart -> {
-                startActivity(Intent(
-                    this@ClientHomeActivity,
-                    ShoppingCartActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@ClientHomeActivity,
+                        ShoppingCartActivity::class.java
+                    )
+                )
                 true
             }
             R.id.logout -> {
@@ -402,10 +405,12 @@ class ClientHomeActivity : AppCompatActivity() {
                 editor.clear() // delete all shared preferences
                 editor.apply()
 
-                startActivity(Intent(
-                    this@ClientHomeActivity,
-                    LoginActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@ClientHomeActivity,
+                        LoginActivity::class.java
+                    )
+                )
                 finish()
                 true
             }

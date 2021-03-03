@@ -81,19 +81,23 @@ class RiderProfileActivity : AppCompatActivity() {
         }
 
         binding.homepageBtn.setOnClickListener {
-            startActivity(Intent(
-                this@RiderProfileActivity,
-                RiderHomeActivity::class.java
-            ))
+            startActivity(
+                Intent(
+                    this@RiderProfileActivity,
+                    RiderHomeActivity::class.java
+                )
+            )
             finish()
         }
 
         binding.currentDeliveryBtn.setOnClickListener {
             if (sharedPreferences.getBoolean(newDelivery, false)) {
-                startActivity(Intent(
-                    this@RiderProfileActivity,
-                    RiderDeliveryActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@RiderProfileActivity,
+                        RiderDeliveryActivity::class.java
+                    )
+                )
             } else {
                 Toast.makeText(
                     baseContext,
@@ -180,19 +184,21 @@ class RiderProfileActivity : AppCompatActivity() {
                 }
     }
 
-    private fun sendDataToNotification(firestore: FirebaseFirestore,
-                                 pendingIntent: PendingIntent,
-                                 notificationManager: NotificationManager,
-                                 email: String) {
+    private fun sendDataToNotification(
+        firestore: FirebaseFirestore,
+        pendingIntent: PendingIntent,
+        notificationManager: NotificationManager,
+        email: String
+    ) {
         firestore.collection(riders).document(email)
-                .collection(delivery)
-                .get()
-                .addOnSuccessListener { result ->
-                    var location = ""
-                    var locationGeoPoint: GeoPoint
-                    var distance: Double
-                    var marketPoint: GeoPoint
-                    var geocoder: List<Address>? = null
+            .collection(delivery)
+            .get()
+            .addOnSuccessListener { result ->
+                var location = ""
+                var locationGeoPoint: GeoPoint
+                var distance: Double
+                var marketPoint: GeoPoint
+                var geocoder: List<Address>? = null
 
                     for (document in result.documents) {
                         locationGeoPoint = document.getGeoPoint(clientAddress) as GeoPoint
@@ -267,7 +273,12 @@ class RiderProfileActivity : AppCompatActivity() {
         notificationManager.notify(notificationID, notification)
     }
 
-    private fun createNotificationChannel(id : String, name: String, description: String, notificationManager: NotificationManager) {
+    private fun createNotificationChannel(
+        id: String,
+        name: String,
+        description: String,
+        notificationManager: NotificationManager
+    ) {
         val priority = NotificationManager.IMPORTANCE_HIGH
 
         val channel = NotificationChannel(id, name, priority)
@@ -307,7 +318,11 @@ class RiderProfileActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.w("FIREBASEFIRESTORE", "Error adding document", e)
-                Toast.makeText(baseContext, getString(R.string.rider_status_save_failure), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.rider_status_save_failure),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
     }
 

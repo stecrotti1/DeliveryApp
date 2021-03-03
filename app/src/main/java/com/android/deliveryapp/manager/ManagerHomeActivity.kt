@@ -49,29 +49,31 @@ class ManagerHomeActivity : AppCompatActivity() {
         val databaseRef = database.getReference(productListFirebase)
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-        
+
         fetchDatabase(databaseRef)
 
         binding.addProductButton.setOnClickListener {
-            startActivity(Intent(
-                this@ManagerHomeActivity,
-                AddProductActivity::class.java
-            ))
-            
+            startActivity(
+                Intent(
+                    this@ManagerHomeActivity,
+                    AddProductActivity::class.java
+                )
+            )
+
         }
-        
+
         binding.ridersMapBtn.setOnClickListener {
             startActivity(
                 Intent(
-                this@ManagerHomeActivity,
-                RidersMapActivity::class.java
-            )
+                    this@ManagerHomeActivity,
+                    RidersMapActivity::class.java
+                )
             )
         }
     }
 
     private fun fetchDatabase(reference: DatabaseReference) {
-        reference.addValueEventListener(object: ValueEventListener {
+        reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 productList = processItems(snapshot)
 
@@ -148,7 +150,7 @@ class ManagerHomeActivity : AppCompatActivity() {
             ChangeProductImageActivity::class.java
         )
         intent.putExtra("name", productName.text.toString())
-        
+
         image.setOnClickListener { // manager wants to modify product image
             startActivity(intent)
             dialog.dismiss()
@@ -159,15 +161,15 @@ class ManagerHomeActivity : AppCompatActivity() {
             val imageUrl = intent.getStringExtra("url") ?: productList[i].imgUrl
 
             updateItemValues(
-                    reference,
-                    imageUrl,
-                    productName.text.toString().toLowerCase(Locale.ROOT),
-                    productDesc.text.toString(),
-                    productPrice.text.toString().toDouble(),
-                    productQty.text.toString().toInt(),
-                    productTitle
+                reference,
+                imageUrl,
+                productName.text.toString().toLowerCase(Locale.ROOT),
+                productDesc.text.toString(),
+                productPrice.text.toString().toDouble(),
+                productQty.text.toString().toInt(),
+                productTitle
             )
-            
+
             dialog.dismiss()
         }
     }
@@ -269,10 +271,12 @@ class ManagerHomeActivity : AppCompatActivity() {
                         if (document.contains("outcome")
                                 && document.getString("outcome") as String == YET_TO_RESPOND) { // if there is a new order
                             createNotification(pendingIntent, notificationManager)
-                            createNotificationChannel(channelID,
+                            createNotificationChannel(
+                                channelID,
                                 getString(R.string.app_name),
                                 getString(R.string.new_order_notification_msg),
-                                notificationManager)
+                                notificationManager
+                            )
                         }
                     }
                 }

@@ -54,7 +54,8 @@ class ChangeProductImageActivity : AppCompatActivity() {
         if (checkSelfPermission(Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_DENIED ||
             checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            == PackageManager.PERMISSION_DENIED) {
+            == PackageManager.PERMISSION_DENIED
+        ) {
             // permission not enabled
             val permission = arrayOf(
                 Manifest.permission.CAMERA,
@@ -116,18 +117,19 @@ class ChangeProductImageActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         //called when user presses ALLOW or DENY from Permission Request Popup
-        when(requestCode){
+        when (requestCode) {
             PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] ==
-                        PackageManager.PERMISSION_GRANTED) {
+                    PackageManager.PERMISSION_GRANTED
+                ) {
                     //permission from popup was granted
                     openCamera()
                 } else {
                     //permission from popup was denied
                     Toast.makeText(
-                            this,
-                            getString(R.string.camera_permission_denied),
-                            Toast.LENGTH_SHORT
+                        this,
+                        getString(R.string.camera_permission_denied),
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -143,8 +145,7 @@ class ChangeProductImageActivity : AppCompatActivity() {
                     transformations(CircleCropTransformation())
                     crossfade(true)
                 }
-            }
-            else if (requestCode == IMAGE_GALLERY_CODE) {
+            } else if (requestCode == IMAGE_GALLERY_CODE) {
                 binding.imageCaptured.load(data?.data) {
                     transformations(CircleCropTransformation())
                     crossfade(true)
@@ -188,44 +189,50 @@ class ChangeProductImageActivity : AppCompatActivity() {
                 if (task.isComplete && task.isSuccessful) {
 
                     storageReference.child("$name.jpg").downloadUrl
-                            .addOnSuccessListener { url ->
-                                imageUri = url
+                        .addOnSuccessListener { url ->
+                            imageUri = url
 
-                                Log.d("FIREBASE_STORAGE", "Image uploaded with success")
+                            Log.d("FIREBASE_STORAGE", "Image uploaded with success")
 
-                                Toast.makeText(
-                                        baseContext,
-                                        getString(R.string.image_upload_success),
-                                        Toast.LENGTH_SHORT
-                                ).show()
+                            Toast.makeText(
+                                baseContext,
+                                getString(R.string.image_upload_success),
+                                Toast.LENGTH_SHORT
+                            ).show()
 
-                                // then return to home
+                            // then return to home
 
-                                val intent = Intent(this@ChangeProductImageActivity,
-                                        ManagerHomeActivity::class.java)
+                            val intent = Intent(
+                                this@ChangeProductImageActivity,
+                                ManagerHomeActivity::class.java
+                            )
 
-                                intent.putExtra("url", imageUri.toString())
+                            intent.putExtra("url", imageUri.toString())
 
-                                startActivity(intent)
-                            }
-                            .addOnFailureListener { e ->
-                                Log.d("FIREBASE_STORAGE",
-                                        "Error getting download url",
-                                        e)
+                            startActivity(intent)
+                        }
+                        .addOnFailureListener { e ->
+                            Log.d(
+                                "FIREBASE_STORAGE",
+                                "Error getting download url",
+                                e
+                            )
 
-                                Toast.makeText(baseContext,
-                                        getString(R.string.error_image_url),
-                                        Toast.LENGTH_LONG).show()
-                            }
+                            Toast.makeText(
+                                baseContext,
+                                getString(R.string.error_image_url),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                 }
             }
             .addOnFailureListener { e ->
                 Log.w("FIREBASE_STORAGE", "Failed to upload image", e)
 
                 Toast.makeText(
-                        baseContext,
-                        getString(R.string.image_upload_failure),
-                        Toast.LENGTH_SHORT
+                    baseContext,
+                    getString(R.string.image_upload_failure),
+                    Toast.LENGTH_SHORT
                 ).show()
             }
     }

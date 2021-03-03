@@ -41,9 +41,9 @@ class ManagerProfileActivity : AppCompatActivity() {
         binding.homepageButton.setOnClickListener {
             startActivity(
                 Intent(
-                this@ManagerProfileActivity,
-                ManagerHomeActivity::class.java
-            )
+                    this@ManagerProfileActivity,
+                    ManagerHomeActivity::class.java
+                )
             )
             finish()
         }
