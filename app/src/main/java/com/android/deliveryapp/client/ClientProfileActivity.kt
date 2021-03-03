@@ -53,6 +53,7 @@ class ClientProfileActivity : AppCompatActivity() {
         // if user has already set the location
         if (sharedPreferences.getBoolean(hasLocation, false)) {
             binding.setLocationBtn.visibility = View.INVISIBLE
+            binding.chatWithRiderBtn.visibility = View.VISIBLE
 
             if (user != null) {
                 database.collection(clients).document(user.email!!) // fetch user address from cloud
@@ -89,6 +90,7 @@ class ClientProfileActivity : AppCompatActivity() {
             }
         } else {
             binding.setLocationBtn.visibility = View.VISIBLE
+            binding.chatWithRiderBtn.visibility = View.INVISIBLE
         }
 
         binding.setLocationBtn.setOnClickListener {

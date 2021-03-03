@@ -103,8 +103,6 @@ class RiderDeliveryActivity : AppCompatActivity() {
             binding.endDeliverySuccessBtn.setOnClickListener {
                 updateView(DELIVERED)
 
-                removeChat(firestore, user.email!!, clientEmail)
-
                 uploadData(firestore, date, user.email!!, DELIVERED)
 
                 startActivity(Intent(this@RiderDeliveryActivity,
@@ -113,8 +111,6 @@ class RiderDeliveryActivity : AppCompatActivity() {
             }
             binding.endDeliveryFailureBtn.setOnClickListener {
                 updateView(DELIVERY_FAILED)
-
-                removeChat(firestore, user.email!!, clientEmail)
 
                 uploadData(firestore, date, user.email!!, DELIVERY_FAILED)
 
