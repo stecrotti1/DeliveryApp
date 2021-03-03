@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityRiderChatBinding
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
@@ -31,6 +32,9 @@ class RiderChatActivity : AppCompatActivity() {
 
         val riderEmail = intent.getStringExtra("riderEmail")
         val recipientEmail = intent.getStringExtra("recipientEmail")
+
+        if (recipientEmail.isNullOrEmpty())
+            Toast.makeText(baseContext, "EMPTY", Toast.LENGTH_SHORT).show()
 
         val firestoreChat by lazy {
             FirebaseFirestore.getInstance().collection(chatCollection)

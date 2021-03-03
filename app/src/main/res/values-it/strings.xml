@@ -138,8 +138,8 @@
     <string name="select_rider">Seleziona un rider per chattare</string>
     <string name="manager_existence_error">Il Gestore è già esistente!</string>
     <string name="no_chat_found">Nessuna chat trovata</string>
-    <string name="delivery_failure">Consegna fallita</string>
-    <string name="delivery_success">Ordine evaso</string>
+    <string name="delivery_failure">fallito</string>
+    <string name="delivery_success">consegnato con successo</string>
     <string name="rider_info_msg">Il rider ha %s l\'ordine</string>
     <string name="rider_accept">accettato</string>
     <string name="rider_reject">rifiutato</string>
@@ -148,4 +148,5 @@
     <string name="outcome">Esito:</string>
     <string name="select_another_rider">Seleziona un altro rider</string>
     <string name="remove_from_shopping_cart_title">Rimuovi %s dal carrello</string>
+    <string name="no_current_delivery">Non ci sono consegne correnti</string>
 </resources>

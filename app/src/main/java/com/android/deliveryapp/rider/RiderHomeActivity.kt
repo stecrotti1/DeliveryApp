@@ -60,8 +60,15 @@ class RiderHomeActivity : AppCompatActivity() {
         super.onStart()
 
         binding.riderOrdersList.setOnItemClickListener { _, _, i, _ ->
+            val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+
             if (auth.currentUser != null) {
-                showOrderDialog(i, auth.currentUser?.email!!)
+                if (sharedPreferences.getBoolean(newDelivery, false)) {
+                    startActivity(Intent(this@RiderHomeActivity,
+                            RiderDeliveryActivity::class.java))
+                } else {
+                    showOrderDialog(i, auth.currentUser?.email!!)
+                }
             }
         }
     }
@@ -109,17 +116,6 @@ class RiderHomeActivity : AppCompatActivity() {
         }
 
         rejectBtn.setOnClickListener {
-            // remove from rider order collection
-            firestore.collection(riders).document(riderEmail)
-                    .collection(delivery).document(orders[i].date)
-                    .delete()
-                    .addOnSuccessListener {
-                        Log.d("FIREBASE_FIRESTORE", "Document removed with success")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASE_FIRESTORE", "Document removed with success", e)
-                    }
-
             val temp = orders
             val date = orders[i].date
             orders = emptyArray()
@@ -159,7 +155,16 @@ class RiderHomeActivity : AppCompatActivity() {
                 firestore.collection(Keys.orders).document(orderList[i].date)
                     .update("outcome", deliveryOutcome)
                     .addOnSuccessListener {
-                        Log.d("FIREBASE_FIRESTORE", "Data saved with success")
+                        // update rider.email/delivery
+                        firestore.collection(riders).document(riderEmail)
+                                .collection(delivery).document(orderList[i].date)
+                                .update("outcome", deliveryOutcome)
+                                .addOnSuccessListener {
+                                    Log.d("FIREBASE_FIRESTORE", "Data saved with success")
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
+                                }
                     }
                     .addOnFailureListener { e ->
                         Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
@@ -275,7 +280,14 @@ class RiderHomeActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         auth = FirebaseAuth.getInstance()
+
+        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+
         return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
             R.id.riderProfile -> {
                 startActivity(Intent(
                     this@RiderHomeActivity,
@@ -283,7 +295,19 @@ class RiderHomeActivity : AppCompatActivity() {
                 ))
                 true
             }
-            R.id.riderDeliveries -> {
+            R.id.currentDelivery -> {
+                if (sharedPreferences.getBoolean(newDelivery, false)) { // if rider has a delivery
+                    startActivity(Intent(this@RiderHomeActivity,
+                            RiderDeliveryActivity::class.java))
+                } else {
+                    Toast.makeText(baseContext,
+                            getString(R.string.no_current_delivery),
+                            Toast.LENGTH_SHORT
+                    ).show()
+                }
+                true
+            }
+            R.id.riderDeliveries -> { // history
                 startActivity(
                     Intent(
                     this@RiderHomeActivity,
@@ -298,7 +322,7 @@ class RiderHomeActivity : AppCompatActivity() {
                     this@RiderHomeActivity,
                     LoginActivity::class.java
                 ))
-                finish()
+                finishAffinity()
                 true
             }
             else -> super.onOptionsItemSelected(item)

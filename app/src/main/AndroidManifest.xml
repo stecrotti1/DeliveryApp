@@ -34,7 +34,7 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".manager.ManagerRiderActivity"
-            android:label="@string/current_delivery"
+            android:label="@string/rider"
             android:screenOrientation="unspecified" />
         <activity
             android:name=".rider.RiderDeliveryHistoryActivity"

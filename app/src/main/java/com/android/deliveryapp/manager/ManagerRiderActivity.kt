@@ -1,26 +1,23 @@
 package com.android.deliveryapp.manager
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerRiderBinding
-import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.ACCEPTED
 import com.android.deliveryapp.util.Keys.Companion.DELIVERED
 import com.android.deliveryapp.util.Keys.Companion.DELIVERY_FAILED
 import com.android.deliveryapp.util.Keys.Companion.REJECTED
+import com.android.deliveryapp.util.Keys.Companion.YET_TO_RESPOND
 import com.android.deliveryapp.util.Keys.Companion.clientEmail
 import com.android.deliveryapp.util.Keys.Companion.clients
-import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
+import com.android.deliveryapp.util.Keys.Companion.delivery
 import com.android.deliveryapp.util.Keys.Companion.managerPref
 import com.android.deliveryapp.util.Keys.Companion.orderDate
 import com.android.deliveryapp.util.Keys.Companion.orders
@@ -36,10 +33,6 @@ class ManagerRiderActivity : AppCompatActivity() {
     private lateinit var binding: ActivityManagerRiderBinding
     private lateinit var firestore: FirebaseFirestore
 
-    private val channelID = "1"
-    private val notificationID = 1
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityManagerRiderBinding.inflate(layoutInflater)
@@ -48,6 +41,9 @@ class ManagerRiderActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
 
         val sharedPreferences = getSharedPreferences(managerPref, Context.MODE_PRIVATE)
+
+        // show a back arrow button in actionBar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val riderEmail = sharedPreferences.getString(riderEmail, "")
         val clientEmail = sharedPreferences.getString(clientEmail, "")
@@ -60,13 +56,19 @@ class ManagerRiderActivity : AppCompatActivity() {
         binding.riderInfo.visibility = View.INVISIBLE
         binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
 
-        // if driver has accepted then show the chat button
+        // update view
         firestore.collection(riders).document(riderEmail!!)
-            .collection(deliveryHistory)
+            .collection(delivery)
             .get()
             .addOnSuccessListener { result ->
-                for (document in result.documents) {
-                    updateView(document.getString("outcome") as String)
+                if (!result.isEmpty) {
+                    for (document in result.documents) {
+                        if (document.contains("outcome")) {
+                            updateView(document.getString("outcome") as String)
+                        }
+                    }
+                } else {
+                    updateView("")
                 }
             }
             .addOnFailureListener { e ->
@@ -81,7 +83,7 @@ class ManagerRiderActivity : AppCompatActivity() {
 
         binding.selectBtn.setOnClickListener {
             if (clientEmail != null && orderDate != null) {
-                sendOrderToRider(firestore, riderEmail, clientEmail, orderDate)
+                sendOrderToRider(firestore, riderEmail!!, clientEmail, orderDate)
             }
         }
 
@@ -141,6 +143,12 @@ class ManagerRiderActivity : AppCompatActivity() {
                 binding.riderInfo.visibility = View.VISIBLE
                 binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
             }
+            else -> {
+                binding.chatWithRiderBtn.visibility = View.INVISIBLE
+                binding.selectBtn.visibility = View.VISIBLE
+                binding.riderInfo.visibility = View.INVISIBLE
+                binding.selectAnotherRiderBtn.visibility = View.INVISIBLE
+            }
         }
     }
 
@@ -158,35 +166,12 @@ class ManagerRiderActivity : AppCompatActivity() {
                         Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
                         return@addSnapshotListener
                     } else {
-                        if (value != null) {
+                        if (value != null && value.contains("outcome")) {
                             updateView(value.getString("outcome") as String)
                         }
                     }
                 }
         }
-    }
-
-    private fun createNotification(pendingIntent: PendingIntent,
-                                   notificationManager: NotificationManager) {
-        val notification = Notification.Builder(this@ManagerRiderActivity, channelID)
-            .setSmallIcon(R.drawable.notification_icon)
-            .setContentTitle(getString(R.string.rider_has_responded))
-            .setAutoCancel(true)
-            .setChannelId(channelID)
-            .setContentIntent(pendingIntent)
-            .build()
-
-        notificationManager.notify(notificationID, notification)
-    }
-
-    private fun createNotificationChannel(id : String, name: String, description: String, notificationManager: NotificationManager) {
-        val priority = NotificationManager.IMPORTANCE_HIGH
-
-        val channel = NotificationChannel(id, name, priority)
-
-        channel.description = description
-
-        notificationManager.createNotificationChannel(channel)
     }
 
     private fun sendOrderToRider(firestore: FirebaseFirestore, rider: String, clientEmail: String, clientOrderDate: String) {
@@ -228,12 +213,13 @@ class ManagerRiderActivity : AppCompatActivity() {
                             "total" to getTotalPrice(productList),
                             "address" to result.getGeoPoint("address") as GeoPoint,
                             "payment" to paymentType,
-                            "clientEmail" to clientEmail
+                            "clientEmail" to clientEmail,
+                            "outcome" to YET_TO_RESPOND
                         )
 
                         // send cliend position, total price and products
                         firestore.collection(riders).document(rider)
-                            .collection(Keys.delivery).document(clientOrderDate)
+                            .collection(delivery).document(clientOrderDate)
                             .set(entry)
                             .addOnSuccessListener {
                                 Toast.makeText(baseContext,
@@ -276,4 +262,15 @@ class ManagerRiderActivity : AppCompatActivity() {
         }
         return total
     }
+    // when the back button is pressed in actionbar, finish this activity
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 }

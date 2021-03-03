@@ -317,15 +317,16 @@ class ClientHomeActivity : AppCompatActivity() {
                                     Log.w("FIREBASE_CHAT", "Listen failed", error)
                                     return@addSnapshotListener
                                 } else {
-                                    if (value != null // if message sent is from rider notify
-                                        && value.getString("NAME") as String == "Rider") {
-                                        createNotification(pendingIntent, notificationManager)
-                                        createNotificationChannel(
-                                            channelID,
-                                            getString(R.string.app_name),
-                                            getString(R.string.notification_channel_desc),
-                                            notificationManager
-                                        )
+                                    if (value != null) { // if message sent is from rider notify
+                                        if (value.contains("NAME") && value.getString("NAME") as String == "Rider") {
+                                            createNotification(pendingIntent, notificationManager)
+                                            createNotificationChannel(
+                                                    channelID,
+                                                    getString(R.string.app_name),
+                                                    getString(R.string.notification_channel_desc),
+                                                    notificationManager
+                                            )
+                                        }
                                     }
                                 }
                             }

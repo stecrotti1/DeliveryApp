@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.databinding.ActivityManagerChatBinding
 import com.android.deliveryapp.rider.RiderChatActivity
+import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.managerPref
 import com.android.deliveryapp.util.Keys.Companion.riderEmail
@@ -46,7 +47,7 @@ class ManagerChatActivity : AppCompatActivity() {
 
             val firestoreChat by lazy {
                 FirebaseFirestore.getInstance().collection(chatCollection)
-                        .document("$riderEmail|${user.email}")
+                        .document("$riderEmail|$MANAGER")
             }
 
             updateChat(firestoreChat)

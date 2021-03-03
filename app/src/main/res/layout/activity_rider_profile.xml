@@ -62,4 +62,14 @@
         app:icon="@drawable/home"
         android:layout_marginTop="10dp" />
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/currentDeliveryBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_delivery"
+        app:icon="@drawable/notification_icon"
+        android:layout_below="@id/homepageBtn"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

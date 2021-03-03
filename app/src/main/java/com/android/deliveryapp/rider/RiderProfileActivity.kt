@@ -14,16 +14,19 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityRiderProfileBinding
 import com.android.deliveryapp.util.Keys
+import com.android.deliveryapp.util.Keys.Companion.YET_TO_RESPOND
 import com.android.deliveryapp.util.Keys.Companion.clientAddress
 import com.android.deliveryapp.util.Keys.Companion.delivery
 import com.android.deliveryapp.util.Keys.Companion.marketDocument
 import com.android.deliveryapp.util.Keys.Companion.marketPosFirestore
+import com.android.deliveryapp.util.Keys.Companion.newDelivery
 import com.android.deliveryapp.util.Keys.Companion.riderStatus
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.android.deliveryapp.util.Keys.Companion.userInfo
@@ -57,6 +60,12 @@ class RiderProfileActivity : AppCompatActivity() {
 
         val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
+
+        if (sharedPreferences.getBoolean(newDelivery, false)) {
+            binding.currentDeliveryBtn.visibility = View.VISIBLE
+        } else {
+            binding.currentDeliveryBtn.visibility = View.INVISIBLE
+        }
 
         if (user != null) {
             binding.riderEmail.setText(user.email) // show orderEmail at the user
@@ -126,12 +135,19 @@ class RiderProfileActivity : AppCompatActivity() {
                                    email: String) {
         firestore.collection(riders).document(email)
                 .collection(delivery)
-                .addSnapshotListener { _, error ->
+                .addSnapshotListener { value, error ->
                     if (error != null) {
                         Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
                         return@addSnapshotListener
                     } else {
-                        sendDataToNotification(firestore, pendingIntent, notificationManager, email)
+                        if (value != null) {
+                            for (document in value.documents) {
+                                if (document.contains("outcome")
+                                        && document.getString("outcome") == YET_TO_RESPOND) {
+                                    sendDataToNotification(firestore, pendingIntent, notificationManager, email)
+                                }
+                            }
+                        }
                     }
                 }
     }
@@ -274,12 +290,18 @@ class RiderProfileActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // in case checkbox hasn't been checked at all
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
+        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
         if (auth.currentUser != null) {
+            // in case checkbox hasn't been checked at all
             uploadToCloud(firestore, auth.currentUser!!, binding.riderStatus.isChecked)
+
+            editor.putBoolean(riderStatus, binding.riderStatus.isChecked)
+            editor.apply()
         }
 
         return when (item.itemId) {

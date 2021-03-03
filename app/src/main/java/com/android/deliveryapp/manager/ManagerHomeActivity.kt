@@ -257,7 +257,8 @@ class ManagerHomeActivity : AppCompatActivity() {
             } else {
                 if (value != null) {
                     for (document in value.documents) {
-                        if (document.getString("outcome") as String == YET_TO_RESPOND) { // if there is a new order
+                        if (document.contains("outcome")
+                                && document.getString("outcome") as String == YET_TO_RESPOND) { // if there is a new order
                             createNotification(pendingIntent, notificationManager)
                             createNotificationChannel(channelID,
                                 getString(R.string.app_name),

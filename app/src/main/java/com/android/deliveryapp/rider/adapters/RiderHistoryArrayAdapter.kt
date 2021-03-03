@@ -38,7 +38,7 @@ class RiderHistoryArrayAdapter(
         val holder = view?.tag as ViewHolder
         holder.date?.text = array[position].date
         holder.location?.text = array[position].location
-        holder.outcome?.text = String.format("%.2f Km", array[position].outcome)
+        holder.outcome?.text = array[position].outcome
 
         return view
     }

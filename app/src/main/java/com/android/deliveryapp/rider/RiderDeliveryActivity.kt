@@ -3,6 +3,7 @@ package com.android.deliveryapp.rider
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,13 +19,10 @@ import com.android.deliveryapp.util.Keys.Companion.delivery
 import com.android.deliveryapp.util.Keys.Companion.deliveryHistory
 import com.android.deliveryapp.util.Keys.Companion.orders
 import com.android.deliveryapp.util.Keys.Companion.riders
-import com.android.deliveryapp.util.Keys.Companion.userType
-import com.android.deliveryapp.util.Keys.Companion.users
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RiderDeliveryActivity : AppCompatActivity() {
-    // TODO: 02/03/2021 remove chat with client when delivery has finished 
     private lateinit var binding: ActivityRiderDeliveryBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
@@ -39,6 +37,9 @@ class RiderDeliveryActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         val user = auth.currentUser
+
+        // show a back arrow button in actionBar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (user != null) {
             var date = ""
@@ -69,7 +70,7 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 binding.endDeliveryFailureBtn.visibility = View.VISIBLE
                 binding.startDeliveryBtn.visibility = View.INVISIBLE
 
-                sendNotificationToClient(user.email!!, clientEmail)
+                sendMessageToClient(user.email!!, clientEmail)
             }
             binding.deliveryMap.setOnClickListener {
                 val intent = Intent(
@@ -95,33 +96,48 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 )
                 intent.putExtra("riderEmail", user.email)
 
-                firestore.collection(users)
-                        .get()
-                        .addOnSuccessListener { result ->
-                            for (document in result.documents) {
-                                if (document.getString(userType) as String == MANAGER) {
-                                    val managerEmail = document.getString(userType) as String
-                                    intent.putExtra("recipientEmail", managerEmail)
-                                }
-                            }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w("ERROR", "Error getting manager email", e)
-                        }
+                intent.putExtra("recipientEmail", MANAGER)
 
                 startActivity(intent)
             }
             binding.endDeliverySuccessBtn.setOnClickListener {
                 updateView(DELIVERED)
 
+                removeChat(firestore, user.email!!, clientEmail)
+
                 uploadData(firestore, date, user.email!!, DELIVERED)
+
+                startActivity(Intent(this@RiderDeliveryActivity,
+                        RiderDeliveryHistoryActivity::class.java))
+
             }
             binding.endDeliveryFailureBtn.setOnClickListener {
                 updateView(DELIVERY_FAILED)
 
+                removeChat(firestore, user.email!!, clientEmail)
+
                 uploadData(firestore, date, user.email!!, DELIVERY_FAILED)
+
+                startActivity(Intent(this@RiderDeliveryActivity,
+                        RiderDeliveryHistoryActivity::class.java))
             }
         }
+    }
+
+    private fun removeChat(firestore: FirebaseFirestore, riderEmail: String, clientEmail: String) {
+        firestore.collection(chatCollection)
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result.documents) {
+                        if (document.id == "$riderEmail|$clientEmail") {
+                            document.reference.delete()
+                            Log.d("FIREBASE_FIRESTORE", "Document deleted with success")
+                        }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Error deleting document", e)
+                }
     }
 
     private fun updateView(outcome: String) {
@@ -172,33 +188,31 @@ class RiderDeliveryActivity : AppCompatActivity() {
                         .addOnSuccessListener {
                             Log.d("FIREBASE_FIRESTORE", "Data updated with success")
 
-                            // delivery is finished in both outcomes
-                            if (outcome == DELIVERED || outcome == DELIVERY_FAILED) {
-                                // cancel order in collection "orders"
-                                firestore.collection(orders).document(date)
-                                    .delete()
-                                    .addOnSuccessListener {
-                                        Log.d(
-                                            "FIREBASE_FIRESTORE",
-                                            "Document deleted with success"
-                                        )
+                            // delete entry in rider.email/delivery
+                            firestore.collection(riders).document(riderEmail)
+                                    .collection(delivery).document(date)
+                                .delete()
+                                .addOnSuccessListener {
+                                    Log.d(
+                                        "FIREBASE_FIRESTORE",
+                                        "Document deleted with success"
+                                    )
 
-                                        Toast.makeText(baseContext,
-                                            getString(R.string.data_update_success),
-                                            Toast.LENGTH_SHORT).show()
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.w(
-                                            "FIREBASE_FIRESTORE",
-                                            "Failed to update data",
-                                            e
-                                        )
+                                    Toast.makeText(baseContext,
+                                        getString(R.string.data_update_success),
+                                        Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w(
+                                        "FIREBASE_FIRESTORE",
+                                        "Failed to update data",
+                                        e
+                                    )
 
-                                        Toast.makeText(baseContext,
-                                            getString(R.string.error_updating_database),
-                                            Toast.LENGTH_LONG).show()
-                                    }
-                            }
+                                    Toast.makeText(baseContext,
+                                        getString(R.string.error_updating_database),
+                                        Toast.LENGTH_LONG).show()
+                                }
                         }
                         .addOnFailureListener { e ->
                             Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)
@@ -216,7 +230,7 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 }
     }
 
-    private fun sendNotificationToClient(riderEmail: String, clientEmail: String) {
+    private fun sendMessageToClient(riderEmail: String, clientEmail: String) {
         val reference = FirebaseFirestore.getInstance().collection(chatCollection)
                 .document("$riderEmail|$clientEmail")
 
@@ -254,5 +268,16 @@ class RiderDeliveryActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
             }
+    }
+
+    // when the back button is pressed in actionbar, finish this activity
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
