@@ -2,6 +2,7 @@ package com.android.deliveryapp.rider
 
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +34,9 @@ class RiderDeliveryHistoryActivity : AppCompatActivity() {
         if (user != null) {
             getDeliveryHistory(firestore, user.email!!)
         }
+
+        // show a back arrow button in actionBar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun getDeliveryHistory(firestore: FirebaseFirestore, email: String) {
@@ -77,6 +81,17 @@ class RiderDeliveryHistoryActivity : AppCompatActivity() {
                 R.layout.rider_history_list_element,
                 deliveries
             )
+        }
+    }
+
+    // when the back button is pressed in actionbar, finish this activity
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }
