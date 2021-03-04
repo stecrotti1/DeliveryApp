@@ -103,7 +103,6 @@ class RiderDeliveryActivity : AppCompatActivity() {
             }
 
             /**************************** SHARE LOCATION ******************************/
-            // FIXME: 03/03/2021 not sharing
             binding.shareLocationBtn.setOnClickListener {
                 val permission = ContextCompat.checkSelfPermission(
                         this,

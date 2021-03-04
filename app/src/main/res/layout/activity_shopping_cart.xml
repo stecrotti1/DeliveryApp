@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".client.ShoppingCartActivity">
 
-    <!-- TODO add menu -->
-
     <TextView
         android:id="@+id/shoppingCartLabel"
         android:layout_width="wrap_content"

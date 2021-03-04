@@ -5,8 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".client.ClientOrdersActivity">
 
-    <!-- TODO add menu -->
-
     <TextView
         android:id="@+id/recentOrdersLabel"
         android:layout_width="wrap_content"
