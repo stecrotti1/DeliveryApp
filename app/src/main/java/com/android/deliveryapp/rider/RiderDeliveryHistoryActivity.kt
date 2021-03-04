@@ -55,6 +55,7 @@ class RiderDeliveryHistoryActivity : AppCompatActivity() {
                         )
                     )
                 }
+                deliveryHistory.reverse()
                 updateView(deliveryHistory)
             }
             .addOnFailureListener { e ->
