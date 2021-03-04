@@ -20,6 +20,7 @@ import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.client.adapters.ClientArrayAdapter
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
+
 import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.clients
@@ -43,6 +44,8 @@ class ClientHomeActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore // shopping cart
     private lateinit var auth: FirebaseAuth
     private lateinit var productList: Array<ProductItem>
+
+    private var dialog: AlertDialog? = null
 
     private var singleProductCount = 0
 
@@ -99,7 +102,8 @@ class ClientHomeActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val intent = Intent(
             this@ClientHomeActivity,
@@ -124,88 +128,89 @@ class ClientHomeActivity : AppCompatActivity() {
         /***************************** ADD TO CART DIALOG ****************************************/
 
         binding.productListView.setOnItemClickListener { _, _, i, _ ->
-            singleProductCount = 0
-            val productTitle: String = productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
+            showAddToCartDialog(i, productList)
+        }
+    }
 
-            val dialogView = LayoutInflater.from(this).inflate(R.layout.client_product_dialog, null)
+    private fun showAddToCartDialog(i: Int, productList: Array<ProductItem>) {
+        singleProductCount = 0
+        val productTitle: String =
+            productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
 
-            val dialog: AlertDialog?
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.client_product_dialog, null)
 
-            val dialogImage: ImageView = dialogView.findViewById(R.id.productImageDialog)
-            dialogImage.load(productList[i].imgUrl) {
-                transformations(CircleCropTransformation())
-                error(R.drawable.error_image)
-                crossfade(true)
-                build()
+        val dialogImage: ImageView = dialogView.findViewById(R.id.productImageDialog)
+        dialogImage.load(productList[i].imgUrl) {
+            transformations(CircleCropTransformation())
+            error(R.drawable.error_image)
+            crossfade(true)
+            build()
+        }
+
+        val dialogProductPrice: TextView = dialogView.findViewById(R.id.productPriceDialog)
+        dialogProductPrice.text = String.format("%.2f €", productList[i].price)
+
+        val productDesc: TextView = dialogView.findViewById(R.id.descriptionDialog)
+        productDesc.text = productList[i].description
+
+        val productQty: TextInputEditText = dialogView.findViewById(R.id.productQtyCounter)
+        productQty.setText("$singleProductCount")
+        productQty.keyListener = null // not editable with keyboard but visible
+
+        val removeQty: FloatingActionButton = dialogView.findViewById(R.id.minusButton)
+
+        val addQty: FloatingActionButton = dialogView.findViewById(R.id.plusButton)
+
+        val addToCart: FloatingActionButton = dialogView.findViewById(R.id.addProductButton)
+
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle(productTitle)
+
+        dialog = dialogBuilder.create()
+        dialog!!.show()
+
+        /************************ ALERT DIALOG BUTTONS ****************************************/
+
+        removeQty.setOnClickListener {
+            if (singleProductCount == 0) {
+                dialog!!.dismiss()
+            } else {
+                productQty.setText((--singleProductCount).toString())
             }
+        }
 
-            val dialogProductPrice: TextView = dialogView.findViewById(R.id.productPriceDialog)
-            dialogProductPrice.text = String.format("%.2f €", productList[i].price)
-
-            val productDesc: TextView = dialogView.findViewById(R.id.descriptionDialog)
-            productDesc.text = productList[i].description
-
-            val productQty: TextInputEditText = dialogView.findViewById(R.id.productQtyCounter)
-            productQty.setText("$singleProductCount")
-            productQty.keyListener = null // not editable with keyboard but visible
-
-            val removeQty: FloatingActionButton = dialogView.findViewById(R.id.minusButton)
-
-            val addQty: FloatingActionButton = dialogView.findViewById(R.id.plusButton)
-
-            val addToCart: FloatingActionButton = dialogView.findViewById(R.id.addProductButton)
-
-            val dialogBuilder = AlertDialog.Builder(this)
-                    .setView(dialogView)
-                    .setTitle(productTitle)
-
-            dialog = dialogBuilder.create()
-            dialog.show()
-
-            /************************ ALERT DIALOG BUTTONS ****************************************/
-
-            removeQty.setOnClickListener {
-                if (singleProductCount == 0) {
-                    dialog.dismiss()
-                } else {
-                    productQty.setText((--singleProductCount).toString())
-                }
+        addQty.setOnClickListener {
+            // product desired by the user == quantity available
+            if (singleProductCount == productList[i].quantity) {
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.error_product_quantity),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                productQty.setText((++singleProductCount).toString())
             }
+        }
 
-            addQty.setOnClickListener {
-                // product desired by the user == quantity available
-                if (singleProductCount == productList[i].quantity) {
-                    Toast.makeText(
-                        baseContext,
-                        getString(R.string.error_product_quantity),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    productQty.setText((++singleProductCount).toString())
-                }
+        addToCart.setOnClickListener {
+            if (singleProductCount == 0) {
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.please_add_quantity),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                // add the new entry
+                addToShoppingCart(
+                    auth,
+                    firestore,
+                    productList[i].title,
+                    productList[i].price,
+                    singleProductCount
+                )
+                dialog!!.dismiss()
             }
-
-            addToCart.setOnClickListener {
-                if (singleProductCount == 0) {
-                    Toast.makeText(
-                            baseContext,
-                            getString(R.string.please_add_quantity),
-                            Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    // add the new entry
-                    addToShoppingCart(
-                            auth,
-                            firestore,
-                            productList[i].title,
-                            productList[i].price,
-                            singleProductCount
-                    )
-                    dialog.dismiss()
-                }
-            }
-
-            /*************************************************************************************/
         }
     }
 
@@ -240,7 +245,8 @@ class ClientHomeActivity : AppCompatActivity() {
                 }
             }
             if (qty.toInt() != 0) { // don't add items with qty 0
-                productList = productList.plus(ProductItem(imageUrl, title, desc, price, qty.toInt()))
+                productList =
+                    productList.plus(ProductItem(imageUrl, title, desc, price, qty.toInt()))
             }
         }
     }
@@ -255,103 +261,109 @@ class ClientHomeActivity : AppCompatActivity() {
      * @param quantity product quantity
      */
     private fun addToShoppingCart(
-            auth: FirebaseAuth,
-            firestore: FirebaseFirestore,
-            title: String,
-            price: Double,
-            quantity: Int
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        title: String,
+        price: Double,
+        quantity: Int
     ) {
         val user = auth.currentUser
 
         if (user != null) {
             val entry = mapOf(
-                    "title" to title,
-                    "price" to price,
-                    "qty" to quantity
+                "title" to title,
+                "price" to price,
+                "qty" to quantity
             )
 
             // set entry under "user.orderEmail/shoppingCart/product.title"
             firestore.collection(clients).document(user.email!!)
-                    .collection(shoppingCart).document(title)
-                    .set(entry)
-                    .addOnSuccessListener { documentRef ->
-                        Log.d("FIREBASEFIRESTORE", "Document added with id: $documentRef")
-                        Toast.makeText(
-                                baseContext,
-                                getString(R.string.add_cart_success),
-                                Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASEFIRESTORE", "Error adding document", e)
-                        Toast.makeText(
-                                baseContext,
-                                getString(R.string.error_shopping_cart),
-                                Toast.LENGTH_LONG
-                        ).show()
-                    }
+                .collection(shoppingCart).document(title)
+                .set(entry)
+                .addOnSuccessListener { documentRef ->
+                    Log.d("FIREBASEFIRESTORE", "Document added with id: $documentRef")
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.add_cart_success),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASEFIRESTORE", "Error adding document", e)
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.error_shopping_cart),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
         } else {
             auth.currentUser?.reload()
             Toast.makeText(
-                    baseContext,
-                    getString(R.string.error_shopping_cart),
-                    Toast.LENGTH_LONG
+                baseContext,
+                getString(R.string.error_shopping_cart),
+                Toast.LENGTH_LONG
             ).show()
         }
     }
 
 
-    private fun listenForDeliveryMessages(firestore: FirebaseFirestore,
-                                          pendingIntent: PendingIntent,
-                                          notificationManager: NotificationManager,
-                                          email: String) {
+    private fun listenForDeliveryMessages(
+        firestore: FirebaseFirestore,
+        pendingIntent: PendingIntent,
+        notificationManager: NotificationManager,
+        email: String
+    ) {
         firestore.collection(chatCollection).get()
-                .addOnSuccessListener { result ->
-                    for (document in result.documents) {
-                        if (document.id.contains(email)) {
-                            document.reference.addSnapshotListener { value, error ->
-                                if (error != null) {
-                                    Log.w("FIREBASE_CHAT", "Listen failed", error)
-                                    return@addSnapshotListener
-                                } else {
-                                    if (value != null) { // if message sent is from rider notify
-                                        if (value.contains("NAME") && value.getString("NAME") as String == "Rider") {
-                                            createNotification(pendingIntent, notificationManager)
-                                            createNotificationChannel(
-                                                    channelID,
-                                                    getString(R.string.app_name),
-                                                    getString(R.string.notification_channel_desc),
-                                                    notificationManager
-                                            )
-                                        }
+            .addOnSuccessListener { result ->
+                for (document in result.documents) {
+                    if (document.id.contains(email)) {
+                        document.reference.addSnapshotListener { value, error ->
+                            if (error != null) {
+                                Log.w("FIREBASE_CHAT", "Listen failed", error)
+                                return@addSnapshotListener
+                            } else {
+                                if (value != null) { // if message sent is from rider notify
+                                    if (value.contains("NAME") && value.getString("NAME") as String == "Rider") {
+                                        createNotification(pendingIntent, notificationManager)
+                                        createNotificationChannel(
+                                            channelID,
+                                            getString(R.string.app_name),
+                                            getString(R.string.notification_channel_desc),
+                                            notificationManager
+                                        )
                                     }
                                 }
                             }
                         }
                     }
                 }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASE_FIRESTORE", "Error getting documents", e)
-                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_FIRESTORE", "Error getting documents", e)
+            }
     }
 
-    private fun createNotification(pendingIntent: PendingIntent,
-                                   notificationManager: NotificationManager) {
+    private fun createNotification(
+        pendingIntent: PendingIntent,
+        notificationManager: NotificationManager
+    ) {
         val notification = Notification.Builder(this@ClientHomeActivity, channelID)
-                .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle(getString(R.string.new_message_notification_title))
-                .setAutoCancel(true)
-                .setChannelId(channelID)
-                .setContentIntent(pendingIntent)
-                .build()
+            .setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle(getString(R.string.new_message_notification_title))
+            .setAutoCancel(true)
+            .setChannelId(channelID)
+            .setContentIntent(pendingIntent)
+            .build()
 
         notificationManager.notify(notificationID, notification)
     }
 
-    private fun createNotificationChannel(id: String,
-                                          name: String,
-                                          description: String,
-                                          notificationManager: NotificationManager) {
+    private fun createNotificationChannel(
+        id: String,
+        name: String,
+        description: String,
+        notificationManager: NotificationManager
+    ) {
         val priority = NotificationManager.IMPORTANCE_HIGH
 
         val channel = NotificationChannel(id, name, priority)
@@ -416,5 +428,19 @@ class ClientHomeActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBundle("dialog", dialog?.onSaveInstanceState())
+        outState.putParcelable("listView", binding.productListView.onSaveInstanceState())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        savedInstanceState.getBundle("dialog")?.let { dialog?.onRestoreInstanceState(it) }
+        binding.productListView.onRestoreInstanceState(savedInstanceState.getParcelable("listView"))
     }
 }

@@ -76,4 +76,16 @@ class ManagerProfileActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString("managerEmail", binding.managerEmail.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.managerEmail.setText(savedInstanceState.getString("managerEmail"))
+    }
 }

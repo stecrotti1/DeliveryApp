@@ -39,6 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 
 class RiderDeliveryActivity : AppCompatActivity() {
+    // TODO: 04/03/2021 clear chat after delivered
     private lateinit var binding: ActivityRiderDeliveryBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth

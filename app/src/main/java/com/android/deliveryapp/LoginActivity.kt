@@ -174,6 +174,22 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString("email", binding.loginEmail.text.toString())
+        outState.putString("password", binding.loginPassword.text.toString())
+        outState.putBoolean("rememberUser", binding.rememberUser.isChecked)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.loginEmail.setText(savedInstanceState.getString("email"))
+        binding.loginPassword.setText(savedInstanceState.getString("password"))
+        binding.rememberUser.isChecked = savedInstanceState.getBoolean("rememberUser")
+    }
+
     // hide keyboard when user clicks outside EditText
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
         if (currentFocus != null) {

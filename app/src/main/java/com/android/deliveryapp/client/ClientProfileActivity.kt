@@ -51,19 +51,22 @@ class ClientProfileActivity : AppCompatActivity() {
         }
 
         sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
-        binding.chatWithRiderBtn.visibility = View.VISIBLE
+        binding.chatWithRiderBtn?.visibility = View.VISIBLE
+        binding.chatWithRiderBtnLand?.visibility = View.VISIBLE
 
         if (user != null) {
             firestore.collection(clients).document(user.email!!) // fetch user address from cloud
-                    .get()
-                    .addOnSuccessListener { result ->
-                        val clientGeoPoint = result.getGeoPoint(clientAddress)
+                .get()
+                .addOnSuccessListener { result ->
+                    val clientGeoPoint = result.getGeoPoint(clientAddress)
 
-                        if (clientGeoPoint != null) {
-                            try {
-                                geocoder = Geocoder(this).getFromLocation(clientGeoPoint.latitude,
-                                        clientGeoPoint.longitude,
-                                        1)
+                    if (clientGeoPoint != null) {
+                        try {
+                            geocoder = Geocoder(this).getFromLocation(
+                                clientGeoPoint.latitude,
+                                clientGeoPoint.longitude,
+                                1
+                            )
                             } catch (e: IOException) {
                                 Log.w("Geocoder", e.message.toString())
                             }
@@ -81,53 +84,86 @@ class ClientProfileActivity : AppCompatActivity() {
         } else {
             auth.currentUser?.reload()
             Toast.makeText(
-                    baseContext,
-                    getString(R.string.error_user_data),
-                    Toast.LENGTH_LONG
+                baseContext,
+                getString(R.string.error_user_data),
+                Toast.LENGTH_LONG
             ).show()
         }
 
-        binding.setLocationBtn.setOnClickListener {
-            startActivity(
-                Intent(
-                    this@ClientProfileActivity,
-                    ClientLocationActivity::class.java
-                )
-            )
+        /******************** LOCATION **************************/
+        binding.setLocationBtn?.setOnClickListener {
+            startLocationActivity()
+        }
+        binding.setLocationBtnLand?.setOnClickListener {
+            startLocationActivity()
         }
 
-        binding.homepageButton.setOnClickListener {
-            startActivity(
-                Intent(
-                    this@ClientProfileActivity,
-                    ClientHomeActivity::class.java
-                )
-            )
-            finish()
+        /********************* HOME *****************************/
+        binding.homepageButton?.setOnClickListener {
+            startHomeActivity()
+        }
+        binding.homepageButtonLand?.setOnClickListener {
+            startHomeActivity()
         }
 
-        binding.chatWithRiderBtn.setOnClickListener {
-            // look if there are chats
-            firestore.collection(chatCollection)
-                    .get()
-                    .addOnSuccessListener { result ->
-                        for (document in result.documents) {
-                            if (document.id.contains(user?.email!!)) {
-                                startActivity(Intent(
-                                        this@ClientProfileActivity,
-                                        ClientChatActivity::class.java
-                                ))
-                            }
-                        }
+        /********************* CHAT RIDER *************************/
+        binding.chatWithRiderBtn?.setOnClickListener {
+            if (user != null) {
+                startChatActivity(firestore, user.email!!)
+            }
+        }
+        binding.chatWithRiderBtnLand?.setOnClickListener {
+            if (user != null) {
+                startChatActivity(firestore, user.email!!)
+            }
+        }
+
+    }
+
+    private fun startChatActivity(firestore: FirebaseFirestore, email: String) {
+        // look if there are chats
+        firestore.collection(chatCollection)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result.documents) {
+                    if (document.id.contains(email)) {
+                        startActivity(
+                            Intent(
+                                this@ClientProfileActivity,
+                                ClientChatActivity::class.java
+                            )
+                        )
                     }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASE_CHAT", "Error getting chats", e)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_CHAT", "Error getting chats", e)
 
-                        Toast.makeText(baseContext,
-                                getString(R.string.no_chat_found),
-                                Toast.LENGTH_SHORT).show()
-                    }
-        }
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.no_chat_found),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+    }
+
+    private fun startLocationActivity() {
+        startActivity(
+            Intent(
+                this@ClientProfileActivity,
+                ClientLocationActivity::class.java
+            )
+        )
+    }
+
+    private fun startHomeActivity() {
+        startActivity(
+            Intent(
+                this@ClientProfileActivity,
+                ClientHomeActivity::class.java
+            )
+        )
+        finish()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -165,5 +201,19 @@ class ClientProfileActivity : AppCompatActivity() {
             imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
         return super.dispatchTouchEvent(event)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString("clientEmail", binding.userEmail.text.toString())
+        outState.putString("clientLocation", binding.location.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.userEmail.setText(savedInstanceState.getString("clientEmail"))
+        binding.location.setText(savedInstanceState.getString("clientLocation"))
     }
 }

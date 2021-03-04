@@ -362,4 +362,18 @@ class RiderProfileActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString("riderEmail", binding.riderEmail.text.toString())
+        outState.putBoolean("riderStatus", binding.riderStatus.isChecked)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.riderEmail.setText(savedInstanceState.getString("riderEmail"))
+        binding.riderStatus.isChecked = savedInstanceState.getBoolean("riderStatus")
+    }
 }
