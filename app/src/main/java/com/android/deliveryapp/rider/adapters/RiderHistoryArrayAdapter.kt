@@ -24,7 +24,7 @@ class RiderHistoryArrayAdapter(
         val view: View?
 
         if (convertView == null) {
-            view = activity.layoutInflater.inflate(R.layout.rider_order_list_element, null)
+            view = activity.layoutInflater.inflate(R.layout.rider_history_list_element, null)
 
             val viewHolder = ViewHolder()
             viewHolder.date = view.findViewById(R.id.dateHistory)

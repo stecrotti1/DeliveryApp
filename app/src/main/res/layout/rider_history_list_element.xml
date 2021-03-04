@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="@string/date_order"
-            android:textAppearance="?android:textAppearanceMedium"
+            android:textAppearance="?android:textAppearanceSmall"
             android:textColor="@color/black" />
 
         <TextView
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_toEndOf="@id/dateLabelHistory"
-            android:textAppearance="?android:textAppearanceMedium"
+            android:textAppearance="?android:textAppearanceSmall"
             android:textColor="@color/black" />
 
         <TextView
@@ -33,9 +33,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dateHistory"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:text="@string/location"
-            android:textAppearance="?android:textAppearanceMedium"
+            android:textAppearance="?android:textAppearanceSmall"
             android:textColor="@color/black" />
 
         <TextView
@@ -44,9 +44,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dateHistory"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:layout_toEndOf="@id/locationLabelHistory"
-            android:textAppearance="?android:textAppearanceMedium"
+            android:textAppearance="?android:textAppearanceSmall"
             android:textColor="@color/black" />
 
         <TextView
@@ -55,9 +55,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/locationLabelHistory"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/distance"
-            android:textAppearance="?android:textAppearanceMedium"
+            android:layout_marginTop="30dp"
+            android:text="@string/outcome"
+            android:textAppearance="?android:textAppearanceSmall"
             android:textColor="@color/black" />
 
         <TextView
@@ -66,9 +66,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/locationHistory"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="14dp"
             android:layout_toEndOf="@id/outcomeLabel"
-            android:textAppearance="?android:textAppearanceMedium"
+            android:textAppearance="?android:textAppearanceSmall"
             android:textColor="@color/black" />
 
     </RelativeLayout>
