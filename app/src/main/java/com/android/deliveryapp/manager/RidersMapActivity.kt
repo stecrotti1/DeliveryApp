@@ -3,6 +3,7 @@ package com.android.deliveryapp.manager
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -76,7 +77,18 @@ class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         /***************************************************************************************/
 
-        getRidersPositions(firestore)
+        // listen for riders position change
+
+        firestore.collection(riders)
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        Log.e("FIREBASE_FIRESTORE", "Failed to listen", error)
+                    } else {
+                        if (value != null) {
+                            getRidersPositions(firestore)
+                        }
+                    }
+                }
     }
 
     private fun getRidersPositions(firestore: FirebaseFirestore) {
