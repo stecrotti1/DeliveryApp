@@ -282,6 +282,7 @@
     <string name="fix_my_location">Fix location</string>
     <string name="location_update_success">Location updated with success</string>
     <string name="location_update_failure">Failed to update location</string>
+    <string name="title_activity_client_rider_map">Map</string>
 
 
 </resources>

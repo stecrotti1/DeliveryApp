@@ -1,6 +1,7 @@
 package com.android.deliveryapp.client
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -10,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityClientChatBinding
+import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
@@ -40,11 +42,16 @@ class ClientChatActivity : AppCompatActivity() {
         val user = auth.currentUser
 
         if (user != null) {
+            var riderEmail = ""
+
             firestore.collection(chatCollection).get()
                 .addOnSuccessListener { result ->
                     // find the chat which contains client email
                     for (document in result.documents) {
                         if (document.id.contains(user.email!!)) {
+                            // get rider email before the "|"
+                            riderEmail = document.id.substring(0, document.id.indexOf("|"))
+
                             reference = document.reference
                             updateChat(reference)
                             return@addOnSuccessListener
@@ -64,6 +71,16 @@ class ClientChatActivity : AppCompatActivity() {
             binding.sendMsgBtn.setOnClickListener {
                 sendMessage(reference)
                 binding.message.text?.clear()
+            }
+
+            binding.riderPosBtn.setOnClickListener {
+                val intent = Intent(
+                    this@ClientChatActivity,
+                    ClientRiderMapActivity::class.java
+                )
+                intent.putExtra(Keys.riderEmail, riderEmail)
+
+                startActivity(intent)
             }
         }
     }

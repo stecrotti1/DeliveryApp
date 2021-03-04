@@ -1,4 +1,4 @@
-package com.android.deliveryapp.manager
+package com.android.deliveryapp.client
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.android.deliveryapp.R
+import com.android.deliveryapp.util.Keys.Companion.clientAddress
+import com.android.deliveryapp.util.Keys.Companion.clients
+import com.android.deliveryapp.util.Keys.Companion.riderEmail
 import com.android.deliveryapp.util.Keys.Companion.riderPosition
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -17,28 +20,31 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 
-class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
+class ClientRiderMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
 
     private val LOCATION_REQUEST_CODE = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_riders_map)
+        setContentView(R.layout.activity_client_rider_map)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+                .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         // show a back arrow button in actionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         firestore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
     }
 
     /**
@@ -54,8 +60,8 @@ class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
         val permission = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
         )
 
         if (permission == PackageManager.PERMISSION_GRANTED) {
@@ -77,46 +83,59 @@ class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         /***************************************************************************************/
 
-        // listen for riders position change
+        val user = auth.currentUser
 
-        firestore.collection(riders)
-            .addSnapshotListener { value, error ->
-                if (error != null) {
-                    Log.e("FIREBASE_FIRESTORE", "Failed to listen", error)
-                } else {
-                    if (value != null) {
-                        getRidersPositions(firestore)
-                    }
-                }
-            }
+        if (user != null) {
+            getMyLocation(firestore, user.email!!)
+
+            val riderEmail = intent.getStringExtra(riderEmail)
+
+            getRiderPosition(firestore, riderEmail!!)
+        }
+
     }
 
-    private fun getRidersPositions(firestore: FirebaseFirestore) {
-        firestore.collection(riders).get()
-            .addOnSuccessListener { result ->
-                for (document in result.documents) {
-                    if (document.contains(riderPosition)) {
-                        val geoPoint = document.getGeoPoint(riderPosition) as GeoPoint
+    private fun getRiderPosition(firestore: FirebaseFirestore, riderEmail: String) {
+        firestore.collection(riders).document(riderEmail)
+                .get()
+                .addOnSuccessListener { result ->
+                    val geoPoint = result.getGeoPoint(riderPosition) as GeoPoint
 
-                        mMap.addMarker(
+                    mMap.addMarker(
                             MarkerOptions()
-                                .title(document.id)
-                                .position(LatLng(geoPoint.latitude, geoPoint.longitude))
-                                .snippet(getString(R.string.rider_is_delivering))
-                        )
+                                    .title(getString(R.string.rider))
+                                    .snippet(getString(R.string.rider_is_delivering))
+                                    .position(LatLng(geoPoint.latitude, geoPoint.longitude))
+                    )
 
-                        mMap.animateCamera(
+                    mMap.animateCamera(
                             CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    geoPoint.latitude,
-                                    geoPoint.longitude
-                                ), 10.0F
+                                    LatLng(
+                                            geoPoint.latitude,
+                                            geoPoint.longitude
+                                    ), 10.0F
                             )
-                        )
-
-                    }
+                    )
                 }
-            }
+    }
+
+    private fun getMyLocation(firestore: FirebaseFirestore, email: String) {
+        firestore.collection(clients).document(email)
+                .get()
+                .addOnSuccessListener { result ->
+                    val clientPoint = result.getGeoPoint(clientAddress) as GeoPoint
+
+                    mMap.addMarker(
+                            MarkerOptions()
+                                    .title(getString(R.string.client_position))
+                                    .position(LatLng(clientPoint.latitude, clientPoint.longitude))
+                                    .snippet(getString(R.string.client_pos_snippet))
+                    )
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Error getting client position", e)
+                }
+
     }
 
     /**

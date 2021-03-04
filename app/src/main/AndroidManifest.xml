@@ -36,9 +36,12 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".client.ClientRiderMapActivity"
+            android:label="@string/title_activity_client_rider_map"></activity>
+        <activity
             android:name=".manager.RidersMapActivity"
             android:label="@string/riders_map_title"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".manager.ManagerRiderActivity"
             android:label="@string/rider"
