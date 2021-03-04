@@ -192,24 +192,26 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
             try {
                 geocoder = Geocoder(this).getFromLocationName(
-                        binding.searchLocation.text.toString(),
-                        1
+                    binding.searchLocation.text.toString(),
+                    1
                 )
+
+                if (geocoder != null) {
+
+                    searchPosition = LatLng(geocoder!![0].latitude, geocoder!![0].longitude)
+
+                    markers.plus(
+                        mMap.addMarker( // add marker on map and to the markers array
+                            MarkerOptions()
+                                .position(searchPosition)
+                        )
+                    )
+
+                    // animate on the new searched position
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(searchPosition, 12.0F))
+                }
             } catch (e: IOException) {
                 Log.w(TAG, e.message.toString())
-            }
-
-            if (geocoder != null) {
-
-                searchPosition = LatLng(geocoder!![0].latitude, geocoder!![0].longitude)
-
-                markers.plus(mMap.addMarker( // add marker on map and to the markers array
-                        MarkerOptions()
-                                .position(searchPosition)
-                ))
-
-                // animate on the new searched position
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(searchPosition, 12.0F))
             }
         }
 
