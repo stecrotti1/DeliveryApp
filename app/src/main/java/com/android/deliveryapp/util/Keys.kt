@@ -34,7 +34,7 @@ class Keys {
         const val manager: String = "manager"
         const val riders: String = "riders"
 
-        const val riderGeopoint = "riderGeopoint"
+        const val riderPosition = "riderPosition"
 
         const val delivery: String = "delivery"
         const val deliveryHistory: String = "deliveryHistory"

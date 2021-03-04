@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.android.deliveryapp.R
-import com.android.deliveryapp.util.Keys.Companion.riderGeopoint
+import com.android.deliveryapp.util.Keys.Companion.riderPosition
 import com.android.deliveryapp.util.Keys.Companion.riders
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -95,23 +95,23 @@ class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         firestore.collection(riders).get()
                 .addOnSuccessListener { result ->
                     for (document in result.documents) {
-                        if (document.contains(riderGeopoint)) {
-                            val geoPoint = document.getGeoPoint(riderGeopoint) as GeoPoint
+                        if (document.contains(riderPosition)) {
+                            val geoPoint = document.getGeoPoint(riderPosition) as GeoPoint
 
                             mMap.addMarker(
-                                MarkerOptions()
-                                    .title(document.id)
-                                    .position(LatLng(geoPoint.latitude, geoPoint.longitude))
-                                    .snippet(getString(R.string.rider_is_delivering))
+                                    MarkerOptions()
+                                            .title(document.id)
+                                            .position(LatLng(geoPoint.latitude, geoPoint.longitude))
+                                            .snippet(getString(R.string.rider_is_delivering))
                             )
 
                             mMap.animateCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    LatLng(
-                                        geoPoint.latitude,
-                                        geoPoint.longitude
-                                    ), 10.0F
-                                )
+                                    CameraUpdateFactory.newLatLngZoom(
+                                            LatLng(
+                                                    geoPoint.latitude,
+                                                    geoPoint.longitude
+                                            ), 10.0F
+                                    )
                             )
 
                         }
