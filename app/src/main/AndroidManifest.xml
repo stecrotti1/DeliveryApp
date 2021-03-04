@@ -37,7 +37,8 @@
 
         <activity
             android:name=".client.ClientRiderMapActivity"
-            android:label="@string/title_activity_client_rider_map"></activity>
+            android:label="@string/title_activity_client_rider_map"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".manager.RidersMapActivity"
             android:label="@string/riders_map_title"
