@@ -79,8 +79,8 @@ class RiderHomeActivity : AppCompatActivity() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.rider_order_dialog, null)
 
         val dialogBuilder = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setTitle(getString(R.string.dialog_title_rider))
+                .setView(dialogView)
+                .setTitle(getString(R.string.dialog_title_rider))
 
         val mapBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.viewMapBtn)
         val acceptBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.acceptOrderBtn)
@@ -108,73 +108,93 @@ class RiderHomeActivity : AppCompatActivity() {
             editor.apply()
 
             startActivity(
-                Intent(
-                    this@RiderHomeActivity,
-                    RiderDeliveryActivity::class.java
-                )
+                    Intent(
+                            this@RiderHomeActivity,
+                            RiderDeliveryActivity::class.java
+                    )
             )
 
             dialog.dismiss()
         }
 
         rejectBtn.setOnClickListener {
-            val temp = orders
-            val date = orders[i].date
-            orders = emptyArray()
-
-            for (item in temp) {
-                if (date != item.date) {
-                    orders = orders.plus(item)
-                }
-            }
-            updateView()
-
             uploadOnHistory(REJECTED, i, orders, firestore, riderEmail) // delivery rejected
+
             dialog.dismiss()
         }
     }
 
     private fun uploadOnHistory(
-        deliveryOutcome: String,
-        i: Int,
-        orderList: Array<RiderOrderItem>,
-        firestore: FirebaseFirestore,
-        riderEmail: String
+            deliveryOutcome: String,
+            i: Int,
+            orderList: Array<RiderOrderItem>,
+            firestore: FirebaseFirestore,
+            riderEmail: String
     ) {
 
         val entry = mapOf(
-            "location" to orderList[i].location,
-            "date" to orderList[i].date,
-            "clientEmail" to orderList[i].clientEmail,
-            "outcome" to deliveryOutcome
+                "location" to orderList[i].location,
+                "date" to orderList[i].date,
+                "clientEmail" to orderList[i].clientEmail,
+                "outcome" to deliveryOutcome
         )
 
         firestore.collection(riders).document(riderEmail)
-            .collection(deliveryHistory).document(orderList[i].date)
-            .set(entry)
-            .addOnSuccessListener {
-                // update also orders for manager
-                firestore.collection(Keys.orders).document(orderList[i].date)
-                    .update("outcome", deliveryOutcome)
-                    .addOnSuccessListener {
-                        // update rider.email/delivery
-                        firestore.collection(riders).document(riderEmail)
-                            .collection(delivery).document(orderList[i].date)
+                .collection(deliveryHistory).document(orderList[i].date)
+                .set(entry)
+                .addOnSuccessListener {
+                    // update also orders for manager
+                    firestore.collection(Keys.orders).document(orderList[i].date)
                             .update("outcome", deliveryOutcome)
                             .addOnSuccessListener {
-                                Log.d("FIREBASE_FIRESTORE", "Data saved with success")
+
+                                if (deliveryOutcome == REJECTED) {
+                                    firestore.collection(riders).document(riderEmail)
+                                            .collection(delivery).document(orderList[i].date)
+                                            .delete()
+                                            .addOnSuccessListener {
+                                                Log.d("FIREBASE_FIRESTORE",
+                                                        "Data saved with success")
+
+                                                val temp = orders
+                                                val date = orders[i].date
+                                                orders = emptyArray()
+
+                                                // update the view
+                                                for (item in temp) {
+                                                    if (date != item.date) {
+                                                        orders = orders.plus(item)
+                                                    }
+                                                }
+                                                updateView()
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.w("FIREBASE_FIRESTORE",
+                                                        "Failed to save data",
+                                                        e)
+                                            }
+                                } else {
+                                    firestore.collection(riders).document(riderEmail)
+                                            .collection(delivery).document(orderList[i].date)
+                                            .update("outcome", deliveryOutcome)
+                                            .addOnSuccessListener {
+                                                Log.d("FIREBASE_FIRESTORE",
+                                                        "Data saved with success")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.w("FIREBASE_FIRESTORE",
+                                                        "Failed to save data",
+                                                        e)
+                                            }
+                                }
                             }
                             .addOnFailureListener { e ->
                                 Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
                             }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
-                    }
-            }
-            .addOnFailureListener { e ->
-                Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
-            }
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
+                }
     }
 
     private fun getOrders(firestore: FirebaseFirestore, email: String) {
@@ -198,9 +218,9 @@ class RiderHomeActivity : AppCompatActivity() {
 
                         try {
                             geocoder = Geocoder(this).getFromLocation(
-                                locationGeoPoint.latitude,
-                                locationGeoPoint.longitude,
-                                1
+                                    locationGeoPoint.latitude,
+                                    locationGeoPoint.longitude,
+                                    1
                             )
                         } catch (e: IOException) {
                             Log.w("Geocoder", e.message.toString())
@@ -214,7 +234,7 @@ class RiderHomeActivity : AppCompatActivity() {
 
                         // get market position
                         firestore.collection(marketPosFirestore).document(marketDocument)
-                            .get()
+                                .get()
                                 .addOnSuccessListener { result2 ->
 
                                     marketPoint = result2.getGeoPoint(Keys.fieldPosition) as GeoPoint
@@ -222,12 +242,12 @@ class RiderHomeActivity : AppCompatActivity() {
                                     distance = calculateDistanceFromMarket(marketPoint, locationGeoPoint)
 
                                     orders = orders.plus(
-                                        RiderOrderItem(
-                                            date,
-                                            location,
-                                            distance,
-                                            clientEmail
-                                        )
+                                            RiderOrderItem(
+                                                    date,
+                                                    location,
+                                                    distance,
+                                                    clientEmail
+                                            )
                                     )
 
                                     updateView()
@@ -296,10 +316,10 @@ class RiderHomeActivity : AppCompatActivity() {
             }
             R.id.riderProfile -> {
                 startActivity(
-                    Intent(
-                        this@RiderHomeActivity,
-                        RiderProfileActivity::class.java
-                    )
+                        Intent(
+                                this@RiderHomeActivity,
+                                RiderProfileActivity::class.java
+                        )
                 )
                 true
             }
@@ -317,20 +337,20 @@ class RiderHomeActivity : AppCompatActivity() {
             }
             R.id.riderDeliveries -> { // history
                 startActivity(
-                    Intent(
-                        this@RiderHomeActivity,
-                        RiderDeliveryHistoryActivity::class.java
-                    )
+                        Intent(
+                                this@RiderHomeActivity,
+                                RiderDeliveryHistoryActivity::class.java
+                        )
                 )
                 true
             }
             R.id.logout -> {
                 auth.signOut()
                 startActivity(
-                    Intent(
-                        this@RiderHomeActivity,
-                        LoginActivity::class.java
-                    )
+                        Intent(
+                                this@RiderHomeActivity,
+                                LoginActivity::class.java
+                        )
                 )
                 finishAffinity()
                 true

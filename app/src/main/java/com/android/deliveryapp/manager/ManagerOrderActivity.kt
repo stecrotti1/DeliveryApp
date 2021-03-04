@@ -15,6 +15,7 @@ import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerOrderBinding
 import com.android.deliveryapp.manager.adapters.ManagerOrdersArrayAdapter
 import com.android.deliveryapp.manager.adapters.OrderDetailAdapter
+import com.android.deliveryapp.util.Keys.Companion.YET_TO_RESPOND
 import com.android.deliveryapp.util.Keys.Companion.clientEmail
 import com.android.deliveryapp.util.Keys.Companion.managerPref
 import com.android.deliveryapp.util.Keys.Companion.orderDate
@@ -48,7 +49,9 @@ class ManagerOrderActivity : AppCompatActivity() {
         getOrders(firestore)
 
         binding.ordersList.setOnItemClickListener { _, _, i, _ ->
-            showProductsDialog(i, firestore)
+            if (orderList[i].outcome == YET_TO_RESPOND) {
+                showProductsDialog(i, firestore)
+            }
         }
     }
 
@@ -143,6 +146,7 @@ class ManagerOrderActivity : AppCompatActivity() {
                                 document.getString("outcome") as String
                         ))
                     }
+                    orderList.reverse()
                     updateView()
                 }
                 .addOnFailureListener { e ->
