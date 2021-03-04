@@ -1,6 +1,5 @@
 package com.android.deliveryapp.manager
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerRidersListBinding
 import com.android.deliveryapp.manager.adapters.RiderListArrayAdapter
-import com.android.deliveryapp.util.Keys.Companion.managerPref
 import com.android.deliveryapp.util.Keys.Companion.riderEmail
 import com.android.deliveryapp.util.Keys.Companion.riderStatus
 import com.android.deliveryapp.util.Keys.Companion.riders
@@ -46,10 +44,6 @@ class ManagerRidersListActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        val sharedPreferences = getSharedPreferences(managerPref, Context.MODE_PRIVATE)
-
-        val editor = sharedPreferences.edit()
-
         binding.ridersList.setOnItemClickListener { _, _, i, _ ->
             if (!riderList[i].availability) { // if rider isn't available
                 showUnavailabilityDialog()
@@ -59,8 +53,7 @@ class ManagerRidersListActivity : AppCompatActivity() {
                     ManagerRiderActivity::class.java
                 )
 
-                editor.putString(riderEmail, riderList[i].email)
-                editor.apply()
+                intent.putExtra(riderEmail, riderList[i].email)
 
                 startActivity(intent)
             }

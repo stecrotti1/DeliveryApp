@@ -109,6 +109,9 @@
     <string name="delivery_start_auto_msg">*** AUTOMATIC MESSAGE: DELIVERY IN PROGRESS ***</string>
     <string name="no_chat_found">No chats found</string>
 
+    <string name="new_message_from_manager">New message from manager</string>
+    <string name="new_message_from_client">New message from client</string>
+
     <!-- ACTIVITY RIDER DELIVERY -->
     <string name="total_price_delivery">Total: %s</string>
 

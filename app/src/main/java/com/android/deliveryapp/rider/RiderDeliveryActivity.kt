@@ -1,6 +1,10 @@
 package com.android.deliveryapp.rider
 
 import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -35,13 +39,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 
 class RiderDeliveryActivity : AppCompatActivity() {
-    // TODO: 03/03/2021 chat notifications 
     private lateinit var binding: ActivityRiderDeliveryBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var clientEmail: String
 
     private val LOCATION_REQUEST_CODE = 101
+    private val channelID = "1"
+    private val notificationID = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,20 +72,25 @@ class RiderDeliveryActivity : AppCompatActivity() {
 
             // get outcomes
             firestore.collection(riders).document(user.email!!)
-                .collection(deliveryHistory)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result.documents) {
-                        // update view with outcome
-                        date = document.getString("date") as String
-                        location = document.getString("location") as String
-                        updateView(document.getString("outcome") as String)
+                    .collection(deliveryHistory)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result.documents) {
+                            // update view with outcome
+                            date = document.getString("date") as String
+                            location = document.getString("location") as String
+                            updateView(document.getString("outcome") as String)
+                        }
+                        getData(firestore, date, location)
                     }
-                    getData(firestore, date, location)
-                }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASE_FIRESTORE", "Failed to get data", e)
-                }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_FIRESTORE", "Failed to get data", e)
+                    }
+
+            val intent = Intent(
+                    this@RiderDeliveryActivity,
+                    RiderChatActivity::class.java
+            )
 
             /************************ START DELIVERY ***********************************/
 
@@ -96,45 +106,41 @@ class RiderDeliveryActivity : AppCompatActivity() {
             // FIXME: 03/03/2021 not sharing
             binding.shareLocationBtn.setOnClickListener {
                 val permission = ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
                 )
 
                 if (permission != PackageManager.PERMISSION_GRANTED) {
                     requestPermission(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        LOCATION_REQUEST_CODE
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            LOCATION_REQUEST_CODE
                     )
                 } else {
                     fusedLocation = LocationServices.getFusedLocationProviderClient(baseContext)
 
                     fusedLocation.lastLocation
-                        .addOnSuccessListener { location: Location? ->
-                            if (location != null) {
-                                updateLocation(firestore, location, user.email!!)
+                            .addOnSuccessListener { location: Location? ->
+                                if (location != null) {
+                                    updateLocation(firestore, location, user.email!!)
+                                }
                             }
-                        }
                 }
             }
 
             /************************** VIEW MAP ***********************************/
 
             binding.deliveryMap.setOnClickListener {
-                val intent = Intent(
-                    this@RiderDeliveryActivity,
-                    DeliveryMapActivity::class.java
+                val mapIntent = Intent(
+                        this@RiderDeliveryActivity,
+                        DeliveryMapActivity::class.java
                 )
-                intent.putExtra("clientLocation", location)
-                startActivity(intent)
+                mapIntent.putExtra("clientLocation", location)
+                startActivity(mapIntent)
             }
 
             /********************** CHAT WITH CLIENT ******************************/
 
             binding.riderChatClientBtn.setOnClickListener {
-                val intent = Intent(
-                    this@RiderDeliveryActivity,
-                    RiderChatActivity::class.java
-                )
                 intent.putExtra("recipientEmail", clientEmail)
                 intent.putExtra("riderEmail", user.email)
                 startActivity(intent)
@@ -143,10 +149,6 @@ class RiderDeliveryActivity : AppCompatActivity() {
             /********************** CHAT WITH MANAGER ***************************/
 
             binding.riderChatManagerBtn.setOnClickListener {
-                val intent = Intent(
-                    this@RiderDeliveryActivity,
-                    RiderChatActivity::class.java
-                )
                 intent.putExtra("riderEmail", user.email)
 
                 intent.putExtra("recipientEmail", MANAGER)
@@ -189,35 +191,182 @@ class RiderDeliveryActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        val user = auth.currentUser
+
+        if (user != null) {
+
+            /*************************** NOTIFICATIONS ********************************/
+
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE)
+                    as NotificationManager
+
+            val intent = Intent(
+                    this@RiderDeliveryActivity,
+                    RiderChatActivity::class.java
+            )
+
+            intent.putExtra("riderEmail", user.email)
+
+            listenForClientMessages(firestore, notificationManager, user.email!!)
+
+            listenForManagerMessages(firestore, notificationManager, user.email!!, intent)
+        }
+    }
+
+    private fun listenForClientMessages(firestore: FirebaseFirestore,
+                                        notificationManager: NotificationManager,
+                                        riderEmail: String) {
+
+        firestore.collection(chatCollection).get()
+                .addOnSuccessListener { result ->
+                    for (document in result.documents) {
+                        if (document.id.contains(MANAGER)) {
+                            document.reference.addSnapshotListener { value, error ->
+                                if (error != null) {
+                                    Log.w("FIREBASE_CHAT", "Listen failed", error)
+                                    return@addSnapshotListener
+                                } else {
+                                    if (value != null) { // if message sent is from rider notify
+                                        if (value.contains("NAME")
+                                                && value.getString("NAME") as String == "Rider"
+                                                && value.id.contains("$riderEmail|$clientEmail")) {
+
+                                            intent.putExtra("recipientEmail", clientEmail)
+
+                                            val pendingIntent = PendingIntent.getActivity(
+                                                    this@RiderDeliveryActivity,
+                                                    0,
+                                                    intent,
+                                                    0
+                                            )
+
+                                            createNotification(pendingIntent,
+                                                    notificationManager,
+                                                    getString(R.string.new_message_from_client))
+                                            createNotificationChannel(
+                                                    channelID,
+                                                    getString(R.string.app_name),
+                                                    getString(R.string.notification_channel_desc),
+                                                    notificationManager
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Error getting documents", e)
+                }
+    }
+
+    private fun listenForManagerMessages(firestore: FirebaseFirestore,
+                                         notificationManager: NotificationManager,
+                                         riderEmail: String, intent: Intent) {
+        firestore.collection(chatCollection).get()
+                .addOnSuccessListener { result ->
+                    for (document in result.documents) {
+                        if (document.id.contains(MANAGER)) {
+                            document.reference.addSnapshotListener { value, error ->
+                                if (error != null) {
+                                    Log.w("FIREBASE_CHAT", "Listen failed", error)
+                                    return@addSnapshotListener
+                                } else {
+                                    if (value != null) { // if message sent is from rider notify
+                                        if (value.contains("NAME")
+                                                && value.getString("NAME") as String == "Rider"
+                                                && value.id.contains("$riderEmail|$MANAGER")) {
+
+                                            intent.putExtra("recipientEmail", MANAGER)
+
+                                            val pendingIntent = PendingIntent.getActivity(
+                                                    this@RiderDeliveryActivity,
+                                                    0,
+                                                    intent,
+                                                    0
+                                            )
+
+                                            createNotification(pendingIntent,
+                                                    notificationManager,
+                                                    getString(R.string.new_message_from_manager))
+                                            createNotificationChannel(
+                                                    channelID,
+                                                    getString(R.string.app_name),
+                                                    getString(R.string.notification_channel_desc),
+                                                    notificationManager
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Error getting documents", e)
+                }
+    }
+
+    private fun createNotification(pendingIntent: PendingIntent,
+                                   notificationManager: NotificationManager,
+                                   title: String) {
+        val notification = Notification.Builder(this@RiderDeliveryActivity, channelID)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle(title)
+                .setAutoCancel(true)
+                .setChannelId(channelID)
+                .setContentIntent(pendingIntent)
+                .build()
+
+        notificationManager.notify(notificationID, notification)
+    }
+
+    private fun createNotificationChannel(id: String,
+                                          name: String,
+                                          description: String,
+                                          notificationManager: NotificationManager) {
+        val priority = NotificationManager.IMPORTANCE_HIGH
+
+        val channel = NotificationChannel(id, name, priority)
+
+        channel.description = description
+
+        notificationManager.createNotificationChannel(channel)
+    }
+
     private fun updateLocation(firestore: FirebaseFirestore, location: Location, email: String) {
         val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
 
         val entry = mapOf(
-            "riderPosition" to GeoPoint(location.latitude, location.longitude),
-            riderStatus to sharedPreferences.getBoolean(riderStatus, false)
+                "riderPosition" to GeoPoint(location.latitude, location.longitude),
+                riderStatus to sharedPreferences.getBoolean(riderStatus, false)
         )
 
         firestore.collection(riders).document(email)
-            .set(entry)
-            .addOnSuccessListener {
-                Log.d("FIREBASE_FIRESTORE", "Location updated with success")
+                .set(entry)
+                .addOnSuccessListener {
+                    Log.d("FIREBASE_FIRESTORE", "Location updated with success")
 
-                Toast.makeText(
-                    baseContext,
-                    getString(R.string.location_update_success),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            .addOnFailureListener { e ->
-                Log.w("FIREBASE_FIRESTORE", "Error updating position", e)
+                    Toast.makeText(
+                            baseContext,
+                            getString(R.string.location_update_success),
+                            Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Error updating position", e)
 
-                Toast.makeText(
-                    baseContext,
-                    getString(R.string.location_update_failure),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+                    Toast.makeText(
+                            baseContext,
+                            getString(R.string.location_update_failure),
+                            Toast.LENGTH_SHORT
+                    ).show()
+                }
     }
 
     /**
@@ -300,50 +449,50 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     // update also in orders
                     firestore.collection(orders).document(date)
-                        .update("outcome", outcome)
-                        .addOnSuccessListener {
-                            Log.d("FIREBASE_FIRESTORE", "Data updated with success")
-                            if (outcome != START && outcome != ACCEPTED) {
-                                // delete entry in rider.email/delivery
-                                firestore.collection(riders).document(riderEmail)
-                                    .collection(delivery).document(date)
-                                    .delete()
-                                    .addOnSuccessListener {
-                                        Log.d(
-                                            "FIREBASE_FIRESTORE",
-                                            "Document deleted with success"
-                                        )
+                            .update("outcome", outcome)
+                            .addOnSuccessListener {
+                                Log.d("FIREBASE_FIRESTORE", "Data updated with success")
+                                if (outcome != START && outcome != ACCEPTED) {
+                                    // delete entry in rider.email/delivery
+                                    firestore.collection(riders).document(riderEmail)
+                                            .collection(delivery).document(date)
+                                            .delete()
+                                            .addOnSuccessListener {
+                                                Log.d(
+                                                        "FIREBASE_FIRESTORE",
+                                                        "Document deleted with success"
+                                                )
 
-                                        Toast.makeText(
-                                            baseContext,
-                                            getString(R.string.data_update_success),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.w(
-                                            "FIREBASE_FIRESTORE",
-                                            "Failed to update data",
-                                            e
-                                        )
+                                                Toast.makeText(
+                                                        baseContext,
+                                                        getString(R.string.data_update_success),
+                                                        Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.w(
+                                                        "FIREBASE_FIRESTORE",
+                                                        "Failed to update data",
+                                                        e
+                                                )
 
-                                        Toast.makeText(
-                                            baseContext,
-                                            getString(R.string.error_updating_database),
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
+                                                Toast.makeText(
+                                                        baseContext,
+                                                        getString(R.string.error_updating_database),
+                                                        Toast.LENGTH_LONG
+                                                ).show()
+                                            }
+                                }
                             }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)
+                            .addOnFailureListener { e ->
+                                Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)
 
-                            Toast.makeText(
-                                baseContext,
-                                getString(R.string.error_updating_database),
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+                                Toast.makeText(
+                                        baseContext,
+                                        getString(R.string.error_updating_database),
+                                        Toast.LENGTH_LONG
+                                ).show()
+                            }
                 }
                 .addOnFailureListener { e ->
                     Log.w("FIREBASE_FIRESTORE", "Failed to update data", e)
@@ -373,23 +522,23 @@ class RiderDeliveryActivity : AppCompatActivity() {
 
     private fun getData(firestore: FirebaseFirestore, date: String, location: String) {
         firestore.collection(orders).document(date)
-            .get()
-            .addOnSuccessListener { result ->
-                binding.deliveryTotalPrice.text = getString(
-                    R.string.total_price_delivery,
-                    String.format("%.2f €", result.getDouble("total") as Double)
-                )
-                binding.dateDelivery.text = getString(R.string.delivery_date, date)
-                binding.deliveryPaymentType.text = getString(
-                    R.string.delivery_payment_type,
-                    result.getString("payment")
-                )
-                binding.locationDelivery.text = getString(R.string.delivery_location, location)
-                clientEmail = result.getString("clientEmail") as String
-            }
-            .addOnFailureListener { e ->
-                Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
-            }
+                .get()
+                .addOnSuccessListener { result ->
+                    binding.deliveryTotalPrice.text = getString(
+                            R.string.total_price_delivery,
+                            String.format("%.2f €", result.getDouble("total") as Double)
+                    )
+                    binding.dateDelivery.text = getString(R.string.delivery_date, date)
+                    binding.deliveryPaymentType.text = getString(
+                            R.string.delivery_payment_type,
+                            result.getString("payment")
+                    )
+                    binding.locationDelivery.text = getString(R.string.delivery_location, location)
+                    clientEmail = result.getString("clientEmail") as String
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
+                }
     }
 
     // when the back button is pressed in actionbar, finish this activity

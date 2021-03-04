@@ -147,4 +147,6 @@
     <string name="rider_is_delivering">In consegna</string>
     <string name="location_update_success">Posizione aggiornata con successo</string>
     <string name="location_update_failure">Errore nell\'aggiornare la posizione</string>
+    <string name="new_message_from_manager">Nuovo messaggio dal gestore</string>
+    <string name="new_message_from_client">Nuovo messaggio dal cliente</string>
 </resources>

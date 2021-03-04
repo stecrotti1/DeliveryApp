@@ -22,8 +22,7 @@ class ManagerChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityManagerChatBinding
     private lateinit var auth: FirebaseAuth
 
-    companion object {
-    }
+    companion object;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +40,7 @@ class ManagerChatActivity : AppCompatActivity() {
 
             val sharedPreferences = getSharedPreferences(managerPref, Context.MODE_PRIVATE)
 
-            val riderEmail = sharedPreferences.getString(riderEmail, "")
+            val riderEmail = intent.getStringExtra(riderEmail)
 
             val firestoreChat by lazy {
                 FirebaseFirestore.getInstance().collection(chatCollection)
@@ -60,7 +59,7 @@ class ManagerChatActivity : AppCompatActivity() {
 
     private fun sendMessage(reference: DocumentReference) {
         val newMessage = mapOf(
-                RiderChatActivity.NAME to "Rider",
+                RiderChatActivity.NAME to "Manager",
                 RiderChatActivity.TEXT to binding.message.text.toString()
         )
 
