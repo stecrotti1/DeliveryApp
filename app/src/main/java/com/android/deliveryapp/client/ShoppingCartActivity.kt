@@ -42,6 +42,8 @@ class ShoppingCartActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var products: Array<ProductItem>
 
+    private var dialog: AlertDialog? = null
+
     private var total: Double = 0.00
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,12 +69,14 @@ class ShoppingCartActivity : AppCompatActivity() {
         binding.shoppingListView.setOnItemClickListener { _, _, i, _ -> // remove from cart dialog
             val dialog: AlertDialog?
 
-            val dialogView = LayoutInflater.from(this).inflate(R.layout.remove_from_cart_dialog,
-                    null)
+            val dialogView = LayoutInflater.from(this).inflate(
+                R.layout.remove_from_cart_dialog,
+                null
+            )
 
             val dialogBuilder = AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.remove_from_shopping_cart_title, products[i].title))
-                    .setView(dialogView)
+                .setTitle(getString(R.string.remove_from_shopping_cart_title, products[i].title))
+                .setView(dialogView)
 
             val removeBtn: FloatingActionButton = dialogView.findViewById(R.id.removeFromCartBtn)
 
@@ -86,8 +90,6 @@ class ShoppingCartActivity : AppCompatActivity() {
             }
         }
 
-        /*************************+***** PLACE ORDER DIALOG ***************************************/
-
         binding.checkoutBtn.setOnClickListener {
             // check if user has set a location
             val user = auth.currentUser
@@ -95,81 +97,93 @@ class ShoppingCartActivity : AppCompatActivity() {
 
             // has location
             if (sharedPreferences.getBoolean(hasLocation, false) && user != null) {
-                val dialogView = LayoutInflater.from(this).inflate(R.layout.checkout_dialog, null)
-
-                // radio group has "credit cart" as set default checked
-                var paymentType = ""
-
-                val dialog: AlertDialog?
-
-                val dialogBuilder = AlertDialog.Builder(this)
-                        .setView(dialogView)
-                        .setTitle(getString(R.string.place_order))
-
-                val totalPrice: TextView = dialogView.findViewById(R.id.totalPriceDialog)
-                totalPrice.text = binding.totalPriceLabel.text
-
-                val paymentRadioGroup: RadioGroup = dialogView.findViewById(R.id.paymentOptions)
-
-                val creditCardRadioButton: RadioButton = dialogView.findViewById(R.id.creditCard)
-                val cashRadioButton: RadioButton = dialogView.findViewById(R.id.cash)
-
-                val placeOrderBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.placeOrderBtn)
-
-                dialog = dialogBuilder.create()
-                dialog.show()
-
-                paymentRadioGroup.setOnCheckedChangeListener { _, i ->
-                    if (creditCardRadioButton.isChecked && creditCardRadioButton.id == i) {
-                        paymentType = getString(R.string.credit_card)
-                    } else if (cashRadioButton.isChecked && cashRadioButton.id == i) {
-                        paymentType = getString(R.string.cash)
-                    }
-                }
-
-                placeOrderBtn.setOnClickListener {
-                    if (paymentType.isNotEmpty()) {
-                        val reference = database.getReference(productListFirebase)
-
-                        createOrder(firestore, reference, user, paymentType)
-                        dialog.dismiss()
-
-                        startActivity(Intent(this@ShoppingCartActivity,
-                                ClientOrdersActivity::class.java))
-                        finish()
-                    } else {
-                        Toast.makeText(
-                            baseContext,
-                            getString(R.string.please_select_payment),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-
-                /*************************************************************************************/
-
+                showCheckOutDialog(user)
             } else {
+                showLocationErrorDialog()
+            }
+        }
+    }
 
-                /******************** NO LOCATION DIALOG *****************************************/
+    private fun showLocationErrorDialog() {
+        val dialogView =
+            LayoutInflater.from(this).inflate(R.layout.location_error_dialog, null)
 
-                val dialogView = LayoutInflater.from(this).inflate(R.layout.location_error_dialog, null)
+        val dialog: AlertDialog?
 
-                val dialog: AlertDialog?
+        val errorButton: ExtendedFloatingActionButton =
+            dialogView.findViewById(R.id.errorButton)
 
-                val errorButton: ExtendedFloatingActionButton = dialogView.findViewById(R.id.errorButton)
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle(getString(R.string.error))
 
-                val dialogBuilder = AlertDialog.Builder(this)
-                        .setView(dialogView)
-                        .setTitle(getString(R.string.error))
+        dialog = dialogBuilder.create()
+        dialog.show()
 
-                dialog = dialogBuilder.create()
-                dialog.show()
+        // return to profile so client can set his location
+        errorButton.setOnClickListener {
+            dialog.dismiss()
+            startActivity(
+                Intent(
+                    this@ShoppingCartActivity,
+                    ClientProfileActivity::class.java
+                )
+            )
+        }
+    }
 
-                // return to profile so client can set his location
-                errorButton.setOnClickListener {
-                    dialog.dismiss()
-                    startActivity(Intent(this@ShoppingCartActivity, ClientProfileActivity::class.java))
-                }
+    private fun showCheckOutDialog(user: FirebaseUser) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.checkout_dialog, null)
+
+        // radio group has "credit cart" as set default checked
+        var paymentType = ""
+
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle(getString(R.string.place_order))
+
+        val totalPrice: TextView = dialogView.findViewById(R.id.totalPriceDialog)
+        totalPrice.text = binding.totalPriceLabel.text
+
+        val paymentRadioGroup: RadioGroup = dialogView.findViewById(R.id.paymentOptions)
+
+        val creditCardRadioButton: RadioButton = dialogView.findViewById(R.id.creditCard)
+        val cashRadioButton: RadioButton = dialogView.findViewById(R.id.cash)
+
+        val placeOrderBtn: ExtendedFloatingActionButton =
+            dialogView.findViewById(R.id.placeOrderBtn)
+
+        dialog = dialogBuilder.create()
+        dialog!!.show()
+
+        paymentRadioGroup.setOnCheckedChangeListener { _, i ->
+            if (creditCardRadioButton.isChecked && creditCardRadioButton.id == i) {
+                paymentType = getString(R.string.credit_card)
+            } else if (cashRadioButton.isChecked && cashRadioButton.id == i) {
+                paymentType = getString(R.string.cash)
+            }
+        }
+
+        placeOrderBtn.setOnClickListener {
+            if (paymentType.isNotEmpty()) {
+                val reference = database.getReference(productListFirebase)
+
+                createOrder(firestore, reference, user, paymentType)
+                dialog!!.dismiss()
+
+                startActivity(
+                    Intent(
+                        this@ShoppingCartActivity,
+                        ClientOrdersActivity::class.java
+                    )
+                )
+                finish()
+            } else {
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.please_select_payment),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -181,9 +195,9 @@ class ShoppingCartActivity : AppCompatActivity() {
      * @param title product title to be removed
      */
     private fun removeFromShoppingCart(
-            auth: FirebaseAuth,
-            firestore: FirebaseFirestore,
-            title: String
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        title: String
     ) {
         val user = auth.currentUser
 
@@ -198,29 +212,33 @@ class ShoppingCartActivity : AppCompatActivity() {
 
         if (user != null) {
             firestore.collection(clients).document(user.email!!)
-                    .collection(shoppingCart).document(title)
-                    .get()
-                    .addOnSuccessListener { result ->
-                        if (result.exists()) { // if it exists then remove it, otherwise, do nothing
-                            result.reference.delete()
-                            Log.d("FIREBASE_FIRESTORE", "Product removed with success")
-                            Toast.makeText(baseContext,
-                                    getString(R.string.product_removed_from_cart_success),
-                                    Toast.LENGTH_SHORT).show()
-                        }
+                .collection(shoppingCart).document(title)
+                .get()
+                .addOnSuccessListener { result ->
+                    if (result.exists()) { // if it exists then remove it, otherwise, do nothing
+                        result.reference.delete()
+                        Log.d("FIREBASE_FIRESTORE", "Product removed with success")
+                        Toast.makeText(
+                            baseContext,
+                            getString(R.string.product_removed_from_cart_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                    .addOnFailureListener {
-                        Log.w("FIREBASE_FIRESTORE", "Error removing product from cart")
-                        Toast.makeText(baseContext,
-                                getString(R.string.error_removing_from_cart),
-                                Toast.LENGTH_LONG).show()
-                    }
+                }
+                .addOnFailureListener {
+                    Log.w("FIREBASE_FIRESTORE", "Error removing product from cart")
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.error_removing_from_cart),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
         } else {
             auth.currentUser?.reload()
             Toast.makeText(
-                    baseContext,
-                    getString(R.string.error_user_data),
-                    Toast.LENGTH_LONG
+                baseContext,
+                getString(R.string.error_user_data),
+                Toast.LENGTH_LONG
             ).show()
         }
     }
@@ -231,67 +249,76 @@ class ShoppingCartActivity : AppCompatActivity() {
         return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM).format(today)
     }
 
-    private fun createOrder(firestore: FirebaseFirestore, reference: DatabaseReference, user: FirebaseUser, paymentType: String) {
+    private fun createOrder(
+        firestore: FirebaseFirestore,
+        reference: DatabaseReference,
+        user: FirebaseUser,
+        paymentType: String
+    ) {
         val today = getDate()
 
         val entry = mapOf(
-                "total" to total,
-                "payment" to paymentType,
-                "date" to today,
-                "products" to products.toList()
+            "total" to total,
+            "payment" to paymentType,
+            "date" to today,
+            "products" to products.toList()
         )
 
         val orderEntryManager = mapOf(
-                "total" to total,
-                "payment" to paymentType,
-                "date" to today,
-                "products" to products.toList(),
-                "clientEmail" to user.email!!,
-                "outcome" to YET_TO_RESPOND
+            "total" to total,
+            "payment" to paymentType,
+            "date" to today,
+            "products" to products.toList(),
+            "clientEmail" to user.email!!,
+            "outcome" to YET_TO_RESPOND
         )
 
         firestore.collection(clients).document(user.email!!)
-                .collection(orders).document(today)
-                .set(entry)
-                .addOnSuccessListener {
-                    // set user order in firestore so manager can see them
-                    firestore.collection(orders).document(today)
-                        .set(orderEntryManager)
-                        .addOnSuccessListener {
-                            for (item in products) {
-                                updateProductQuantity(reference, item.title, item.quantity)
-                            }
-
-                            // empty the shopping cart
-                            emptyShoppingCart(firestore, user.email!!)
-                            products = emptyArray()
-
-                            // update view
-                            updateView(products)
+            .collection(orders).document(today)
+            .set(entry)
+            .addOnSuccessListener {
+                // set user order in firestore so manager can see them
+                firestore.collection(orders).document(today)
+                    .set(orderEntryManager)
+                    .addOnSuccessListener {
+                        for (item in products) {
+                            updateProductQuantity(reference, item.title, item.quantity)
                         }
-                        .addOnFailureListener { e ->
-                            Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
-                            Toast.makeText(
-                                baseContext,
-                                getString(R.string.order_failure),
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASE_FIRESTORE", "Failed to upload data", e)
-                    Toast.makeText(
-                        baseContext,
-                        getString(R.string.order_failure),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+
+                        // empty the shopping cart
+                        emptyShoppingCart(firestore, user.email!!)
+                        products = emptyArray()
+
+                        // update view
+                        updateView(products)
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_DATABASE", "Failed to upload data", e)
+                        Toast.makeText(
+                            baseContext,
+                            getString(R.string.order_failure),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_FIRESTORE", "Failed to upload data", e)
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.order_failure),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
     }
 
     /**
      * Update the product quantity on firebase firestore
      */
-    private fun updateProductQuantity(reference: DatabaseReference, productTitle: String, quantity: Int) {
+    private fun updateProductQuantity(
+        reference: DatabaseReference,
+        productTitle: String,
+        quantity: Int
+    ) {
         reference.child(productTitle).child("quantity")
             .get()
             .addOnSuccessListener { result ->
@@ -328,17 +355,17 @@ class ShoppingCartActivity : AppCompatActivity() {
 
     private fun emptyShoppingCart(firestore: FirebaseFirestore, userEmail: String) {
         firestore.collection(clients).document(userEmail)
-                .collection(shoppingCart)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result.documents) {
-                        document.reference.delete()
-                    }
-                    Log.d("FIREBASE_FIRESTORE", "Documents deleted")
+            .collection(shoppingCart)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result.documents) {
+                    document.reference.delete()
                 }
-                .addOnFailureListener {
-                    Log.w("FIREBASE_FIRESTORE", "Error deleting documents")
-                }
+                Log.d("FIREBASE_FIRESTORE", "Documents deleted")
+            }
+            .addOnFailureListener {
+                Log.w("FIREBASE_FIRESTORE", "Error deleting documents")
+            }
     }
 
     /**
@@ -363,37 +390,37 @@ class ShoppingCartActivity : AppCompatActivity() {
 
         if (user != null) {
             firestore.collection(clients).document(user.email!!)
-                    .collection(shoppingCart)
-                    .get()
-                    .addOnSuccessListener { result ->
-                        for (document in result.documents) {
-                            products = products.plus(
-                                ProductItem(
-                                    "",
-                                    document.getString("title") as String,
-                                    "",
-                                    document.getDouble("price") as Double,
-                                    document.getLong("qty")!!.toInt()
-                                )
+                .collection(shoppingCart)
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result.documents) {
+                        products = products.plus(
+                            ProductItem(
+                                "",
+                                document.getString("title") as String,
+                                "",
+                                document.getDouble("price") as Double,
+                                document.getLong("qty")!!.toInt()
                             )
-                        }
+                        )
+                    }
 
-                        // update view
-                        updateView(products)
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("FIREBASE_FIRESTORE", "Error fetching data", e)
-                        Toast.makeText(
-                                baseContext,
-                                getString(R.string.error_user_data),
-                                Toast.LENGTH_LONG
-                        ).show()
-                    }
+                    // update view
+                    updateView(products)
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIREBASE_FIRESTORE", "Error fetching data", e)
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.error_user_data),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
         } else {
             Toast.makeText(
-                    baseContext,
-                    getString(R.string.error_user_data),
-                    Toast.LENGTH_LONG
+                baseContext,
+                getString(R.string.error_user_data),
+                Toast.LENGTH_LONG
             ).show()
         }
     }
@@ -410,11 +437,12 @@ class ShoppingCartActivity : AppCompatActivity() {
             binding.shoppingListView.visibility = View.VISIBLE
 
             binding.shoppingListView.adapter = ShoppingCartArrayAdapter(
-                    this,
-                    R.layout.list_element_shopping_cart,
-                    products
+                this,
+                R.layout.list_element_shopping_cart,
+                products
             )
-            binding.totalPriceLabel.text = String.format("%s %.2f", getString(R.string.total_price), getTotalPrice())
+            binding.totalPriceLabel.text =
+                String.format("%s %.2f", getString(R.string.total_price), getTotalPrice())
 
         } else { // empty cart
             binding.emptyCartLabel.visibility = View.VISIBLE
@@ -434,6 +462,20 @@ class ShoppingCartActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBundle("dialog", dialog?.onSaveInstanceState())
+        outState.putParcelable("listView", binding.shoppingListView.onSaveInstanceState())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        savedInstanceState.getBundle("dialog")?.let { dialog?.onRestoreInstanceState(it) }
+        binding.shoppingListView.onRestoreInstanceState(savedInstanceState.getParcelable("listView"))
     }
 
     override fun onDestroy() {

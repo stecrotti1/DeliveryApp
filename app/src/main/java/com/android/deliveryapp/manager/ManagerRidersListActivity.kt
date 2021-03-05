@@ -28,6 +28,8 @@ class ManagerRidersListActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var riderList: Array<RiderListItem>
 
+    private var dialog: AlertDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityManagerRidersListBinding.inflate(layoutInflater)
@@ -61,8 +63,6 @@ class ManagerRidersListActivity : AppCompatActivity() {
     }
 
     private fun showUnavailabilityDialog() {
-        val dialog: AlertDialog?
-
         val dialogView = LayoutInflater.from(this).inflate(R.layout.rider_unavailable_dialog, null)
 
         val dialogBuilder = AlertDialog.Builder(this)
@@ -71,10 +71,10 @@ class ManagerRidersListActivity : AppCompatActivity() {
         val okBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.okBtn)
 
         dialog = dialogBuilder.create()
-        dialog.show()
+        dialog!!.show()
 
         okBtn.setOnClickListener {
-            dialog.dismiss()
+            dialog!!.dismiss()
         }
     }
 
@@ -127,5 +127,19 @@ class ManagerRidersListActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBundle("dialog", dialog?.onSaveInstanceState())
+        outState.putParcelable("listView", binding.ridersList.onSaveInstanceState())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        savedInstanceState.getBundle("dialog")?.let { dialog?.onRestoreInstanceState(it) }
+        binding.ridersList.onRestoreInstanceState(savedInstanceState.getParcelable("listView"))
     }
 }

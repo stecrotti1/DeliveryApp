@@ -1,5 +1,6 @@
 package com.android.deliveryapp
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
@@ -13,6 +14,7 @@ class ThemeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityThemeBinding
 
+    @SuppressLint("SwitchIntDef")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityThemeBinding.inflate(layoutInflater)
@@ -25,7 +27,7 @@ class ThemeActivity : AppCompatActivity() {
         val editor = sharedPreferences.edit()
 
         // update ui
-        when (sharedPreferences.getInt(themePref, -1)) {
+        when (AppCompatDelegate.getDefaultNightMode()) {
             AppCompatDelegate.MODE_NIGHT_NO -> {
                 binding.lightTheme.isChecked = true
                 binding.darkTheme.isChecked = false
