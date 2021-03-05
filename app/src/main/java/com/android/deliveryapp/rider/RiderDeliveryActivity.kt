@@ -177,6 +177,8 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 // stop sharing and put 0.0, 0.0
                 updateLocation(firestore, geopoint, user.email!!)
 
+                removeClientChat(user.email!!, clientEmail)
+
                 startActivity(
                     Intent(
                         this@RiderDeliveryActivity,
@@ -203,6 +205,8 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 // stop sharing and put 0.0, 0.0
                 updateLocation(firestore, geopoint, user.email!!)
 
+                removeClientChat(user.email!!, clientEmail)
+
                 startActivity(
                     Intent(
                         this@RiderDeliveryActivity,
@@ -211,6 +215,17 @@ class RiderDeliveryActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    private fun removeClientChat(riderEmail: String, clientEmail: String) {
+        val reference = FirebaseFirestore.getInstance().collection(chatCollection)
+            .document("$riderEmail|$clientEmail").delete()
+            .addOnSuccessListener {
+                Log.d("FIRESTORE_CHAT", "Chat deleted with success")
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIRESTORE_CHAT", "Failed to remove chat", e)
+            }
     }
 
     override fun onStart() {
