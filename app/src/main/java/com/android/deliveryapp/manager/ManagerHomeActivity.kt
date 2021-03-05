@@ -86,6 +86,14 @@ class ManagerHomeActivity : AppCompatActivity() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        val databaseRef = database.getReference(productListFirebase)
+
+        fetchDatabase(databaseRef)
+    }
+
     override fun onStart() {
         super.onStart()
 
