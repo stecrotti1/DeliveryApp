@@ -98,21 +98,24 @@ class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (document.contains(riderPosition)) {
                         val geoPoint = document.getGeoPoint(riderPosition) as GeoPoint
 
-                        mMap.addMarker(
-                            MarkerOptions()
-                                .title(document.id)
-                                .position(LatLng(geoPoint.latitude, geoPoint.longitude))
-                                .snippet(getString(R.string.rider_is_delivering))
-                        )
-
-                        mMap.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    geoPoint.latitude,
-                                    geoPoint.longitude
-                                ), 10.0F
+                        // 0.0, 0.0 means rider has finished delivering and stopped sharing location
+                        if (geopoint.latitude != 0.0 && geopoint.longitude != 0.0) {
+                            mMap.addMarker(
+                                MarkerOptions()
+                                    .title(document.id)
+                                    .position(LatLng(geoPoint.latitude, geoPoint.longitude))
+                                    .snippet(getString(R.string.rider_is_delivering))
                             )
-                        )
+
+                            mMap.animateCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(
+                                        geoPoint.latitude,
+                                        geoPoint.longitude
+                                    ), 10.0F
+                                )
+                            )
+                        }
 
                     }
                 }
