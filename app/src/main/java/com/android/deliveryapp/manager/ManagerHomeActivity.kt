@@ -59,7 +59,6 @@ class ManagerHomeActivity : AppCompatActivity() {
                     AddProductActivity::class.java
                 )
             )
-
         }
 
         binding.ridersMapBtn.setOnClickListener {

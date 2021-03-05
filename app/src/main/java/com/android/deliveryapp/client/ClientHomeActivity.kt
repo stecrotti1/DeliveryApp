@@ -30,10 +30,7 @@ import com.android.deliveryapp.util.ProductItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
@@ -67,22 +64,34 @@ class ClientHomeActivity : AppCompatActivity() {
         val user = auth.currentUser
 
         if (user != null) {
-            databaseRef.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    processItems(snapshot) // create the product list
-
-                    updateView()
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
-                }
-            })
+            fetchDatabase(databaseRef)
 
             binding.shoppingCartButton.setOnClickListener {
                 startActivity(Intent(this@ClientHomeActivity, ShoppingCartActivity::class.java))
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val reference = database.getReference(productListFirebase)
+
+        fetchDatabase(reference)
+    }
+
+    private fun fetchDatabase(reference: DatabaseReference) {
+        reference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                processItems(snapshot) // create the product list
+
+                updateView()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("FIREBASE_DATABASE", "Failed to retrieve items", error.toException())
+            }
+        })
     }
 
     private fun updateView() {

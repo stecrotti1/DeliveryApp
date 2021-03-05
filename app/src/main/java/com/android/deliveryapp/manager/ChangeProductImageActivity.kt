@@ -233,8 +233,6 @@ class ChangeProductImageActivity : AppCompatActivity() {
                                         ManagerHomeActivity::class.java
                                     )
 
-
-
                                     startActivity(intent)
 
                                     Toast.makeText(

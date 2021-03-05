@@ -60,13 +60,14 @@ class AddProductActivity : AppCompatActivity() {
     private fun checkCameraPermissions() {
         // check permissions to use camera
         if (checkSelfPermission(Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_DENIED ||
-                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_DENIED) {
+            == PackageManager.PERMISSION_DENIED ||
+            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            == PackageManager.PERMISSION_DENIED
+        ) {
             // permission not enabled
             val permission = arrayOf(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
             requestPermissions(permission, PERMISSION_CODE)
         } else {
@@ -77,11 +78,12 @@ class AddProductActivity : AppCompatActivity() {
     private fun showDialog() {
         val dialog: AlertDialog?
 
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.manager_choose_image_from_dialog, null)
+        val dialogView =
+            LayoutInflater.from(this).inflate(R.layout.manager_choose_image_from_dialog, null)
 
         val dialogBuilder = AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setTitle(getString(R.string.dialog_select_image_title))
+            .setView(dialogView)
+            .setTitle(getString(R.string.dialog_select_image_title))
 
         val cameraBtn: FloatingActionButton = dialogView.findViewById(R.id.cameraBtn)
         val galleryBtn: FloatingActionButton = dialogView.findViewById(R.id.galleryBtn)
@@ -104,7 +106,8 @@ class AddProductActivity : AppCompatActivity() {
         val contentValues = ContentValues()
         contentValues.put(MediaStore.Images.Media.TITLE, "New picture")
         contentValues.put(MediaStore.Images.Media.DESCRIPTION, "From camera")
-        imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        imageUri =
+            contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
@@ -114,15 +117,23 @@ class AddProductActivity : AppCompatActivity() {
     private fun openGallery() {
         val contentValues = ContentValues()
         contentValues.put(MediaStore.Images.Media.TITLE, getString(R.string.new_image_title))
-        contentValues.put(MediaStore.Images.Media.DESCRIPTION, getString(R.string.new_image_desc_gallery))
-        imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        contentValues.put(
+            MediaStore.Images.Media.DESCRIPTION,
+            getString(R.string.new_image_desc_gallery)
+        )
+        imageUri =
+            contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
         val galleryIntent = Intent(Intent.ACTION_PICK)
         galleryIntent.type = "image/*"
         startActivityForResult(galleryIntent, IMAGE_GALLERY_CODE)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         //called when user presses ALLOW or DENY from Permission Request Popup
         when (requestCode) {
             PERMISSION_CODE -> {
@@ -169,7 +180,8 @@ class AddProductActivity : AppCompatActivity() {
         val storageRef = storage.getReference(productImages)
 
         val today: Date = Calendar.getInstance().time
-        var name = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(today)
+        var name =
+            DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(today)
 
         name = name.replace(" ", "_") // remove spaces
         name = name.replace(",", "") // remove ","
@@ -186,7 +198,11 @@ class AddProductActivity : AppCompatActivity() {
     /**
      * Upload product image from ImageView
      */
-    private fun uploadImage(storageReference: StorageReference, reference: DatabaseReference, name: String) {
+    private fun uploadImage(
+        storageReference: StorageReference,
+        reference: DatabaseReference,
+        name: String
+    ) {
         binding.imageView.isDrawingCacheEnabled = true
         binding.imageView.buildDrawingCache()
 
@@ -200,71 +216,79 @@ class AddProductActivity : AppCompatActivity() {
 
         val uploadTask = nameRef.putBytes(data)
         uploadTask
-                .addOnCompleteListener { task ->
-                    if (task.isComplete && task.isSuccessful) {
+            .addOnCompleteListener { task ->
+                if (task.isComplete && task.isSuccessful) {
 
-                        Log.d("FIREBASE_STORAGE", "Image uploaded with success")
+                    Log.d("FIREBASE_STORAGE", "Image uploaded with success")
 
-                        storageReference.child("$name.jpg").downloadUrl
-                                .addOnSuccessListener { url ->
-                                    // upload data
-                                    uploadData(reference, url)
+                    storageReference.child("$name.jpg").downloadUrl
+                        .addOnSuccessListener { url ->
+                            // upload data
+                            uploadData(reference, url)
 
-                                    // then return to home
-                                    val intent = Intent(this@AddProductActivity,
-                                            ManagerHomeActivity::class.java)
+                            // then return to home
+                            val intent = Intent(
+                                this@AddProductActivity,
+                                ManagerHomeActivity::class.java
+                            )
 
-                                    intent.putExtra("url", imageUri.toString())
+                            intent.putExtra("url", imageUri.toString())
 
-                                    startActivity(intent)
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.d("FIREBASE_STORAGE",
-                                            "Error getting download url",
-                                            e)
+                            startActivity(intent)
+                        }
+                        .addOnFailureListener { e ->
+                            Log.d(
+                                "FIREBASE_STORAGE",
+                                "Error getting download url",
+                                e
+                            )
 
-                                    Toast.makeText(baseContext,
-                                            getString(R.string.error_image_url),
-                                            Toast.LENGTH_LONG).show()
-                                }
-                    }
+                            Toast.makeText(
+                                baseContext,
+                                getString(R.string.error_image_url),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                 }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASE_STORAGE", "Failed to upload image", e)
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_STORAGE", "Failed to upload image", e)
 
-                    Toast.makeText(
-                            baseContext,
-                            getString(R.string.image_upload_failure),
-                            Toast.LENGTH_SHORT
-                    ).show()
-                }
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.image_upload_failure),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
     private fun uploadData(reference: DatabaseReference, imageUrl: Uri) {
         val entry = mapOf<String, Any?>(
-                "title" to binding.productName.text.toString().toLowerCase(Locale.ROOT),
-                "description" to binding.productDescription.text.toString(),
-                "quantity" to binding.productQty.text.toString().toInt(),
-                "price" to binding.productPrice.text.toString().toDouble(),
-                "image" to imageUrl.toString()
+            "title" to binding.productName.text.toString().toLowerCase(Locale.ROOT),
+            "description" to binding.productDescription.text.toString(),
+            "quantity" to binding.productQty.text.toString().toInt(),
+            "price" to binding.productPrice.text.toString().toDouble(),
+            "image" to imageUrl.toString()
         )
 
         reference.child(entry["title"] as String)
-                .setValue(entry)
-                .addOnSuccessListener {
-                    Toast.makeText(baseContext,
-                            getString(R.string.data_upload_success),
-                            Toast.LENGTH_SHORT
-                    ).show()
-                }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASE_DATABASE", "Error uploading data", e)
+            .setValue(entry)
+            .addOnSuccessListener {
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.data_upload_success),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_DATABASE", "Error uploading data", e)
 
-                    Toast.makeText(baseContext,
-                            getString(R.string.data_upload_failure),
-                            Toast.LENGTH_SHORT
-                    ).show()
-                }
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.data_upload_failure),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
     private fun isDataValid(): Boolean {
@@ -322,8 +346,12 @@ class AddProductActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                startActivity(Intent(this@AddProductActivity,
-                        ManagerHomeActivity::class.java))
+                startActivity(
+                    Intent(
+                        this@AddProductActivity,
+                        ManagerHomeActivity::class.java
+                    )
+                )
                 finish()
                 true
             }
