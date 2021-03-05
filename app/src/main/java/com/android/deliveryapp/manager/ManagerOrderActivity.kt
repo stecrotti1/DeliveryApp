@@ -15,6 +15,7 @@ import com.android.deliveryapp.R
 import com.android.deliveryapp.databinding.ActivityManagerOrderBinding
 import com.android.deliveryapp.manager.adapters.ManagerOrdersArrayAdapter
 import com.android.deliveryapp.manager.adapters.OrderDetailAdapter
+import com.android.deliveryapp.util.Keys.Companion.REJECTED
 import com.android.deliveryapp.util.Keys.Companion.YET_TO_RESPOND
 import com.android.deliveryapp.util.Keys.Companion.clientEmail
 import com.android.deliveryapp.util.Keys.Companion.managerPref
@@ -49,7 +50,7 @@ class ManagerOrderActivity : AppCompatActivity() {
         getOrders(firestore)
 
         binding.ordersList.setOnItemClickListener { _, _, i, _ ->
-            if (orderList[i].outcome == YET_TO_RESPOND) {
+            if (orderList[i].outcome == YET_TO_RESPOND || orderList[i].outcome == REJECTED) {
                 showProductsDialog(i, firestore)
             }
         }
