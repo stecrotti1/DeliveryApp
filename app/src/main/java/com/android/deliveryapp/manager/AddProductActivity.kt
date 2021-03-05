@@ -296,16 +296,17 @@ class AddProductActivity : AppCompatActivity() {
             binding.productPrice.requestFocus()
             return false
         }
-        if ((binding.productPrice.text.toString().length > 1
-                        && binding.productPrice.text.toString().startsWith("0"))
-                || !binding.productPrice.text.toString().isDigitsOnly()) {
-            binding.productPrice.error = getString(R.string.invalid_quantity)
+        if (binding.productPrice.text.toString().length > 1
+            && binding.productPrice.text.toString().startsWith("0")
+        ) {
+            binding.productPrice.error = getString(R.string.invalid_price)
             binding.productPrice.requestFocus()
             return false
         }
         if ((binding.productQty.text.toString().length > 1
                     && binding.productQty.text.toString().startsWith("0"))
-                || !binding.productQty.text.toString().isDigitsOnly()) {
+            || !binding.productQty.text.toString().isDigitsOnly()
+        ) {
             binding.productPrice.error = getString(R.string.invalid_quantity)
             binding.productPrice.requestFocus()
             return false

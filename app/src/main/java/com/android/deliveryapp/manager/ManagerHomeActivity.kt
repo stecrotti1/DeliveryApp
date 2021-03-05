@@ -89,14 +89,17 @@ class ManagerHomeActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val intent = Intent(this@ManagerHomeActivity, ManagerOrderActivity::class.java)
 
-        val pendingIntent = PendingIntent.getActivity(this@ManagerHomeActivity,
-                0,
-                intent,
-                0)
+        val pendingIntent = PendingIntent.getActivity(
+            this@ManagerHomeActivity,
+            0,
+            intent,
+            0
+        )
 
         listenForNewOrders(firestore, pendingIntent, notificationManager)
 
@@ -113,7 +116,8 @@ class ManagerHomeActivity : AppCompatActivity() {
     private fun showItemDialog(i: Int, reference: DatabaseReference) {
         val dialog: AlertDialog?
 
-        val productTitle: String = productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
+        val productTitle: String =
+            productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
 
         val dialogView = LayoutInflater.from(this).inflate(R.layout.manager_product_dialog, null)
 
@@ -133,7 +137,8 @@ class ManagerHomeActivity : AppCompatActivity() {
         val productName: TextInputEditText = dialogView.findViewById(R.id.managerProductTitleDialog)
         val productDesc: TextInputEditText = dialogView.findViewById(R.id.managerDescriptionDialog)
         val productPrice: TextInputEditText = dialogView.findViewById(R.id.managerPriceDialog)
-        val productQty: TextInputEditText = dialogView.findViewById(R.id.managerProductCounterDialog)
+        val productQty: TextInputEditText =
+            dialogView.findViewById(R.id.managerProductCounterDialog)
 
         val doneBtn: FloatingActionButton = dialogView.findViewById(R.id.editDoneBtn)
 
@@ -258,9 +263,11 @@ class ManagerHomeActivity : AppCompatActivity() {
      * Listen for new orders and sends a notification
      * @param firestore firestore instance
      */
-    private fun listenForNewOrders(firestore: FirebaseFirestore,
-                                   pendingIntent: PendingIntent,
-                                   notificationManager: NotificationManager) {
+    private fun listenForNewOrders(
+        firestore: FirebaseFirestore,
+        pendingIntent: PendingIntent,
+        notificationManager: NotificationManager
+    ) {
         firestore.collection(orders).addSnapshotListener { value, error ->
             if (error != null) {
                 Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
@@ -269,7 +276,8 @@ class ManagerHomeActivity : AppCompatActivity() {
                 if (value != null) {
                     for (document in value.documents) {
                         if (document.contains("outcome")
-                                && document.getString("outcome") as String == YET_TO_RESPOND) { // if there is a new order
+                            && document.getString("outcome") as String == YET_TO_RESPOND
+                        ) { // if there is a new order
                             createNotification(pendingIntent, notificationManager)
                             createNotificationChannel(
                                 channelID,
@@ -289,13 +297,13 @@ class ManagerHomeActivity : AppCompatActivity() {
         notificationManager: NotificationManager
     ) {
         val notification = Notification.Builder(this@ManagerHomeActivity, channelID)
-                .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle(getString(R.string.new_order_notification_msg))
-                .setContentText(getString(R.string.new_order_description))
-                .setChannelId(channelID)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build()
+            .setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle(getString(R.string.new_order_notification_msg))
+            .setContentText(getString(R.string.new_order_description))
+            .setChannelId(channelID)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
 
         notificationManager.notify(notificationID, notification)
     }
@@ -326,24 +334,30 @@ class ManagerHomeActivity : AppCompatActivity() {
         deleteSharedPreferences(userType)
         return when (item.itemId) {
             R.id.managerProfile -> {
-                startActivity(Intent(
-                    this@ManagerHomeActivity,
-                    ManagerProfileActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@ManagerHomeActivity,
+                        ManagerProfileActivity::class.java
+                    )
+                )
                 true
             }
             R.id.ridersList -> {
-                startActivity(Intent(
-                    this@ManagerHomeActivity,
-                    ManagerRidersListActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@ManagerHomeActivity,
+                        ManagerRidersListActivity::class.java
+                    )
+                )
                 true
             }
             R.id.orders -> {
-                startActivity(Intent(
-                    this@ManagerHomeActivity,
-                    ManagerOrderActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@ManagerHomeActivity,
+                        ManagerOrderActivity::class.java
+                    )
+                )
                 true
             }
             R.id.logout -> {
@@ -353,10 +367,12 @@ class ManagerHomeActivity : AppCompatActivity() {
                 editor.clear() // delete all shared preferences
                 editor.apply()
 
-                startActivity(Intent(
-                    this@ManagerHomeActivity,
-                    LoginActivity::class.java
-                ))
+                startActivity(
+                    Intent(
+                        this@ManagerHomeActivity,
+                        LoginActivity::class.java
+                    )
+                )
                 finish()
                 true
             }
