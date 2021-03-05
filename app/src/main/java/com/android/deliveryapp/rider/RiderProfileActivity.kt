@@ -108,19 +108,6 @@ class RiderProfileActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-
-        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        // in case checkbox hasn't been checked at all
-        uploadToCloud(firestore, auth.currentUser!!, binding.riderStatus.isChecked)
-
-        editor.putBoolean(riderStatus, binding.riderStatus.isChecked)
-        editor.apply()
-    }
-
     override fun onStart() {
         super.onStart()
 

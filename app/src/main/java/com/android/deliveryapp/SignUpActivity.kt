@@ -82,12 +82,13 @@ class SignUpActivity : AppCompatActivity() {
             return
         }
 
+        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+
         auth.createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "createUserWithEmail: SUCCESS")
 
-                    val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
                     val editor = sharedPreferences.edit()
                     editor.putBoolean(isRegistered, true) // user flagged as registered
@@ -121,35 +122,20 @@ class SignUpActivity : AppCompatActivity() {
                             )
                         }
                         MANAGER -> {
-                            firestore.collection(users).get()
-                                .addOnSuccessListener { result ->
-                                    for (document in result.documents) {
-                                        if (document.getString(userType) as String == MANAGER) { // if manager already exists
-                                            Toast.makeText(
-                                                baseContext,
-                                                getString(R.string.manager_existence_error),
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                            return@addOnSuccessListener
-                                        } else {
-                                            saveUserInfo(
-                                                sharedPreferences.getString(userType, null),
-                                                firestore,
-                                                email.text.toString()
-                                            )
-                                            startActivity(
-                                                Intent(
-                                                    this@SignUpActivity,
-                                                    ManagerHomeActivity::class.java
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
+                            saveUserInfo(
+                                sharedPreferences.getString(userType, null),
+                                firestore,
+                                email.text.toString()
+                            )
+                            startActivity(
+                                Intent(
+                                    this@SignUpActivity,
+                                    ManagerHomeActivity::class.java
+                                )
+                            )
                         }
                     }
                     finish()
-
                 } else {
                     Log.w(TAG, "createUserWithEmail: FAILURE", task.exception)
                     Toast.makeText(
