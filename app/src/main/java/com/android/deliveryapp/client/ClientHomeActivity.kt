@@ -18,14 +18,14 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
+import com.android.deliveryapp.ThemeActivity
 import com.android.deliveryapp.client.adapters.ClientArrayAdapter
 import com.android.deliveryapp.databinding.ActivityClientHomeBinding
-
-import com.android.deliveryapp.util.Keys
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
 import com.android.deliveryapp.util.Keys.Companion.clients
 import com.android.deliveryapp.util.Keys.Companion.productListFirebase
 import com.android.deliveryapp.util.Keys.Companion.shoppingCart
+import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.ProductItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
@@ -390,6 +390,10 @@ class ClientHomeActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         auth = FirebaseAuth.getInstance()
+
+        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
         return when (item.itemId) {
             R.id.clientProfile -> {
                 startActivity(
@@ -418,11 +422,12 @@ class ClientHomeActivity : AppCompatActivity() {
                 )
                 true
             }
+            R.id.theme -> {
+                startActivity(Intent(this@ClientHomeActivity, ThemeActivity::class.java))
+                true
+            }
             R.id.logout -> {
                 auth.signOut()
-
-                val sharedPreferences = getSharedPreferences(Keys.userInfo, Context.MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
                 editor.clear() // delete all shared preferences
                 editor.apply()
 

@@ -14,6 +14,10 @@
         android:title="@string/incoming_orders" />
 
     <item
+        android:id="@+id/theme"
+        android:title="@string/theme" />
+
+    <item
         android:id="@+id/logout"
         android:title="@string/logout" />
 

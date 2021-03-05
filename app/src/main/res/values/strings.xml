@@ -3,6 +3,10 @@
 
     <string name="chat" translatable="false">Chat</string>
 
+    <string name="light_theme">Light Theme</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="system_default">System Default</string>
+
     <!-- LOGIN ACTIVITY -->
 
     <string name="submit_button">submit</string>
@@ -129,6 +133,7 @@
     <string name="shopping_cart">Shopping cart</string>
     <string name="orders">Your orders</string>
     <string name="logout">Log out</string>
+    <string name="theme">Themes</string>
 
     <string name="current_delivery">Current delivery</string>
 
@@ -282,7 +287,7 @@
     <string name="fix_my_location">Fix location</string>
     <string name="location_update_success">Location updated with success</string>
     <string name="location_update_failure">Failed to update location</string>
-    <string name="title_activity_client_rider_map">Map</string>
+    <string name="title_activity_client_rider_map" translatable="false">Map</string>
 
 
 </resources>

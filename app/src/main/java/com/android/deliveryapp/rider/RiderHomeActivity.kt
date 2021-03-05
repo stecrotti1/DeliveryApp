@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
+import com.android.deliveryapp.ThemeActivity
 import com.android.deliveryapp.databinding.ActivityRiderHomeBinding
 import com.android.deliveryapp.rider.adapters.RiderOrdersArrayAdapter
 import com.android.deliveryapp.util.Keys
@@ -325,32 +326,41 @@ class RiderHomeActivity : AppCompatActivity() {
             }
             R.id.currentDelivery -> {
                 if (sharedPreferences.getBoolean(newDelivery, false)) { // if rider has a delivery
-                    startActivity(Intent(this@RiderHomeActivity,
-                            RiderDeliveryActivity::class.java))
+                    startActivity(
+                        Intent(
+                            this@RiderHomeActivity,
+                            RiderDeliveryActivity::class.java
+                        )
+                    )
                 } else {
-                    Toast.makeText(baseContext,
-                            getString(R.string.no_current_delivery),
-                            Toast.LENGTH_SHORT
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.no_current_delivery),
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
                 true
             }
             R.id.riderDeliveries -> { // history
                 startActivity(
-                        Intent(
-                                this@RiderHomeActivity,
-                                RiderDeliveryHistoryActivity::class.java
-                        )
+                    Intent(
+                        this@RiderHomeActivity,
+                        RiderDeliveryHistoryActivity::class.java
+                    )
                 )
+                true
+            }
+            R.id.theme -> {
+                startActivity(Intent(this@RiderHomeActivity, ThemeActivity::class.java))
                 true
             }
             R.id.logout -> {
                 auth.signOut()
                 startActivity(
-                        Intent(
-                                this@RiderHomeActivity,
-                                LoginActivity::class.java
-                        )
+                    Intent(
+                        this@RiderHomeActivity,
+                        LoginActivity::class.java
+                    )
                 )
                 finishAffinity()
                 true

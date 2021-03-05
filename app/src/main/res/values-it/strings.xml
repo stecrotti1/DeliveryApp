@@ -149,4 +149,8 @@
     <string name="location_update_failure">Errore nell\'aggiornare la posizione</string>
     <string name="new_message_from_manager">Nuovo messaggio dal gestore</string>
     <string name="new_message_from_client">Nuovo messaggio dal cliente</string>
+    <string name="theme">Temi</string>
+    <string name="light_theme">Tema Chiaro</string>
+    <string name="dark_theme">Tema Scuro</string>
+    <string name="system_default">Default di Sistema</string>
 </resources>

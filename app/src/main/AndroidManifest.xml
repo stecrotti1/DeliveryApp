@@ -3,7 +3,6 @@
     package="com.android.deliveryapp"
     android:versionCode="60"
     android:versionName="v1.3.2">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -35,6 +34,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity
+            android:name=".ThemeActivity"
+            android:label="@string/theme"
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".client.ClientRiderMapActivity"
             android:label="@string/title_activity_client_rider_map"

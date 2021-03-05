@@ -14,6 +14,7 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.android.deliveryapp.LoginActivity
 import com.android.deliveryapp.R
+import com.android.deliveryapp.ThemeActivity
 import com.android.deliveryapp.databinding.ActivityManagerHomeBinding
 import com.android.deliveryapp.manager.adapters.ManagerArrayAdapter
 import com.android.deliveryapp.util.Keys.Companion.YET_TO_RESPOND
@@ -365,6 +366,10 @@ class ManagerHomeActivity : AppCompatActivity() {
                         ManagerOrderActivity::class.java
                     )
                 )
+                true
+            }
+            R.id.theme -> {
+                startActivity(Intent(this@ManagerHomeActivity, ThemeActivity::class.java))
                 true
             }
             R.id.logout -> {

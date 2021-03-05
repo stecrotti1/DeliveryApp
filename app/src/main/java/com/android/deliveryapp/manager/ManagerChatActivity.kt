@@ -11,7 +11,6 @@ import com.android.deliveryapp.databinding.ActivityManagerChatBinding
 import com.android.deliveryapp.rider.RiderChatActivity
 import com.android.deliveryapp.util.Keys.Companion.MANAGER
 import com.android.deliveryapp.util.Keys.Companion.chatCollection
-import com.android.deliveryapp.util.Keys.Companion.managerPref
 import com.android.deliveryapp.util.Keys.Companion.riderEmail
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
@@ -37,8 +36,6 @@ class ManagerChatActivity : AppCompatActivity() {
         val user = auth.currentUser
 
         if (user != null) {
-
-            val sharedPreferences = getSharedPreferences(managerPref, Context.MODE_PRIVATE)
 
             val riderEmail = intent.getStringExtra(riderEmail)
 

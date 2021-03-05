@@ -48,6 +48,8 @@ class Keys {
         const val DELIVERY_FAILED: String = "DELIVERY_FAILED"
         const val REJECTED: String = "REJECTED"
 
+        const val themePref = "themePref"
+
         const val chatCollection: String = "chats"
 
         const val managerEmail: String = "managerEmail"

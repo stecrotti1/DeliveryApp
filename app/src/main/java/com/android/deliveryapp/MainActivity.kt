@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.android.deliveryapp.client.ClientHomeActivity
 import com.android.deliveryapp.manager.ManagerHomeActivity
 import com.android.deliveryapp.rider.RiderProfileActivity
@@ -21,6 +22,7 @@ import com.android.deliveryapp.util.Keys.Companion.invalidUser
 import com.android.deliveryapp.util.Keys.Companion.isLogged
 import com.android.deliveryapp.util.Keys.Companion.isRegistered
 import com.android.deliveryapp.util.Keys.Companion.pwd
+import com.android.deliveryapp.util.Keys.Companion.themePref
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.Keys.Companion.username
@@ -54,6 +56,19 @@ class MainActivity : AppCompatActivity() {
             ) { // if has location > 10 km from market
                 showErrorDialog()
             } else {
+                // set theme
+                when (sharedPreferences.getInt(themePref, -1)) {
+                    AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_NO
+                    )
+                    AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_YES
+                    )
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    )
+                }
+
                 if (sharedPreferences.getBoolean(isRegistered, false)) {
                     if (sharedPreferences.getBoolean(isLogged, false)) {
                         val email = sharedPreferences.getString(username, null)
@@ -117,7 +132,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showErrorDialog() {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.location_distance_error_dialog, null)
+        val dialogView =
+            LayoutInflater.from(this).inflate(R.layout.location_distance_error_dialog, null)
 
         val dialog: AlertDialog?
 
@@ -125,8 +141,10 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogView)
             .setTitle(getString(R.string.too_far_title))
 
-        val confirmButton: ExtendedFloatingActionButton = dialogView.findViewById(R.id.confirmButtonDialog)
-        val fixLocationBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.fixLocationBtn)
+        val confirmButton: ExtendedFloatingActionButton =
+            dialogView.findViewById(R.id.confirmButtonDialog)
+        val fixLocationBtn: ExtendedFloatingActionButton =
+            dialogView.findViewById(R.id.fixLocationBtn)
 
         dialog = dialogBuilder.create()
         dialog.show()
