@@ -218,7 +218,8 @@ class RiderDeliveryActivity : AppCompatActivity() {
 
     private fun removeClientChat(riderEmail: String, clientEmail: String) {
         val reference = FirebaseFirestore.getInstance().collection(chatCollection)
-            .document("$riderEmail|$clientEmail").delete()
+
+        reference.document("$riderEmail|$clientEmail").delete()
             .addOnSuccessListener {
                 Log.d("FIRESTORE_CHAT", "Chat deleted with success")
             }

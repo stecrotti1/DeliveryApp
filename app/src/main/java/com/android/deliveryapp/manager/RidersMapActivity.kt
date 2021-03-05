@@ -99,7 +99,7 @@ class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                         val geoPoint = document.getGeoPoint(riderPosition) as GeoPoint
 
                         // 0.0, 0.0 means rider has finished delivering and stopped sharing location
-                        if (geopoint.latitude != 0.0 && geopoint.longitude != 0.0) {
+                        if (geoPoint.latitude != 0.0 && geoPoint.longitude != 0.0) {
                             mMap.addMarker(
                                 MarkerOptions()
                                     .title(document.id)
