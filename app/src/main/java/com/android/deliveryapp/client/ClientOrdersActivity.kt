@@ -91,6 +91,17 @@ class ClientOrdersActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putParcelable("listView", binding.ordersList.onSaveInstanceState())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.ordersList.onRestoreInstanceState(savedInstanceState.getParcelable("listView"))
+    }
 
     // when the back button is pressed in actionbar, finish this activity
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

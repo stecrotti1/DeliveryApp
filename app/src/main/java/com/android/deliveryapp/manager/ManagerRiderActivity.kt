@@ -355,11 +355,25 @@ class ManagerRiderActivity : AppCompatActivity() {
                     Log.w("FIREBASE_FIRESTORE", "Error getting client address", e)
 
                     Toast.makeText(
-                            baseContext,
-                            getString(R.string.error_user_data),
-                            Toast.LENGTH_LONG
+                        baseContext,
+                        getString(R.string.error_user_data),
+                        Toast.LENGTH_LONG
                     ).show()
                 }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString("riderSelected", binding.riderSelected.text.toString())
+        outState.putString("riderInfo", binding.riderInfo.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.riderSelected.text = savedInstanceState.getString("riderSelected")
+        binding.riderInfo.text = savedInstanceState.getString("riderInfo")
     }
 
     private fun getTotalPrice(productList: List<RiderProductItem>): Double {

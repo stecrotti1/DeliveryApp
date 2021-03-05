@@ -85,6 +85,22 @@ class RiderDeliveryHistoryActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putParcelable(
+            "listView",
+            binding.deliveryHistoryListView.onSaveInstanceState()
+        )
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.deliveryHistoryListView
+            .onRestoreInstanceState(savedInstanceState.getParcelable("listView"))
+    }
+
     // when the back button is pressed in actionbar, finish this activity
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

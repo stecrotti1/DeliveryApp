@@ -33,6 +33,8 @@ class ManagerOrderActivity : AppCompatActivity() {
     private lateinit var orderList: Array<ManagerOrderItem>
     private lateinit var products: Array<ProductItem>
 
+    private var dialog: AlertDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityManagerOrderBinding.inflate(layoutInflater)
@@ -57,8 +59,6 @@ class ManagerOrderActivity : AppCompatActivity() {
     }
 
     private fun showProductsDialog(i: Int, firestore: FirebaseFirestore) {
-        val dialog: AlertDialog?
-
         val dialogView = LayoutInflater.from(this).inflate(R.layout.manager_order_list_dialog, null)
 
         val dialogBuilder = AlertDialog.Builder(this)
@@ -70,7 +70,7 @@ class ManagerOrderActivity : AppCompatActivity() {
         val productListView: ListView = dialogView.findViewById(R.id.orderProductList)
 
         dialog = dialogBuilder.create()
-        dialog.show()
+        dialog!!.show()
 
         products = emptyArray()
 
@@ -136,26 +136,30 @@ class ManagerOrderActivity : AppCompatActivity() {
 
     private fun getOrders(firestore: FirebaseFirestore) {
         firestore.collection(orders)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result.documents) {
-                        orderList = orderList.plus(ManagerOrderItem(
-                                document.getString("clientEmail") as String,
-                                document.getString("date") as String,
-                                document.getDouble("total") as Double,
-                                document.getString("payment") as String,
-                                document.getString("outcome") as String
-                        ))
-                    }
-                    orderList.reverse()
-                    updateView()
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result.documents) {
+                    orderList = orderList.plus(
+                        ManagerOrderItem(
+                            document.getString("clientEmail") as String,
+                            document.getString("date") as String,
+                            document.getDouble("total") as Double,
+                            document.getString("payment") as String,
+                            document.getString("outcome") as String
+                        )
+                    )
                 }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
-                    Toast.makeText(baseContext,
-                            getString(R.string.failure_data),
-                            Toast.LENGTH_LONG).show()
-                }
+                orderList.reverse()
+                updateView()
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_FIRESTORE", "Error getting data", e)
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.failure_data),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
     }
 
     private fun updateView() {
@@ -163,14 +167,30 @@ class ManagerOrderActivity : AppCompatActivity() {
             binding.ordersList.visibility = View.VISIBLE
             binding.emptyOrdersLabel.visibility = View.INVISIBLE
 
-            binding.ordersList.adapter = ManagerOrdersArrayAdapter(this,
-                    R.layout.manager_order_list_element,
-                    orderList)
+            binding.ordersList.adapter = ManagerOrdersArrayAdapter(
+                this,
+                R.layout.manager_order_list_element,
+                orderList
+            )
 
         } else { // empty
             binding.ordersList.visibility = View.INVISIBLE
             binding.emptyOrdersLabel.visibility = View.VISIBLE
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBundle("dialog", dialog?.onSaveInstanceState())
+        outState.putParcelable("listView", binding.ordersList.onSaveInstanceState())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        savedInstanceState.getBundle("dialog")?.let { dialog?.onRestoreInstanceState(it) }
+        binding.ordersList.onRestoreInstanceState(savedInstanceState.getParcelable("listView"))
     }
 
     // when the back button is pressed in actionbar, finish this activity

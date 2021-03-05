@@ -88,6 +88,20 @@ class RiderChatActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString("messageTextView", binding.messageTextView.text.toString())
+        outState.putString("message", binding.message.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.messageTextView.text = savedInstanceState.getString("messageTextView")
+        binding.message.setText(savedInstanceState.getString("message"))
+    }
+
     // hide keyboard when user clicks outside EditText
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
         if (currentFocus != null) {

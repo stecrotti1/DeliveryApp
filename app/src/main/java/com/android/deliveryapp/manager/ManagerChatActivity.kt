@@ -75,11 +75,31 @@ class ManagerChatActivity : AppCompatActivity() {
                 error != null -> Log.e("ERROR", error.message.toString())
                 value != null && value.exists() -> {
                     with(value) {
-                        binding.messageTextView.append("${data?.get(RiderChatActivity.NAME)}:${data?.get(RiderChatActivity.TEXT)}\n")
+                        binding.messageTextView.append(
+                            "${data?.get(RiderChatActivity.NAME)}:${
+                                data?.get(
+                                    RiderChatActivity.TEXT
+                                )
+                            }\n"
+                        )
                     }
                 }
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString("messageTextView", binding.messageTextView.text.toString())
+        outState.putString("message", binding.message.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.messageTextView.text = savedInstanceState.getString("messageTextView")
+        binding.message.setText(savedInstanceState.getString("message"))
     }
 
     // when the back button is pressed in actionbar, finish this activity
