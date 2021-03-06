@@ -38,6 +38,8 @@ class ManagerHomeActivity : AppCompatActivity() {
     private lateinit var productList: Array<ProductItem>
     private lateinit var firestore: FirebaseFirestore
 
+    private var dialog: AlertDialog? = null
+
     private val channelID = "1"
     private val notificationID = 1
 
@@ -122,8 +124,6 @@ class ManagerHomeActivity : AppCompatActivity() {
     }
 
     private fun showItemDialog(i: Int, reference: DatabaseReference) {
-        val dialog: AlertDialog?
-
         val productTitle: String =
             productList[i].title.capitalize(Locale.ROOT) // capitalize first letter
 
@@ -156,7 +156,7 @@ class ManagerHomeActivity : AppCompatActivity() {
         productQty.setText(productList[i].quantity.toString())
 
         dialog = dialogBuilder.create()
-        dialog.show()
+        dialog!!.show()
 
         val intent = Intent(
             this@ManagerHomeActivity,
@@ -166,7 +166,7 @@ class ManagerHomeActivity : AppCompatActivity() {
 
         image.setOnClickListener { // manager wants to modify product image
             startActivity(intent)
-            dialog.dismiss()
+            dialog!!.dismiss()
         }
 
         doneBtn.setOnClickListener {
@@ -183,7 +183,7 @@ class ManagerHomeActivity : AppCompatActivity() {
                 productTitle
             )
 
-            dialog.dismiss()
+            dialog!!.dismiss()
         }
     }
 
@@ -390,6 +390,20 @@ class ManagerHomeActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBundle("dialog", dialog?.onSaveInstanceState())
+        outState.putParcelable("listView", binding.productListView.onSaveInstanceState())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        savedInstanceState.getBundle("dialog")?.let { dialog?.onRestoreInstanceState(it) }
+        binding.productListView.onRestoreInstanceState(savedInstanceState.getParcelable("listView"))
     }
 
     // hide keyboard when user clicks outside EditText

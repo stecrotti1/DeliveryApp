@@ -41,7 +41,7 @@ class ManagerChatActivity : AppCompatActivity() {
 
             val firestoreChat by lazy {
                 FirebaseFirestore.getInstance().collection(chatCollection)
-                        .document("$riderEmail|$MANAGER")
+                    .document("$riderEmail|$MANAGER")
             }
 
             updateChat(firestoreChat)
@@ -56,17 +56,17 @@ class ManagerChatActivity : AppCompatActivity() {
 
     private fun sendMessage(reference: DocumentReference) {
         val newMessage = mapOf(
-                RiderChatActivity.NAME to "Manager",
-                RiderChatActivity.TEXT to binding.message.text.toString()
+            RiderChatActivity.NAME to "Manager",
+            RiderChatActivity.TEXT to binding.message.text.toString()
         )
 
         reference.set(newMessage)
-                .addOnSuccessListener {
-                    Log.d("FIRESTORE_CHAT", "Message sent")
-                }
-                .addOnFailureListener { e ->
-                    Log.e("ERROR", e.message.toString())
-                }
+            .addOnSuccessListener {
+                Log.d("FIRESTORE_CHAT", "Message sent")
+            }
+            .addOnFailureListener { e ->
+                Log.e("ERROR", e.message.toString())
+            }
     }
 
     private fun updateChat(reference: DocumentReference) {
