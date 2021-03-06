@@ -315,7 +315,10 @@ class ClientHomeActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * Listen for rider messages on firestore chats
+     * @param email client email
+     */
     private fun listenForDeliveryMessages(
         firestore: FirebaseFirestore,
         pendingIntent: PendingIntent,
@@ -325,7 +328,7 @@ class ClientHomeActivity : AppCompatActivity() {
         firestore.collection(chatCollection).get()
             .addOnSuccessListener { result ->
                 for (document in result.documents) {
-                    if (document.id.contains(email)) {
+                    if (document.id.contains(email) && document.getString("NAME") == "Rider") {
                         document.reference.addSnapshotListener { value, error ->
                             if (error != null) {
                                 Log.w("FIREBASE_CHAT", "Listen failed", error)

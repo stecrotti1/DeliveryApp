@@ -30,7 +30,6 @@
         android:layout_below="@id/descriptionDialog"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
-        android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold" />
 

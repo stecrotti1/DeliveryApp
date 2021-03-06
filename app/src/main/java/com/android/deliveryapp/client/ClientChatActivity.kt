@@ -85,6 +85,10 @@ class ClientChatActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Send message to rider
+     * @param reference the firebase firestore document reference
+     */
     private fun sendMessage(reference: DocumentReference) {
         val newMessage = mapOf(
             NAME to "Client",
@@ -100,6 +104,10 @@ class ClientChatActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Update UI whenever a message is received/sent
+     * @param reference the firebase firestore document reference
+     */
     private fun updateChat(reference: DocumentReference) {
         reference.addSnapshotListener { value, error ->
             when {
