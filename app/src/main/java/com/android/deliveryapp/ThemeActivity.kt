@@ -26,7 +26,7 @@ class ThemeActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        // update ui
+        // update radiobuttons
         when (AppCompatDelegate.getDefaultNightMode()) {
             AppCompatDelegate.MODE_NIGHT_NO -> {
                 binding.lightTheme.isChecked = true
