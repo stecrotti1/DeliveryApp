@@ -173,12 +173,10 @@ class ManagerHomeActivity : AppCompatActivity() {
             // if extra is null/"" take it from the list
             val imageUrl = intent.getStringExtra("url") ?: productList[i].imgUrl
 
-            val price: Double
-
-            if (productPrice.text.toString().length == 1) {
-                price = "${productPrice.text.toString()}.00".toDouble()
+            val price: Double = if (productPrice.text.toString().length == 1) {
+                "${productPrice.text.toString()}.00".toDouble()
             } else {
-                price = productPrice.text.toString().toDouble()
+                productPrice.text.toString().toDouble()
             }
 
             if (productPrice.text.toString()
