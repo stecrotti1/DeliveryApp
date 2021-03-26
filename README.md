@@ -43,6 +43,13 @@ When an order arrives, the manager receives a notification and can select a ride
 otherwise the list of drivers reappears and the manager can select another one. Once entrusted
 the assignment, manager can contact the rider via chat.
 
+## Requirements
+* at least Android API 28;
+* Android Studio version 4.1.+;
+* Kotlin version: 1.4.21;
+* you have to create your own [Google API key](https://developers.google.com/maps/documentation/android-sdk/start#get-key);
+* you may want to connect the Android app to your own firebase project
+
 ## Screenshots
 ![SelectUserType](https://firebasestorage.googleapis.com/v0/b/deliveryapp-7c8fe.appspot.com/o/screenshots%2Fapp_screen_1.png?alt=media&token=e4b6cfca-a5c1-4b00-b8da-7b20ff6e2596)
 
