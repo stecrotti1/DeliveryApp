@@ -5,7 +5,7 @@ This application is still under development, but feel free to add pull requests 
 
 This application was made only for academic purposes and it's not meant to use in real life circumstances.
 
-This application uses the [Coroutine Image Loader (Coil)](https://coil-kt.github.io/coil/) to load images from [Firebase](https://firebase.google.com/) server.
+This application uses the [Coroutine Image Loader (Coil)](https://coil-kt.github.io/coil/) to download/upload images from [Firebase](https://firebase.google.com/) server.
 
 Buttons and icons were developed using [Material Design](https://material.io/design).
 
