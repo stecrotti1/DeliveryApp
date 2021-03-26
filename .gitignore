@@ -11,3 +11,4 @@ local.properties
 /app/src/release/
 /app/src/debug/
 /app/src/androidTest/
+/app/google-services.json
