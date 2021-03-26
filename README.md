@@ -10,7 +10,7 @@ Buttons and icons were developed using [Material Design](https://material.io/des
 The Android application is still under development, but feel free to add pull requests if you find any bugs or have suggestions.
 
 ## What does it do
-The application domain of this project is a delivery system made available by a small market/grocery store. The application is supposed to have 3 types of users:
+The application domain of this project is a delivery system made available by a small market/grocery store (with a static position). The application is supposed to have 3 types of users:
 * client/customer;
 * rider;
 * manager;
@@ -50,7 +50,8 @@ the assignment, manager can contact the rider via chat.
 * Android Studio version 4.1.+;
 * Kotlin version: 1.4.21;
 * you have to create your own [Google API key](https://developers.google.com/maps/documentation/android-sdk/start#get-key);
-* you may want to connect the Android app to your own firebase project
+* you may want to connect the Android app to your own firebase project;
+* you may want to set the market position in your own firestore cloud (path: marketPos/randomID/position) as a Geopoint
 
 ## Screenshots
 ![SelectUserType](https://firebasestorage.googleapis.com/v0/b/deliveryapp-7c8fe.appspot.com/o/screenshots%2Fapp_screen_1.png?alt=media&token=e4b6cfca-a5c1-4b00-b8da-7b20ff6e2596)
