@@ -153,4 +153,5 @@
     <string name="light_theme">Tema Chiaro</string>
     <string name="dark_theme">Tema Scuro</string>
     <string name="system_default">Default di Sistema</string>
+    <string name="error_invalid_price">Il prezzo non può essere 0</string>
 </resources>

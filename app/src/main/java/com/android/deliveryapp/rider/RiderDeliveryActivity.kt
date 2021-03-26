@@ -184,7 +184,6 @@ class RiderDeliveryActivity : AppCompatActivity() {
                         RiderDeliveryHistoryActivity::class.java
                     )
                 )
-
             }
 
             /************************ END DELIVERY FAILURE ***********************/

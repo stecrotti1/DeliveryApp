@@ -116,7 +116,6 @@ class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 )
                             )
                         }
-
                     }
                 }
             }

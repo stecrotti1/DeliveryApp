@@ -173,17 +173,31 @@ class ManagerHomeActivity : AppCompatActivity() {
             // if extra is null/"" take it from the list
             val imageUrl = intent.getStringExtra("url") ?: productList[i].imgUrl
 
-            updateItemValues(
-                reference,
-                imageUrl,
-                productName.text.toString().toLowerCase(Locale.ROOT),
-                productDesc.text.toString(),
-                productPrice.text.toString().toDouble(),
-                productQty.text.toString().toInt(),
-                productTitle
-            )
+            val price: Double
 
-            dialog!!.dismiss()
+            if (productPrice.text.toString().length == 1) {
+                price = "${productPrice.text.toString()}.00".toDouble()
+            } else {
+                price = productPrice.text.toString().toDouble()
+            }
+
+            if (productPrice.text.toString()
+                    .startsWith("0") && productPrice.text.toString().length == 1
+            ) {
+                productPrice.error = getString(R.string.error_invalid_price)
+            } else {
+                updateItemValues(
+                    reference,
+                    imageUrl,
+                    productName.text.toString().toLowerCase(Locale.ROOT),
+                    productDesc.text.toString(),
+                    price,
+                    productQty.text.toString().toInt(),
+                    productTitle
+                )
+
+                dialog!!.dismiss()
+            }
         }
     }
 
@@ -258,7 +272,14 @@ class ManagerHomeActivity : AppCompatActivity() {
                     "image" -> imageUrl = item.value as String
                     "title" -> title = item.value as String
                     "description" -> desc = item.value as String
-                    "price" -> price = item.value as Double
+                    "price" -> {
+                        price = try {
+                            item.value as Double
+                        } catch (e: ClassCastException) {
+                            val priceLong = item.value as Long
+                            priceLong.toDouble()
+                        }
+                    }
                     "quantity" -> qty = item.value as Long
                 }
             }

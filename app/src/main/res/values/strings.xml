@@ -275,6 +275,8 @@
     <string name="save_location_failed">Could not save your location</string>
     <string name="error_user_data">Error fetching user data</string>
 
+    <string name="error_invalid_price">Price cannot be 0</string>
+
     <string name="manager_existence_error">Manager already exists!</string>
 
     <string name="please_add_quantity">Please add some quantity</string>
