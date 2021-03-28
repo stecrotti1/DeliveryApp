@@ -51,7 +51,7 @@ the assignment, manager can contact the rider via chat.
 * Kotlin version: 1.4.21;
 * you have to create your own [Google API key](https://developers.google.com/maps/documentation/android-sdk/start#get-key);
 * you may want to connect the Android app to your own firebase project;
-* you may want to set the market position in your own firestore cloud (path: marketPos/randomID/position) as a Geopoint
+* you may want to set the market position in your own firestore cloud (path: **marketPos/randomID/position**) as a Geopoint
 
 ## Screenshots
 ![SelectUserType](https://firebasestorage.googleapis.com/v0/b/deliveryapp-7c8fe.appspot.com/o/screenshots%2Fapp_screen_1.png?alt=media&token=e4b6cfca-a5c1-4b00-b8da-7b20ff6e2596)
