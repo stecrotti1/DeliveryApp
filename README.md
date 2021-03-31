@@ -1,7 +1,7 @@
 # DeliveryApp
 DeliveryApp is an Android application developed by [Stefano Crotti](https://github.com/stecrotti1) at the [Computer Science Institute](http://www.di.unipmn.it) of the [University of Piemonte Orientale](http://www.uniupo.it) for the *Mobile applications* course.
 
-The application was made only for academic purposes and it's not meant to use in real life circumstances.
+The application was made only for **academic purposes** and it's not meant to use in real life circumstances.
 
 The application uses the [Coroutine Image Loader (Coil)](https://coil-kt.github.io/coil/) to download/upload images from [Firebase](https://firebase.google.com/) server.
 
