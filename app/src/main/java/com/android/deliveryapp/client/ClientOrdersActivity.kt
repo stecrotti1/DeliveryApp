@@ -16,7 +16,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ClientOrdersActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityClientOrdersBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth

@@ -35,7 +35,6 @@ import java.text.DateFormat
 import java.util.*
 
 class ShoppingCartActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityShoppingCartBinding
     private lateinit var firestore: FirebaseFirestore // shopping cart
     private lateinit var database: FirebaseDatabase // orders
