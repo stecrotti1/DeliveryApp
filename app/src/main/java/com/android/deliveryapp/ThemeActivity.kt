@@ -11,10 +11,8 @@ import com.android.deliveryapp.util.Keys.Companion.themePref
 import com.android.deliveryapp.util.Keys.Companion.userInfo
 
 class ThemeActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityThemeBinding
 
-    @SuppressLint("SwitchIntDef")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityThemeBinding.inflate(layoutInflater)
@@ -26,24 +24,7 @@ class ThemeActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        // update radiobuttons
-        when (AppCompatDelegate.getDefaultNightMode()) {
-            AppCompatDelegate.MODE_NIGHT_NO -> {
-                binding.lightTheme.isChecked = true
-                binding.darkTheme.isChecked = false
-                binding.systemDefault.isChecked = false
-            }
-            AppCompatDelegate.MODE_NIGHT_YES -> {
-                binding.lightTheme.isChecked = false
-                binding.darkTheme.isChecked = true
-                binding.systemDefault.isChecked = false
-            }
-            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> {
-                binding.lightTheme.isChecked = false
-                binding.darkTheme.isChecked = false
-                binding.systemDefault.isChecked = true
-            }
-        }
+        updateView()
 
         binding.radioGroup.setOnCheckedChangeListener { _, _ ->
             if (binding.lightTheme.isChecked) { // LIGHT THEME
@@ -60,6 +41,28 @@ class ThemeActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 editor.putInt(themePref, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 editor.apply()
+            }
+        }
+    }
+
+    @SuppressLint("SwitchIntDef")
+    private fun updateView() {
+        // update radiobuttons
+        when (AppCompatDelegate.getDefaultNightMode()) {
+            AppCompatDelegate.MODE_NIGHT_NO -> {
+                binding.lightTheme.isChecked = true
+                binding.darkTheme.isChecked = false
+                binding.systemDefault.isChecked = false
+            }
+            AppCompatDelegate.MODE_NIGHT_YES -> {
+                binding.lightTheme.isChecked = false
+                binding.darkTheme.isChecked = true
+                binding.systemDefault.isChecked = false
+            }
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> {
+                binding.lightTheme.isChecked = false
+                binding.darkTheme.isChecked = false
+                binding.systemDefault.isChecked = true
             }
         }
     }

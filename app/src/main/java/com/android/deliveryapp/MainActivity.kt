@@ -34,7 +34,6 @@ import kotlin.system.exitProcess
  * Splash screen activity
  */
 class MainActivity : AppCompatActivity() {
-
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +48,8 @@ class MainActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
 
-            if (sharedPreferences.getBoolean(
-                    invalidUser,
-                    false
-                )
+            if (sharedPreferences.getBoolean(invalidUser, false)
+
             ) { // if has location > 10 km from market
                 showErrorDialog()
             } else {
@@ -109,7 +106,11 @@ class MainActivity : AppCompatActivity() {
                                         )
                                     }
                                 } else {
-                                    Log.w("FIREBASE_AUTH", "Failed to log user", task.exception)
+                                    Log.w(
+                                        "FIREBASE_AUTH", "Failed to log user",
+                                        task.exception
+                                    )
+
                                     startActivity(
                                         Intent(
                                             this@MainActivity,
@@ -119,12 +120,23 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }
                     } else {
-                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                        startActivity(
+                            Intent(
+                                this@MainActivity,
+                                LoginActivity::class.java
+                            )
+                        )
                     }
                 } else {
                     editor.putBoolean(hasLocation, false)
                     editor.apply()
-                    startActivity(Intent(this@MainActivity, SelectUserTypeActivity::class.java))
+
+                    startActivity(
+                        Intent(
+                            this@MainActivity,
+                            SelectUserTypeActivity::class.java
+                        )
+                    )
                 }
             }
         }, 1500) // wait 1.5 seconds, then show the activity

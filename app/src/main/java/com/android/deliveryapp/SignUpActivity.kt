@@ -2,6 +2,7 @@ package com.android.deliveryapp
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -25,12 +26,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class SignUpActivity : AppCompatActivity() {
+    companion object {
+        private const val TAG = "EmailPassword"
+    }
 
     private lateinit var binding: ActivitySignUpBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
-
-    private val TAG = "EmailPassword"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +43,7 @@ class SignUpActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance() // saves user data in cloud
 
         binding.nextButton.setOnClickListener {
-            signUpUser(binding.email, binding.password, binding.confirmPassword)
+            checkEmailAndPassword(binding.email, binding.password, binding.confirmPassword)
         }
     }
 
@@ -50,7 +52,7 @@ class SignUpActivity : AppCompatActivity() {
      * @param password given by the user
      * @param confirmPwd must be the same as password in order to confirm
      */
-    private fun signUpUser(
+    private fun checkEmailAndPassword(
         email: TextInputEditText,
         password: TextInputEditText,
         confirmPwd: TextInputEditText
@@ -84,7 +86,18 @@ class SignUpActivity : AppCompatActivity() {
 
         val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
 
-        auth.createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
+        createUser(auth, sharedPreferences, email.text.toString(), password.text.toString())
+
+        return
+    }
+
+    private fun createUser(
+        auth: FirebaseAuth,
+        sharedPreferences: SharedPreferences,
+        email: String,
+        password: String
+    ) {
+        auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "createUserWithEmail: SUCCESS")
@@ -99,7 +112,7 @@ class SignUpActivity : AppCompatActivity() {
                             saveUserInfo(
                                 sharedPreferences.getString(userType, null),
                                 firestore,
-                                email.text.toString()
+                                email
                             )
                             startActivity(
                                 Intent(
@@ -112,7 +125,7 @@ class SignUpActivity : AppCompatActivity() {
                             saveUserInfo(
                                 sharedPreferences.getString(userType, null),
                                 firestore,
-                                email.text.toString()
+                                email
                             )
                             startActivity(
                                 Intent(
@@ -125,7 +138,7 @@ class SignUpActivity : AppCompatActivity() {
                             saveUserInfo(
                                 sharedPreferences.getString(userType, null),
                                 firestore,
-                                email.text.toString()
+                                email
                             )
                             startActivity(
                                 Intent(
@@ -145,11 +158,9 @@ class SignUpActivity : AppCompatActivity() {
                     ).show()
                 }
             }
-        return
     }
 
     private fun saveUserInfo(userType: String?, firestore: FirebaseFirestore, email: String) {
-
         val entry = hashMapOf(
             "userType" to userType
         )
