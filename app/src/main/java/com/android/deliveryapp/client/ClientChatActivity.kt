@@ -18,7 +18,6 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ClientChatActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityClientChatBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -44,6 +43,8 @@ class ClientChatActivity : AppCompatActivity() {
         if (user != null) {
             var riderEmail = ""
 
+            /********************************** GET RIDER EMAIL **********************************/
+
             firestore.collection(chatCollection).get()
                 .addOnSuccessListener { result ->
                     // find the chat which contains client email
@@ -67,6 +68,8 @@ class ClientChatActivity : AppCompatActivity() {
                     ).show()
                     finish()
                 }
+
+            /*************************************************************************************/
 
             binding.sendMsgBtn.setOnClickListener {
                 sendMessage(reference)
@@ -114,13 +117,8 @@ class ClientChatActivity : AppCompatActivity() {
                 error != null -> Log.e("ERROR", error.message.toString())
                 value != null && value.exists() -> {
                     with(value) {
-                        binding.messageTextView.append(
-                            "${data?.get(NAME)}:${
-                                data?.get(
-                                    TEXT
-                                )
-                            }\n"
-                        )
+                        binding.messageTextView
+                            .append("${data?.get(NAME)}: ${data?.get(TEXT)}\n")
                     }
                 }
             }

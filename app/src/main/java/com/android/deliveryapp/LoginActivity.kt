@@ -30,13 +30,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
+    companion object {
+        private const val TAG = "EmailPassword"
+    }
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var firestore: FirebaseFirestore
-
-    private val TAG = "EmailPassword"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +51,7 @@ class LoginActivity : AppCompatActivity() {
         val editor = sharedPreferences.edit()
 
         binding.submitButton.setOnClickListener {
-            loginUser(binding.loginEmail, binding.loginPassword)
+            checkEmailAndPassword(binding.loginEmail, binding.loginPassword)
         }
 
         binding.signUpLabel.setOnClickListener {
@@ -61,7 +62,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun loginUser(email: TextInputEditText, password: TextInputEditText) {
+    private fun checkEmailAndPassword(email: TextInputEditText, password: TextInputEditText) {
         if (email.text.isNullOrEmpty()) {
             email.error = getString(R.string.empty_email)
             email.requestFocus()
@@ -79,7 +80,11 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        auth.signInWithEmailAndPassword(email.text.toString(), password.text.toString())
+        loginUser(auth, email.text.toString(), password.text.toString())
+    }
+
+    private fun loginUser(auth: FirebaseAuth, email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val editor = sharedPreferences.edit()
@@ -98,7 +103,7 @@ class LoginActivity : AppCompatActivity() {
                         editor.putBoolean(isLogged, false)
                     }
 
-                    getUserType(firestore, editor, email.text.toString())
+                    setUserTypePreference(firestore, editor, email)
                 } else {
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
                     Toast.makeText(
@@ -110,7 +115,14 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun getUserType(firestore: FirebaseFirestore, editor: SharedPreferences.Editor, email: String) {
+    /**
+     * get the user type from firestore cloud, set preference
+     */
+    private fun setUserTypePreference(
+        firestore: FirebaseFirestore,
+        editor: SharedPreferences.Editor,
+        email: String
+    ) {
         var user = String()
 
         firestore.collection(users)
@@ -123,42 +135,7 @@ class LoginActivity : AppCompatActivity() {
                         editor.putBoolean(isRegistered, true)
                         editor.apply()
 
-                        when (user) {
-                            CLIENT -> {
-                                editor.putBoolean(hasLocation, true)
-                                startActivity(
-                                    Intent(
-                                        this@LoginActivity,
-                                        ClientHomeActivity::class.java
-                                    )
-                                )
-                                finishAffinity()
-                            }
-                            RIDER -> {
-                                startActivity(
-                                    Intent(
-                                        this@LoginActivity,
-                                        RiderProfileActivity::class.java
-                                    )
-                                )
-                                finishAffinity()
-                            }
-                            MANAGER -> {
-                                startActivity(
-                                    Intent(
-                                        this@LoginActivity,
-                                        ManagerHomeActivity::class.java
-                                    )
-                                )
-                                finishAffinity()
-                            }
-                            else -> startActivity(
-                                Intent(
-                                    this@LoginActivity,
-                                    SelectUserTypeActivity::class.java
-                                )
-                            )
-                        }
+                        gotoActivity(user, editor)
                     }
                 }
                 editor.putString(userType, user)
@@ -172,6 +149,45 @@ class LoginActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             }
+    }
+
+    private fun gotoActivity(user: String, editor: SharedPreferences.Editor) {
+        when (user) {
+            CLIENT -> {
+                editor.putBoolean(hasLocation, true)
+                startActivity(
+                    Intent(
+                        this@LoginActivity,
+                        ClientHomeActivity::class.java
+                    )
+                )
+                finishAffinity()
+            }
+            RIDER -> {
+                startActivity(
+                    Intent(
+                        this@LoginActivity,
+                        RiderProfileActivity::class.java
+                    )
+                )
+                finishAffinity()
+            }
+            MANAGER -> {
+                startActivity(
+                    Intent(
+                        this@LoginActivity,
+                        ManagerHomeActivity::class.java
+                    )
+                )
+                finishAffinity()
+            }
+            else -> startActivity(
+                Intent(
+                    this@LoginActivity,
+                    SelectUserTypeActivity::class.java
+                )
+            )
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
