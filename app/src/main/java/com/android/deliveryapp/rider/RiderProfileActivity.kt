@@ -34,6 +34,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 import kotlin.math.*
 
@@ -227,12 +229,15 @@ class RiderProfileActivity : AppCompatActivity() {
                                 locationGeoPoint
                             )
 
-                            createNotification(
-                                pendingIntent,
-                                notificationManager,
-                                location,
-                                distance
-                            )
+                            GlobalScope.launch {
+                                createNotification(
+                                    pendingIntent,
+                                    notificationManager,
+                                    location,
+                                    distance
+                                )
+                            }
+
                             createNotificationChannel(
                                 channelID,
                                 getString(R.string.app_name),
