@@ -34,16 +34,7 @@ class SelectUserTypeActivity : AppCompatActivity() {
                     .addOnSuccessListener { result ->
                         for (document in result.documents) {
                             if (document.getString(userType) as String == MANAGER) { // if manager already exists
-                                Toast.makeText(
-                                    baseContext,
-                                    getString(R.string.manager_existence_error),
-                                    Toast.LENGTH_LONG
-                                ).show()
-
-                                binding.client.isChecked = true
-                                binding.manager.isChecked = false
-                                binding.manager.isClickable =
-                                    false // user cannot check manager amymore
+                                updateView()
                             }
                         }
                     }
@@ -58,7 +49,6 @@ class SelectUserTypeActivity : AppCompatActivity() {
         }
 
         binding.confirmButton.setOnClickListener {
-
             val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
 
@@ -84,6 +74,18 @@ class SelectUserTypeActivity : AppCompatActivity() {
             startActivity(Intent(this@SelectUserTypeActivity, LoginActivity::class.java))
             finish()
         }
+    }
+
+    private fun updateView() {
+        Toast.makeText(
+            baseContext,
+            getString(R.string.manager_existence_error),
+            Toast.LENGTH_LONG
+        ).show()
+
+        binding.client.isChecked = true
+        binding.manager.isChecked = false
+        binding.manager.isClickable = false // user cannot check manager anymore
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

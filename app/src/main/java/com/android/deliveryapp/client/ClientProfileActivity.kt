@@ -55,7 +55,10 @@ class ClientProfileActivity : AppCompatActivity() {
         binding.chatWithRiderBtnLand?.visibility = View.VISIBLE
 
         if (user != null) {
-            firestore.collection(clients).document(user.email!!) // fetch user address from cloud
+
+            /******************** USER ADDRESS FROM CLOUD INTO VIEW ************************/
+
+            firestore.collection(clients).document(user.email!!)
                 .get()
                 .addOnSuccessListener { result ->
                     val clientGeoPoint = result.getGeoPoint(clientAddress)
@@ -67,20 +70,26 @@ class ClientProfileActivity : AppCompatActivity() {
                                 clientGeoPoint.longitude,
                                 1
                             )
-                            } catch (e: IOException) {
-                                Log.w("Geocoder", e.message.toString())
-                            }
+                        } catch (e: IOException) {
+                            Log.w("Geocoder", e.message.toString())
+                        }
 
-                            if (geocoder != null) {
-                                binding.location.setText("${geocoder!![0].getAddressLine(0)}, " +
+                        if (geocoder != null) {
+                            binding.location.setText(
+                                "${geocoder!![0].getAddressLine(0)}, " +
                                         "${geocoder!![0].adminArea}, " +
-                                        geocoder!![0].postalCode)
-                            }
+                                        geocoder!![0].postalCode
+                            )
                         }
                     }
-                    .addOnFailureListener {
-                        Toast.makeText(baseContext, getString(R.string.error_user_data), Toast.LENGTH_LONG).show()
-                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(
+                        baseContext,
+                        getString(R.string.error_user_data),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
         } else {
             auth.currentUser?.reload()
             Toast.makeText(
@@ -117,7 +126,6 @@ class ClientProfileActivity : AppCompatActivity() {
                 startChatActivity(firestore, user.email!!)
             }
         }
-
     }
 
     private fun startChatActivity(firestore: FirebaseFirestore, email: String) {

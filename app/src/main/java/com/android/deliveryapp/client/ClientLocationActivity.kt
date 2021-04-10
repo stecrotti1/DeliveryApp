@@ -50,15 +50,16 @@ import kotlin.system.exitProcess
  * Client set his home location
  */
 class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
+    companion object {
+        private const val LOCATION_REQUEST_CODE = 101
+        private const val TAG = "GoogleMaps"
+        private const val FIREBASEFIRESTORE = "FIREBASEFIRESTORE"
+    }
+
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityClientLocationBinding
     private lateinit var database: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-
-
-    private val LOCATION_REQUEST_CODE = 101
-    private val TAG = "GoogleMaps"
-    private val FIREBASEFIRESTORE = "FIREBASEFIRESTORE"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,25 +122,26 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        // get market position
+        /**************************** GET MARKET POSITION ***************************************/
         var marketPos = GeoPoint(0.0, 0.0)
 
         database.collection(marketPosFirestore)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        marketPos = document.getGeoPoint(fieldPosition) as GeoPoint
-                    }
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    marketPos = document.getGeoPoint(fieldPosition) as GeoPoint
+                }
 
-                    mMap.addMarker(MarkerOptions() // put a marker
-                            .position(LatLng(marketPos.latitude, marketPos.longitude))
-                            .title(getString(R.string.market_position))
-                            .snippet(getString(R.string.market_snippet))
-                    )
-                }
-                .addOnFailureListener { exception ->
-                    Log.w("Firestore", "Error getting documents", exception)
-                }
+                mMap.addMarker(
+                    MarkerOptions() // put a marker
+                        .position(LatLng(marketPos.latitude, marketPos.longitude))
+                        .title(getString(R.string.market_position))
+                        .snippet(getString(R.string.market_snippet))
+                )
+            }
+            .addOnFailureListener { exception ->
+                Log.w("Firestore", "Error getting documents", exception)
+            }
 
         /******************************** CLIENT LOCATION *****************************************/
 
@@ -159,6 +161,8 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
         }
 
+        /******************************** MAP BUTTONS ******************************************/
+
         mMap.setOnMyLocationButtonClickListener { // when user click on location button on map
             if (clientPosition != LatLng(0.0, 0.0)) {
                 for (marker in markers) { // if there are previous markers, delete it
@@ -177,10 +181,6 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 false
             }
         }
-
-        /*****************************************************************************************/
-
-        /**************++++++++++++++++++++++++****** USER SEARCH ********************************/
 
         // if user press search button
         binding.searchLocationBtn.setOnClickListener {
@@ -215,22 +215,21 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        /*****************************************************************************************/
-
-        /************************************** CLIENT SAVE LOCATION ******************************/
-
         // if user wants to save location
         binding.saveLocationBtn.setOnClickListener {
-            val clientGeoPoint: GeoPoint = if (binding.searchLocation.text.isNullOrEmpty()) { // if live location is correct
-                GeoPoint(clientPosition.latitude, clientPosition.longitude)
-            } else { // if user has searched for a location
-                GeoPoint(searchPosition.latitude, searchPosition.longitude)
-            }
+            val clientGeoPoint: GeoPoint =
+                if (binding.searchLocation.text.isNullOrEmpty()) { // if live location is correct
+                    GeoPoint(clientPosition.latitude, clientPosition.longitude)
+                } else { // if user has searched for a location
+                    GeoPoint(searchPosition.latitude, searchPosition.longitude)
+                }
 
             if (calculateDistanceFromMarket(marketPos, clientGeoPoint) < 10.0) {
                 try {
-                    geocoder = Geocoder(this).getFromLocation(clientPosition.latitude,
-                            clientPosition.longitude, 1)
+                    geocoder = Geocoder(this).getFromLocation(
+                        clientPosition.latitude,
+                        clientPosition.longitude, 1
+                    )
                 } catch (e: IOException) {
                     Log.w(TAG, e.message.toString())
                 }
@@ -240,30 +239,37 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         if (user != null) {
                             val entry = hashMapOf(
-                                    clientAddress to clientGeoPoint
+                                clientAddress to clientGeoPoint
                             )
 
-                            // adds a document with user orderEmail
+                            // adds a document with user email
                             database.collection(clients).document(user.email!!)
-                                    .set(entry)
-                                    .addOnSuccessListener { documentRef ->
-                                        Log.d(FIREBASEFIRESTORE,
-                                                "DocumentSnapshot added with id $documentRef")
+                                .set(entry)
+                                .addOnSuccessListener { documentRef ->
+                                    Log.d(
+                                        FIREBASEFIRESTORE,
+                                        "DocumentSnapshot added with id $documentRef"
+                                    )
 
-                                        editor.putBoolean(hasLocation, true) // set preference
-                                        editor.apply()
+                                    editor.putBoolean(hasLocation, true) // set preference
+                                    editor.apply()
 
-                                        startActivity(Intent(this@ClientLocationActivity, ClientProfileActivity::class.java))
-                                        finish()
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.w(FIREBASEFIRESTORE, "Error adding document", e)
-                                        Toast.makeText(
-                                                baseContext,
-                                                getString(R.string.save_location_failed),
-                                                Toast.LENGTH_LONG
-                                        ).show()
-                                    }
+                                    startActivity(
+                                        Intent(
+                                            this@ClientLocationActivity,
+                                            ClientProfileActivity::class.java
+                                        )
+                                    )
+                                    finish()
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w(FIREBASEFIRESTORE, "Error adding document", e)
+                                    Toast.makeText(
+                                        baseContext,
+                                        getString(R.string.save_location_failed),
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
                         }
                     }
                 }
@@ -274,16 +280,19 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun showErrorDialog(editor: SharedPreferences.Editor) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.location_distance_error_dialog, null)
+        val dialogView =
+            LayoutInflater.from(this).inflate(R.layout.location_distance_error_dialog, null)
 
         val dialog: AlertDialog?
 
         val dialogBuilder = AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setTitle(getString(R.string.too_far_title))
+            .setView(dialogView)
+            .setTitle(getString(R.string.too_far_title))
 
-        val confirmButton: ExtendedFloatingActionButton = dialogView.findViewById(R.id.confirmButtonDialog)
-        val fixLocationBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.fixLocationBtn)
+        val confirmButton: ExtendedFloatingActionButton =
+            dialogView.findViewById(R.id.confirmButtonDialog)
+        val fixLocationBtn: ExtendedFloatingActionButton =
+            dialogView.findViewById(R.id.fixLocationBtn)
 
         dialog = dialogBuilder.create()
         dialog.show()
@@ -312,7 +321,8 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val distanceLng: Double = lon2 - lon1
         val distanceLat: Double = lat2 - lat1
 
-        val a: Double = sin(distanceLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(distanceLng / 2).pow(2.0)
+        val a: Double =
+            sin(distanceLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(distanceLng / 2).pow(2.0)
         val c = 2 * asin(sqrt(a))
 
         return (6367 * c)
@@ -324,7 +334,11 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
      * @param googleMap the google map of this activity
      * @param clientPosition the LatLng user position
      */
-    private fun showUserLocation(markers: Array<Marker>, googleMap: GoogleMap, clientPosition: LatLng) {
+    private fun showUserLocation(
+        markers: Array<Marker>,
+        googleMap: GoogleMap,
+        clientPosition: LatLng
+    ) {
         markers.plus(
             googleMap.addMarker( // add marker to the array
                 MarkerOptions()
@@ -338,7 +352,11 @@ class ClientLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clientPosition, 12.0F))
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when (requestCode) {

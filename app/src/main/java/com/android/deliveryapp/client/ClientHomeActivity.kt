@@ -35,7 +35,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
 class ClientHomeActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityClientHomeBinding
     private lateinit var database: FirebaseDatabase // product names and prices
     private lateinit var firestore: FirebaseFirestore // shopping cart
@@ -335,7 +334,9 @@ class ClientHomeActivity : AppCompatActivity() {
                                 return@addSnapshotListener
                             } else {
                                 if (value != null) { // if message sent is from rider notify
-                                    if (value.contains("NAME") && value.getString("NAME") as String == "Rider") {
+                                    if (value.contains("NAME")
+                                        && value.getString("NAME") as String == "Rider"
+                                    ) {
                                         createNotification(pendingIntent, notificationManager)
                                         createNotificationChannel(
                                             channelID,
@@ -426,7 +427,12 @@ class ClientHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.theme -> {
-                startActivity(Intent(this@ClientHomeActivity, ThemeActivity::class.java))
+                startActivity(
+                    Intent(
+                        this@ClientHomeActivity,
+                        ThemeActivity::class.java
+                    )
+                )
                 true
             }
             R.id.logout -> {
@@ -458,6 +464,9 @@ class ClientHomeActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
 
         savedInstanceState.getBundle("dialog")?.let { dialog?.onRestoreInstanceState(it) }
-        binding.productListView.onRestoreInstanceState(savedInstanceState.getParcelable("listView"))
+        binding.productListView.onRestoreInstanceState(
+            savedInstanceState
+                .getParcelable("listView")
+        )
     }
 }
