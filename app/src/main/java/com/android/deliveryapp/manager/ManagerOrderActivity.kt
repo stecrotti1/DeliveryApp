@@ -27,7 +27,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ManagerOrderActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityManagerOrderBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var orderList: Array<ManagerOrderItem>

@@ -36,15 +36,16 @@ import java.text.DateFormat
 import java.util.*
 
 class AddProductActivity : AppCompatActivity() {
+    companion object {
+        private const val IMAGE_CAPTURE_CODE = 1001
+        private const val PERMISSION_CODE = 1000
+        private const val IMAGE_GALLERY_CODE = 1
+    }
 
     private lateinit var binding: ActivityAddProductBinding
     private var imageUri: Uri? = null
     private lateinit var storage: FirebaseStorage
     private lateinit var database: FirebaseDatabase
-
-    private val IMAGE_CAPTURE_CODE = 1001
-    private val PERMISSION_CODE = 1000
-    private val IMAGE_GALLERY_CODE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -339,7 +340,10 @@ class AddProductActivity : AppCompatActivity() {
     }
 
     private fun printErrorToast() {
-        Toast.makeText(baseContext, getString(R.string.invalid_values), Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            baseContext, getString(R.string.invalid_values),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     // when the back button is pressed in actionbar, finish this activity

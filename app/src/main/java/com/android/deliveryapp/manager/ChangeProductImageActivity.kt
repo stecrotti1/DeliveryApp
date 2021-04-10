@@ -32,16 +32,17 @@ import java.util.*
 
 
 class ChangeProductImageActivity : AppCompatActivity() {
+    companion object {
+        private const val IMAGE_CAPTURE_CODE = 1001
+        private const val PERMISSION_CODE = 1000
+        private const val IMAGE_GALLERY_CODE = 1
+    }
 
     private lateinit var binding: ActivityChangeProductImageBinding
     private lateinit var storage: FirebaseStorage
     private lateinit var database: FirebaseDatabase
 
     private var imageUri: Uri? = null
-
-    private val IMAGE_CAPTURE_CODE = 1001
-    private val PERMISSION_CODE = 1000
-    private val IMAGE_GALLERY_CODE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

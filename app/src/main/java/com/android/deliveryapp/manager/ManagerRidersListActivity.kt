@@ -63,10 +63,12 @@ class ManagerRidersListActivity : AppCompatActivity() {
     }
 
     private fun showUnavailabilityDialog() {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.rider_unavailable_dialog, null)
+        val dialogView = LayoutInflater.from(this).inflate(
+            R.layout.rider_unavailable_dialog, null
+        )
 
         val dialogBuilder = AlertDialog.Builder(this)
-                .setView(dialogView)
+            .setView(dialogView)
 
         val okBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.okBtn)
 
@@ -82,26 +84,28 @@ class ManagerRidersListActivity : AppCompatActivity() {
         riderList = emptyArray()
 
         firestore.collection(riders).get()
-                .addOnSuccessListener { result ->
-                    var email: String
-                    var isAvailable: Boolean
+            .addOnSuccessListener { result ->
+                var email: String
+                var isAvailable: Boolean
 
-                    for (document in result.documents) {
-                        email = document.id
-                        isAvailable = document.getBoolean(riderStatus) as Boolean
+                for (document in result.documents) {
+                    email = document.id
+                    isAvailable = document.getBoolean(riderStatus) as Boolean
 
-                        riderList = riderList.plus(RiderListItem(email, isAvailable))
-                    }
-
-                    updateView()
+                    riderList = riderList.plus(RiderListItem(email, isAvailable))
                 }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASE_FIRESTORE", "Error getting riders data", e)
 
-                    Toast.makeText(baseContext,
-                            getString(R.string.error_getting_riders),
-                            Toast.LENGTH_LONG).show()
-                }
+                updateView()
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_FIRESTORE", "Error getting riders data", e)
+
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.error_getting_riders),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
     }
 
     private fun updateView() {
@@ -109,9 +113,11 @@ class ManagerRidersListActivity : AppCompatActivity() {
             binding.ridersList.visibility = View.VISIBLE
             binding.empty.visibility = View.INVISIBLE
 
-            binding.ridersList.adapter = RiderListArrayAdapter(this,
-                    R.layout.manager_rider_list_element,
-                    riderList)
+            binding.ridersList.adapter = RiderListArrayAdapter(
+                this,
+                R.layout.manager_rider_list_element,
+                riderList
+            )
         } else {
             binding.empty.visibility = View.VISIBLE
             binding.ridersList.visibility = View.INVISIBLE

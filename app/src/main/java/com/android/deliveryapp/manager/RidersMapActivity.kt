@@ -21,11 +21,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 
 class RidersMapActivity : AppCompatActivity(), OnMapReadyCallback {
+    companion object {
+        private const val LOCATION_REQUEST_CODE = 101
+    }
 
     private lateinit var mMap: GoogleMap
     private lateinit var firestore: FirebaseFirestore
-
-    private val LOCATION_REQUEST_CODE = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

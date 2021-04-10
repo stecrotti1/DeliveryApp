@@ -31,7 +31,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
 class ManagerHomeActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityManagerHomeBinding
     private lateinit var database: FirebaseDatabase
     private lateinit var auth: FirebaseAuth
@@ -388,7 +387,12 @@ class ManagerHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.theme -> {
-                startActivity(Intent(this@ManagerHomeActivity, ThemeActivity::class.java))
+                startActivity(
+                    Intent(
+                        this@ManagerHomeActivity,
+                        ThemeActivity::class.java
+                    )
+                )
                 true
             }
             R.id.logout -> {

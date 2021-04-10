@@ -17,11 +17,13 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ManagerChatActivity : AppCompatActivity() {
+    companion object {
+        const val NAME = "NAME"
+        const val TEXT = "TEXT"
+    }
 
     private lateinit var binding: ActivityManagerChatBinding
     private lateinit var auth: FirebaseAuth
-
-    companion object;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,10 +86,8 @@ class ManagerChatActivity : AppCompatActivity() {
                 value != null && value.exists() -> {
                     with(value) {
                         binding.messageTextView.append(
-                            "${data?.get(RiderChatActivity.NAME)}:${
-                                data?.get(
-                                    RiderChatActivity.TEXT
-                                )
+                            "${data?.get(NAME)}:${
+                                data?.get(TEXT)
                             }\n"
                         )
                     }
