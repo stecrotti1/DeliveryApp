@@ -65,8 +65,12 @@ class RiderHomeActivity : AppCompatActivity() {
 
             if (auth.currentUser != null) {
                 if (sharedPreferences.getBoolean(newDelivery, false)) {
-                    startActivity(Intent(this@RiderHomeActivity,
-                            RiderDeliveryActivity::class.java))
+                    startActivity(
+                        Intent(
+                            this@RiderHomeActivity,
+                            RiderDeliveryActivity::class.java
+                        )
+                    )
                 } else {
                     showOrderDialog(i, auth.currentUser?.email!!)
                 }
@@ -80,8 +84,8 @@ class RiderHomeActivity : AppCompatActivity() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.rider_order_dialog, null)
 
         val dialogBuilder = AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setTitle(getString(R.string.dialog_title_rider))
+            .setView(dialogView)
+            .setTitle(getString(R.string.dialog_title_rider))
 
         val mapBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.viewMapBtn)
         val acceptBtn: ExtendedFloatingActionButton = dialogView.findViewById(R.id.acceptOrderBtn)
@@ -94,7 +98,10 @@ class RiderHomeActivity : AppCompatActivity() {
         val editor = sharedPreferences.edit()
 
         mapBtn.setOnClickListener {
-            val intent = Intent(this@RiderHomeActivity, DeliveryMapActivity::class.java)
+            val intent = Intent(
+                this@RiderHomeActivity,
+                DeliveryMapActivity::class.java
+            )
             intent.putExtra("clientLocation", orders[i].location)
 
             startActivity(intent)
@@ -109,10 +116,10 @@ class RiderHomeActivity : AppCompatActivity() {
             editor.apply()
 
             startActivity(
-                    Intent(
-                            this@RiderHomeActivity,
-                            RiderDeliveryActivity::class.java
-                    )
+                Intent(
+                    this@RiderHomeActivity,
+                    RiderDeliveryActivity::class.java
+                )
             )
 
             dialog.dismiss()
@@ -126,147 +133,159 @@ class RiderHomeActivity : AppCompatActivity() {
     }
 
     private fun uploadOnHistory(
-            deliveryOutcome: String,
-            i: Int,
-            orderList: Array<RiderOrderItem>,
-            firestore: FirebaseFirestore,
-            riderEmail: String
+        deliveryOutcome: String,
+        i: Int,
+        orderList: Array<RiderOrderItem>,
+        firestore: FirebaseFirestore,
+        riderEmail: String
     ) {
 
         val entry = mapOf(
-                "location" to orderList[i].location,
-                "date" to orderList[i].date,
-                "clientEmail" to orderList[i].clientEmail,
-                "outcome" to deliveryOutcome
+            "location" to orderList[i].location,
+            "date" to orderList[i].date,
+            "clientEmail" to orderList[i].clientEmail,
+            "outcome" to deliveryOutcome
         )
 
         firestore.collection(riders).document(riderEmail)
-                .collection(deliveryHistory).document(orderList[i].date)
-                .set(entry)
-                .addOnSuccessListener {
-                    // update also orders for manager
-                    firestore.collection(Keys.orders).document(orderList[i].date)
-                            .update("outcome", deliveryOutcome)
-                            .addOnSuccessListener {
+            .collection(deliveryHistory).document(orderList[i].date)
+            .set(entry)
+            .addOnSuccessListener {
+                // update also orders for manager
+                firestore.collection(Keys.orders).document(orderList[i].date)
+                    .update("outcome", deliveryOutcome)
+                    .addOnSuccessListener {
 
-                                if (deliveryOutcome == REJECTED) {
-                                    firestore.collection(riders).document(riderEmail)
-                                            .collection(delivery).document(orderList[i].date)
-                                            .delete()
-                                            .addOnSuccessListener {
-                                                Log.d("FIREBASE_FIRESTORE",
-                                                        "Data saved with success")
+                        if (deliveryOutcome == REJECTED) {
+                            firestore.collection(riders).document(riderEmail)
+                                .collection(delivery).document(orderList[i].date)
+                                .delete()
+                                .addOnSuccessListener {
+                                    Log.d(
+                                        "FIREBASE_FIRESTORE",
+                                        "Data saved with success"
+                                    )
 
-                                                val temp = orders
-                                                val date = orders[i].date
-                                                orders = emptyArray()
+                                    val temp = orders
+                                    val date = orders[i].date
+                                    orders = emptyArray()
 
-                                                // update the view
-                                                for (item in temp) {
-                                                    if (date != item.date) {
-                                                        orders = orders.plus(item)
-                                                    }
-                                                }
-                                                updateView()
-                                            }
-                                            .addOnFailureListener { e ->
-                                                Log.w("FIREBASE_FIRESTORE",
-                                                        "Failed to save data",
-                                                        e)
-                                            }
-                                } else {
-                                    firestore.collection(riders).document(riderEmail)
-                                            .collection(delivery).document(orderList[i].date)
-                                            .update("outcome", deliveryOutcome)
-                                            .addOnSuccessListener {
-                                                Log.d("FIREBASE_FIRESTORE",
-                                                        "Data saved with success")
-                                            }
-                                            .addOnFailureListener { e ->
-                                                Log.w("FIREBASE_FIRESTORE",
-                                                        "Failed to save data",
-                                                        e)
-                                            }
+                                    // update the view
+                                    for (item in temp) {
+                                        if (date != item.date) {
+                                            orders = orders.plus(item)
+                                        }
+                                    }
+                                    updateView()
                                 }
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
-                            }
-                }
-                .addOnFailureListener { e ->
-                    Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
-                }
+                                .addOnFailureListener { e ->
+                                    Log.w(
+                                        "FIREBASE_FIRESTORE",
+                                        "Failed to save data",
+                                        e
+                                    )
+                                }
+                        } else {
+                            firestore.collection(riders).document(riderEmail)
+                                .collection(delivery).document(orderList[i].date)
+                                .update("outcome", deliveryOutcome)
+                                .addOnSuccessListener {
+                                    Log.d(
+                                        "FIREBASE_FIRESTORE",
+                                        "Data saved with success"
+                                    )
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w(
+                                        "FIREBASE_FIRESTORE",
+                                        "Failed to save data",
+                                        e
+                                    )
+                                }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIREBASE_FIRESTORE", "Failed to save data", e)
+            }
     }
 
     private fun getOrders(firestore: FirebaseFirestore, email: String) {
         firestore.collection(riders).document(email)
-                .collection(delivery)
-                .get()
-                .addOnSuccessListener { result ->
-                    var date: String
-                    var location = ""
-                    var locationGeoPoint: GeoPoint
-                    var distance: Double
-                    var marketPoint: GeoPoint
-                    var geocoder: List<Address>? = null
-                    var clientEmail: String
+            .collection(delivery)
+            .get()
+            .addOnSuccessListener { result ->
+                var date: String
+                var location = ""
+                var locationGeoPoint: GeoPoint
+                var distance: Double
+                var marketPoint: GeoPoint
+                var geocoder: List<Address>? = null
+                var clientEmail: String
 
-                    for (document in result.documents) {
-                        date = document.id
-                        locationGeoPoint = document.getGeoPoint(clientAddress) as GeoPoint
+                for (document in result.documents) {
+                    date = document.id
+                    locationGeoPoint = document.getGeoPoint(clientAddress) as GeoPoint
 
-                        clientEmail = document.getString("clientEmail") as String
+                    clientEmail = document.getString("clientEmail") as String
 
-                        try {
-                            geocoder = Geocoder(this).getFromLocation(
-                                    locationGeoPoint.latitude,
-                                    locationGeoPoint.longitude,
-                                    1
-                            )
-                        } catch (e: IOException) {
-                            Log.w("Geocoder", e.message.toString())
-                        }
-
-                        if (geocoder != null) {
-                            location = "${geocoder[0].getAddressLine(0)}, " +
-                                    "${geocoder[0].adminArea}, " +
-                                    geocoder[0].postalCode
-                        }
-
-                        // get market position
-                        firestore.collection(marketPosFirestore).document(marketDocument)
-                                .get()
-                                .addOnSuccessListener { result2 ->
-
-                                    marketPoint = result2.getGeoPoint(Keys.fieldPosition) as GeoPoint
-
-                                    distance = calculateDistanceFromMarket(marketPoint, locationGeoPoint)
-
-                                    orders = orders.plus(
-                                            RiderOrderItem(
-                                                    date,
-                                                    location,
-                                                    distance,
-                                                    clientEmail
-                                            )
-                                    )
-
-                                    updateView()
-                                }
-                                .addOnFailureListener { exception ->
-                                    Log.w("Firestore", "Error getting documents", exception)
-                                }
+                    try {
+                        geocoder = Geocoder(this).getFromLocation(
+                            locationGeoPoint.latitude,
+                            locationGeoPoint.longitude,
+                            1
+                        )
+                    } catch (e: IOException) {
+                        Log.w("Geocoder", e.message.toString())
                     }
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(baseContext,
-                            getString(R.string.error_user_data),
-                            Toast.LENGTH_SHORT).show()
 
-                    Log.w("FIREBASE_FIRESTORE",
-                            "Error getting orders",
-                            e)
+                    if (geocoder != null) {
+                        location = "${geocoder[0].getAddressLine(0)}, " +
+                                "${geocoder[0].adminArea}, " +
+                                geocoder[0].postalCode
+                    }
+
+                    // get market position
+                    firestore.collection(marketPosFirestore).document(marketDocument)
+                        .get()
+                        .addOnSuccessListener { result2 ->
+
+                            marketPoint = result2.getGeoPoint(Keys.fieldPosition) as GeoPoint
+
+                            distance = calculateDistanceFromMarket(marketPoint, locationGeoPoint)
+
+                            orders = orders.plus(
+                                RiderOrderItem(
+                                    date,
+                                    location,
+                                    distance,
+                                    clientEmail
+                                )
+                            )
+
+                            updateView()
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.w("Firestore", "Error getting documents", exception)
+                        }
                 }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.error_user_data),
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                Log.w(
+                    "FIREBASE_FIRESTORE",
+                    "Error getting orders",
+                    e
+                )
+            }
     }
 
     private fun updateView() {
@@ -274,9 +293,11 @@ class RiderHomeActivity : AppCompatActivity() {
             binding.empty.visibility = View.INVISIBLE
             binding.riderOrdersList.visibility = View.VISIBLE
 
-            binding.riderOrdersList.adapter = RiderOrdersArrayAdapter(this,
-                    R.layout.rider_order_list_element,
-                    orders)
+            binding.riderOrdersList.adapter = RiderOrdersArrayAdapter(
+                this,
+                R.layout.rider_order_list_element,
+                orders
+            )
         } else { // empty
             binding.empty.visibility = View.VISIBLE
             binding.riderOrdersList.visibility = View.INVISIBLE
@@ -293,7 +314,8 @@ class RiderHomeActivity : AppCompatActivity() {
         val distanceLng: Double = lon2 - lon1
         val distanceLat: Double = lat2 - lat1
 
-        val a: Double = sin(distanceLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(distanceLng / 2).pow(2.0)
+        val a: Double =
+            sin(distanceLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(distanceLng / 2).pow(2.0)
         val c = 2 * asin(sqrt(a))
 
         return (6367 * c)
@@ -317,10 +339,10 @@ class RiderHomeActivity : AppCompatActivity() {
             }
             R.id.riderProfile -> {
                 startActivity(
-                        Intent(
-                                this@RiderHomeActivity,
-                                RiderProfileActivity::class.java
-                        )
+                    Intent(
+                        this@RiderHomeActivity,
+                        RiderProfileActivity::class.java
+                    )
                 )
                 true
             }
@@ -351,7 +373,12 @@ class RiderHomeActivity : AppCompatActivity() {
                 true
             }
             R.id.theme -> {
-                startActivity(Intent(this@RiderHomeActivity, ThemeActivity::class.java))
+                startActivity(
+                    Intent(
+                        this@RiderHomeActivity,
+                        ThemeActivity::class.java
+                    )
+                )
                 true
             }
             R.id.logout -> {

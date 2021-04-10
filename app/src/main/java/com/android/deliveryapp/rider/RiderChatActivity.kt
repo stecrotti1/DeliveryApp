@@ -14,13 +14,12 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RiderChatActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityRiderChatBinding
-
     companion object {
         const val NAME = "NAME"
         const val TEXT = "TEXT"
     }
+
+    private lateinit var binding: ActivityRiderChatBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

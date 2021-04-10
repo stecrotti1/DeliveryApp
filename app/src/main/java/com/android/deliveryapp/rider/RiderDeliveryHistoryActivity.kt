@@ -16,7 +16,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RiderDeliveryHistoryActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityRiderDeliveryHistoryBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth

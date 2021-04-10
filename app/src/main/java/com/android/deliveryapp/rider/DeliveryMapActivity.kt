@@ -20,10 +20,11 @@ import com.google.android.gms.maps.model.MarkerOptions
 import java.io.IOException
 
 class DeliveryMapActivity : AppCompatActivity(), OnMapReadyCallback {
+    companion object {
+        private const val LOCATION_REQUEST_CODE = 101
+    }
 
     private lateinit var mMap: GoogleMap
-
-    private val LOCATION_REQUEST_CODE = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

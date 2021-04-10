@@ -115,14 +115,17 @@ class RiderProfileActivity : AppCompatActivity() {
 
         val user = auth.currentUser
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val intent = Intent(this@RiderProfileActivity, RiderHomeActivity::class.java)
 
-        val pendingIntent = PendingIntent.getActivity(this@RiderProfileActivity,
-                0,
-                intent,
-                0)
+        val pendingIntent = PendingIntent.getActivity(
+            this@RiderProfileActivity,
+            0,
+            intent,
+            0
+        )
         if (user != null) {
             listenForNewOrders(firestore, pendingIntent, notificationManager, user.email!!)
         }
@@ -135,40 +138,48 @@ class RiderProfileActivity : AppCompatActivity() {
         editor: SharedPreferences.Editor
     ) {
         firestore.collection(riders).document(email)
-                .get()
-                .addOnSuccessListener { result ->
-                    // if cannot get from server, get it from preferences
-                    if (result.getBoolean(riderStatus) == null) {
-                        binding.riderStatus.isChecked = sharedPreferences.getBoolean(riderStatus, false)
-                    } else {
-                        binding.riderStatus.isChecked = result.getBoolean(riderStatus) as Boolean
-                        editor.putBoolean(riderStatus, binding.riderStatus.isChecked)
-                        editor.apply()
-                    }
+            .get()
+            .addOnSuccessListener { result ->
+                // if cannot get from server, get it from preferences
+                if (result.getBoolean(riderStatus) == null) {
+                    binding.riderStatus.isChecked = sharedPreferences.getBoolean(riderStatus, false)
+                } else {
+                    binding.riderStatus.isChecked = result.getBoolean(riderStatus) as Boolean
+                    editor.putBoolean(riderStatus, binding.riderStatus.isChecked)
+                    editor.apply()
                 }
+            }
     }
 
-    private fun listenForNewOrders(firestore: FirebaseFirestore,
-                                   pendingIntent: PendingIntent,
-                                   notificationManager: NotificationManager,
-                                   email: String) {
+    private fun listenForNewOrders(
+        firestore: FirebaseFirestore,
+        pendingIntent: PendingIntent,
+        notificationManager: NotificationManager,
+        email: String
+    ) {
         firestore.collection(riders).document(email)
-                .collection(delivery)
-                .addSnapshotListener { value, error ->
-                    if (error != null) {
-                        Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
-                        return@addSnapshotListener
-                    } else {
-                        if (value != null) {
-                            for (document in value.documents) {
-                                if (document.contains("outcome")
-                                        && document.getString("outcome") == YET_TO_RESPOND) {
-                                    sendDataToNotification(firestore, pendingIntent, notificationManager, email)
-                                }
+            .collection(delivery)
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    Log.w("FIREBASE_FIRESTORE", "Listen failed", error)
+                    return@addSnapshotListener
+                } else {
+                    if (value != null) {
+                        for (document in value.documents) {
+                            if (document.contains("outcome")
+                                && document.getString("outcome") == YET_TO_RESPOND
+                            ) {
+                                sendDataToNotification(
+                                    firestore,
+                                    pendingIntent,
+                                    notificationManager,
+                                    email
+                                )
                             }
                         }
                     }
                 }
+            }
     }
 
     private fun sendDataToNotification(
@@ -187,75 +198,88 @@ class RiderProfileActivity : AppCompatActivity() {
                 var marketPoint: GeoPoint
                 var geocoder: List<Address>? = null
 
-                    for (document in result.documents) {
-                        locationGeoPoint = document.getGeoPoint(clientAddress) as GeoPoint
+                for (document in result.documents) {
+                    locationGeoPoint = document.getGeoPoint(clientAddress) as GeoPoint
 
-                        try {
-                            geocoder = Geocoder(this).getFromLocation(locationGeoPoint.latitude,
-                                    locationGeoPoint.longitude,
-                                    1)
-                        } catch (e: IOException) {
-                            Log.w("Geocoder", e.message.toString())
-                        }
-
-                        if (geocoder != null) {
-                            location = "${geocoder[0].getAddressLine(0)}, " +
-                                    "${geocoder[0].adminArea}, " +
-                                    geocoder[0].postalCode
-                        }
-
-                        firestore.collection(marketPosFirestore).document(marketDocument)
-                                .get()
-                                .addOnSuccessListener { result2 ->
-                                    marketPoint = result2.getGeoPoint(Keys.fieldPosition) as GeoPoint
-
-                                    distance = calculateDistanceFromMarket(
-                                            marketPoint,
-                                            locationGeoPoint
-                                    )
-
-                                    createNotification(
-                                            pendingIntent,
-                                            notificationManager,
-                                            location,
-                                            distance
-                                    )
-                                    createNotificationChannel(
-                                            channelID,
-                                            getString(R.string.app_name),
-                                            getString(R.string.new_delivery_title),
-                                            notificationManager
-                                    )
-                                }
-                                .addOnFailureListener { exception ->
-                                    Log.w("Firestore", "Error getting documents", exception)
-                                }
+                    try {
+                        geocoder = Geocoder(this).getFromLocation(
+                            locationGeoPoint.latitude,
+                            locationGeoPoint.longitude,
+                            1
+                        )
+                    } catch (e: IOException) {
+                        Log.w("Geocoder", e.message.toString())
                     }
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(baseContext,
-                            getString(R.string.error_user_data),
-                            Toast.LENGTH_SHORT).show()
 
-                    Log.w("FIREBASE_FIRESTORE",
-                            "Error getting orders",
-                            e)
+                    if (geocoder != null) {
+                        location = "${geocoder[0].getAddressLine(0)}, " +
+                                "${geocoder[0].adminArea}, " +
+                                geocoder[0].postalCode
+                    }
+
+                    firestore.collection(marketPosFirestore).document(marketDocument)
+                        .get()
+                        .addOnSuccessListener { result2 ->
+                            marketPoint = result2.getGeoPoint(Keys.fieldPosition) as GeoPoint
+
+                            distance = calculateDistanceFromMarket(
+                                marketPoint,
+                                locationGeoPoint
+                            )
+
+                            createNotification(
+                                pendingIntent,
+                                notificationManager,
+                                location,
+                                distance
+                            )
+                            createNotificationChannel(
+                                channelID,
+                                getString(R.string.app_name),
+                                getString(R.string.new_delivery_title),
+                                notificationManager
+                            )
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.w("Firestore", "Error getting documents", exception)
+                        }
                 }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    baseContext,
+                    getString(R.string.error_user_data),
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                Log.w(
+                    "FIREBASE_FIRESTORE",
+                    "Error getting orders",
+                    e
+                )
+            }
     }
 
-    private fun createNotification(pendingIntent: PendingIntent,
-                                   notificationManager: NotificationManager,
-                                   location: String,
-                                   distance: Double) {
+    private fun createNotification(
+        pendingIntent: PendingIntent,
+        notificationManager: NotificationManager,
+        location: String,
+        distance: Double
+    ) {
         val notification = Notification.Builder(this@RiderProfileActivity, channelID)
-                .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle(getString(R.string.new_delivery_title))
-                .setContentText("${getString(R.string.notification_desc_address, location)} " +
-                        getString(R.string.notification_desc_distance, String.format("%.2f", distance)))
-                .setAutoCancel(true)
-                .setChannelId(channelID)
-                .setContentIntent(pendingIntent)
-                .build()
+            .setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle(getString(R.string.new_delivery_title))
+            .setContentText(
+                "${getString(R.string.notification_desc_address, location)} " +
+                        getString(
+                            R.string.notification_desc_distance,
+                            String.format("%.2f", distance)
+                        )
+            )
+            .setAutoCancel(true)
+            .setChannelId(channelID)
+            .setContentIntent(pendingIntent)
+            .build()
 
         notificationManager.notify(notificationID, notification)
     }
@@ -285,7 +309,8 @@ class RiderProfileActivity : AppCompatActivity() {
         val distanceLng: Double = lon2 - lon1
         val distanceLat: Double = lat2 - lat1
 
-        val a: Double = sin(distanceLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(distanceLng / 2).pow(2.0)
+        val a: Double =
+            sin(distanceLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(distanceLng / 2).pow(2.0)
         val c = 2 * asin(sqrt(a))
 
         return (6367 * c)
@@ -336,13 +361,23 @@ class RiderProfileActivity : AppCompatActivity() {
 
         return when (item.itemId) {
             R.id.homePage -> {
-                startActivity(Intent(this@RiderProfileActivity, RiderHomeActivity::class.java))
+                startActivity(
+                    Intent(
+                        this@RiderProfileActivity,
+                        RiderHomeActivity::class.java
+                    )
+                )
                 finish()
                 true
             }
             R.id.logout -> {
                 auth.signOut()
-                startActivity(Intent(this@RiderProfileActivity, LoginActivity::class.java))
+                startActivity(
+                    Intent(
+                        this@RiderProfileActivity,
+                        LoginActivity::class.java
+                    )
+                )
                 finish()
                 true
             }

@@ -9,27 +9,25 @@ class Keys {
         const val RIDER: String = "RIDER"
         const val MANAGER: String = "MANAGER"
 
-        // manager preferences
-        const val managerPref = "managerPref"
-        const val clientEmail = "clientEmail"
-        const val riderEmail = "riderEmail"
-        const val orderDate = "orderDate"
-
-        // preferences
+        // general user preferences
         const val userInfo: String = "userInfo"
         const val userType: String = "userType"
         const val isLogged: String = "isLogged"
+        const val isRegistered: String = "isRegistered"
+        const val hasLocation: String = "hasLocation"
 
         // if is logged
         const val username: String = "username"
         const val pwd: String = "password"
         const val invalidUser = "invalidUser"
 
+        // manager preferences
+        const val managerPref = "managerPref"
+        const val clientEmail = "clientEmail"
+        const val riderEmail = "riderEmail"
+        const val orderDate = "orderDate"
 
-        const val isRegistered: String = "isRegistered"
-        const val hasLocation: String = "hasLocation"
-
-        // firebase
+        // firebase string keys
         const val clients: String = "clients"
         const val manager: String = "manager"
         const val riders: String = "riders"
@@ -52,8 +50,6 @@ class Keys {
 
         const val chatCollection: String = "chats"
 
-        const val managerEmail: String = "managerEmail"
-
         const val riderStatus: String = "riderStatus"
 
         const val clientAddress: String = "address"
@@ -65,12 +61,9 @@ class Keys {
         const val marketDocument: String = "MARKET"
         const val fieldPosition: String = "position"
 
-        const val productsDocument: String = "orderProducts"
-
         const val productListFirebase: String = "productList"
         const val productImages: String = "productImages"
 
-        const val image: String = "image"
         const val name: String = "name"
         const val price: String = "price"
     }
