@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.deliveryapp.R
 import com.android.deliveryapp.client.ClientChatActivity
 import com.android.deliveryapp.databinding.ActivityManagerRiderBinding
+import com.android.deliveryapp.manager.fragments.AcceptedOutcomeFragment
 import com.android.deliveryapp.util.Keys.Companion.ACCEPTED
 import com.android.deliveryapp.util.Keys.Companion.DELIVERED
 import com.android.deliveryapp.util.Keys.Companion.DELIVERY_FAILED
@@ -113,8 +114,17 @@ class ManagerRiderActivity : AppCompatActivity() {
     }
 
     private fun updateView(outcome: String) {
+        val positiveOutcomeFragment = AcceptedOutcomeFragment()
+        val positiveOutcomeBinding = positiveOutcomeFragment.getBinding()
+
+        // TODO: 10/04/2021  
         when (outcome) {
             ACCEPTED, START -> {
+                supportFragmentManager.beginTransaction().apply {
+                    binding.fragment?.id?.let { replace(it, positiveOutcomeFragment) }
+                    commit()
+                }
+
                 binding.chatWithRiderBtn.visibility = View.VISIBLE
                 binding.selectBtn.visibility = View.INVISIBLE
 

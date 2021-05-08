@@ -30,6 +30,7 @@ import com.android.deliveryapp.util.Keys.Companion.username
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
 /**
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         Handler(Looper.getMainLooper()).postDelayed({
-            GlobalScope.run {
+            GlobalScope.launch {
                 getUserData()
             }
         }, 1500) // wait 1.5 seconds, then show the activity
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        GlobalScope.run {
+        GlobalScope.launch {
             getTheme(sharedPreferences)
         }
 
