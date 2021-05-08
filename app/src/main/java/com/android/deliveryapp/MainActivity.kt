@@ -2,6 +2,7 @@ package com.android.deliveryapp
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -28,6 +29,7 @@ import com.android.deliveryapp.util.Keys.Companion.userType
 import com.android.deliveryapp.util.Keys.Companion.username
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.GlobalScope
 import kotlin.system.exitProcess
 
 /**
@@ -45,107 +47,118 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
-            val editor = sharedPreferences.edit()
-
-            if (sharedPreferences.getBoolean(invalidUser, false)
-
-            ) { // if has location > 10 km from market
-                showErrorDialog()
-            } else {
-                // set theme
-                when (sharedPreferences.getInt(themePref, -1)) {
-                    AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_NO
-                    )
-                    AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_YES
-                    )
-                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    )
-                }
-
-                if (sharedPreferences.getBoolean(isRegistered, false)) {
-                    if (sharedPreferences.getBoolean(isLogged, false)) {
-                        val email = sharedPreferences.getString(username, null)
-                        val password = sharedPreferences.getString(pwd, null)
-
-                        // if client is already registered, so has already a location
-                        editor.putBoolean(hasLocation, true)
-                        editor.apply()
-
-                        auth.signInWithEmailAndPassword(email ?: "error", password ?: "error")
-                            .addOnCompleteListener(this) { task ->
-                                if (task.isSuccessful) {
-                                    Log.d("FIREBASE_AUTH", "User logged successfully")
-                                    when (sharedPreferences.getString(userType, null)) {
-                                        CLIENT -> startActivity(
-                                            Intent(
-                                                this@MainActivity,
-                                                ClientHomeActivity::class.java
-                                            )
-                                        )
-                                        RIDER -> startActivity(
-                                            Intent(
-                                                this@MainActivity,
-                                                RiderProfileActivity::class.java
-                                            )
-                                        )
-                                        MANAGER -> startActivity(
-                                            Intent(
-                                                this@MainActivity,
-                                                ManagerHomeActivity::class.java
-                                            )
-                                        )
-                                        else -> startActivity(
-                                            Intent(
-                                                this@MainActivity,
-                                                SelectUserTypeActivity::class.java
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    Log.w(
-                                        "FIREBASE_AUTH", "Failed to log user",
-                                        task.exception
-                                    )
-
-                                    startActivity(
-                                        Intent(
-                                            this@MainActivity,
-                                            LoginActivity::class.java
-                                        )
-                                    )
-                                }
-                            }
-                    } else {
-                        startActivity(
-                            Intent(
-                                this@MainActivity,
-                                LoginActivity::class.java
-                            )
-                        )
-                    }
-                } else {
-                    editor.putBoolean(hasLocation, false)
-                    editor.apply()
-
-                    startActivity(
-                        Intent(
-                            this@MainActivity,
-                            SelectUserTypeActivity::class.java
-                        )
-                    )
-                }
+            GlobalScope.run {
+                getUserData()
             }
         }, 1500) // wait 1.5 seconds, then show the activity
 
     }
 
+    private fun getTheme(sharedPreferences: SharedPreferences) {
+        // if has location > 10 km from market
+        if (sharedPreferences.getBoolean(invalidUser, false)) {
+            showErrorDialog()
+        } else {
+            // set theme
+            when (sharedPreferences.getInt(themePref, -1)) {
+                AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
+                    AppCompatDelegate.MODE_NIGHT_NO
+                )
+                AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(
+                    AppCompatDelegate.MODE_NIGHT_YES
+                )
+                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> AppCompatDelegate.setDefaultNightMode(
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                )
+            }
+        }
+    }
+
+    private fun getUserData() {
+        val sharedPreferences = getSharedPreferences(userInfo, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        GlobalScope.run {
+            getTheme(sharedPreferences)
+        }
+
+        if (sharedPreferences.getBoolean(isRegistered, false)) {
+            if (sharedPreferences.getBoolean(isLogged, false)) {
+                val email = sharedPreferences.getString(username, null)
+                val password = sharedPreferences.getString(pwd, null)
+
+                // if client is already registered, so has already a location
+                editor.putBoolean(hasLocation, true)
+                editor.apply()
+
+                auth.signInWithEmailAndPassword(email ?: "error", password ?: "error")
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            Log.d("FIREBASE_AUTH", "User logged successfully")
+                            when (sharedPreferences.getString(userType, null)) {
+                                CLIENT -> startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        ClientHomeActivity::class.java
+                                    )
+                                )
+                                RIDER -> startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        RiderProfileActivity::class.java
+                                    )
+                                )
+                                MANAGER -> startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        ManagerHomeActivity::class.java
+                                    )
+                                )
+                                else -> startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        SelectUserTypeActivity::class.java
+                                    )
+                                )
+                            }
+                        } else {
+                            Log.w(
+                                "FIREBASE_AUTH", "Failed to log user",
+                                task.exception
+                            )
+
+                            startActivity(
+                                Intent(
+                                    this@MainActivity,
+                                    LoginActivity::class.java
+                                )
+                            )
+                        }
+                    }
+            } else {
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        LoginActivity::class.java
+                    )
+                )
+            }
+        } else {
+            editor.putBoolean(hasLocation, false)
+            editor.apply()
+
+            startActivity(
+                Intent(
+                    this@MainActivity,
+                    SelectUserTypeActivity::class.java
+                )
+            )
+        }
+    }
+
     private fun showErrorDialog() {
         val dialogView =
-            LayoutInflater.from(this).inflate(R.layout.location_distance_error_dialog, null)
+            LayoutInflater.from(baseContext).inflate(R.layout.location_distance_error_dialog, null)
 
         val dialog: AlertDialog?
 
@@ -168,6 +181,5 @@ class MainActivity : AppCompatActivity() {
             finishAffinity()
             exitProcess(-1) // close the application entirely
         }
-
     }
 }

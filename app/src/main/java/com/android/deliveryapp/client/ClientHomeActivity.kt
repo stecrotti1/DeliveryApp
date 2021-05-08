@@ -248,7 +248,14 @@ class ClientHomeActivity : AppCompatActivity() {
                     "image" -> imageUrl = item.value as String
                     "title" -> title = item.value as String
                     "description" -> desc = item.value as String
-                    "price" -> price = item.value as Double
+                    "price" -> {
+                        price = try {
+                            item.value as Double
+                        } catch (e: ClassCastException) {
+                            val priceLong = item.value as Long
+                            priceLong.toDouble()
+                        }
+                    }
                     "quantity" -> qty = item.value as Long
                 }
             }
