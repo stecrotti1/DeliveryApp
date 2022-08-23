@@ -1,5 +1,4 @@
 # DeliveryApp
-DeliveryApp is an Android application developed by [stecrotti1](https://github.com/stecrotti1) at the [Computer Science Institute](http://www.di.unipmn.it) of the [University of Piemonte Orientale](http://www.uniupo.it) for the *Mobile applications* course.
 
 The application was made only for **academic purposes** and it's not meant to use in real life circumstances.
 
